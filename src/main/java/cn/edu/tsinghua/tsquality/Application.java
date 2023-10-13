@@ -1,12 +1,12 @@
-package cn.edu.tsinghua.tb;
+package cn.edu.tsinghua.tsquality;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TbApplication {
+public class Application {
 
   public static void main(String[] args) {
-    SpringApplication.run(TbApplication.class, args);
+    SpringApplication.run(Application.class, args);
   }
 }
