@@ -16,6 +16,14 @@ public class IoTDBConfigService {
         return ioTDBConfigMapper.getAll();
     }
 
+    public IoTDBConfig getById(int id) {
+        return ioTDBConfigMapper.getById(id);
+    }
+
+    public IoTDBConfig getWithPasswordById(int id) {
+        return ioTDBConfigMapper.getWithPasswordById(id);
+    }
+
     public int save(IoTDBConfig ioTDBConfig) {
         if (ioTDBConfig.getId() == 0) {
             return create(ioTDBConfig);

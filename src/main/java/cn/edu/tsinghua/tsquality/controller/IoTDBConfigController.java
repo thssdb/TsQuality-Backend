@@ -20,9 +20,14 @@ public class IoTDBConfigController {
     return ioTDBConfigService.save(ioTDBConfig);
   }
 
-  @GetMapping("all")
+  @GetMapping("/all")
   public List<IoTDBConfig> getAll() {
     return ioTDBConfigService.getAll();
+  }
+
+  @GetMapping("/{id}")
+  public IoTDBConfig getById(@PathVariable int id) {
+    return ioTDBConfigService.getById(id);
   }
 
   @DeleteMapping("/{id}")
