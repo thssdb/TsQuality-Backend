@@ -32,5 +32,4 @@ public interface IoTDBConfigMapper {
     // delete an iotdb-config
     @Delete("DELETE FROM iotdb_configs WHERE id = #{id}")
     int deleteById(@Param("id") int id);
-
 }

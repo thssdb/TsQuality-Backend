@@ -15,7 +15,7 @@
             <if test="username != null">
                 username = #{username},
             </if>
-            <if test="password != 0">
+            <if test="password != null">
                 password = #{password}
             </if>
         </set>

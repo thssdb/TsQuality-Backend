@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace指向mapper.xml所对应的Mapper接口-->
+<mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBPageSeriesStatMapper">
+    <update id="createPageSeriesStatTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS ${pageSeriesStatTableName}(
+            pid INTEGER PRIMARY KEY,
+            start_timestamp BIGINT NOT NULL,
+            end_timestamp BIGINT NOT NULL,
+            count INTEGER NOT NULL,
+            miss_count INTEGER NOT NULL,
+            special_count INTEGER NOT NULL,
+            late_count INTEGER,
+            redundancy_count INTEGER,
+            value_count INTEGER,
+            variation_count INTEGER,
+            speed_count INTEGER,
+            speed_change_count INTEGER,
+            FOREIGN KEY(pid) REFERENCES ${pageTableName}(pid) ON DELETE CASCADE
+        )
+    </update>
+
+</mapper>

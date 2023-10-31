@@ -10,3 +10,19 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pre-aggregation:
+  executor:
+    core-pool-size: 9
+    max-pool-size: 15
+    queue-capacity: 1000
+    name-prefix: pre-aggregation
+  data-dir: /Users/tyty/Projects/apache-iotdb-1.2.2/data/datanode/data/sequence
+  tables:
+    series: "iotdb_series"
+    file: "iotdb_file"
+    chunk: "iotdb_chunk"
+    page: "iotdb_page"
+    file-series-stat: "iotdb_file_series_stat"
+    chunk-series-stat: "iotdb_chunk_series_stat"
+    page-series-stat: "iotdb_page_series_stat"

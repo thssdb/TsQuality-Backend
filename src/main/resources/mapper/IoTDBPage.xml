@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace指向mapper.xml所对应的Mapper接口-->
+<mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBPageMapper">
+    <update id="createPageTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS ${pageTableName}(
+            pid INTEGER PRIMARY KEY AUTO_INCREMENT,
+            cid INT,
+            sid INT,
+            page_index INT,
+            FOREIGN KEY (cid) REFERENCES ${chunkTableName}(cid) ON DELETE CASCADE
+        )
+    </update>
+
+</mapper>
