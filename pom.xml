@@ -15,7 +15,7 @@
     <description>Backend of TsQuality</description>
     <properties>
         <java.version>21</java.version>
-        <iotdb.version>1.1.0</iotdb.version>
+        <iotdb.version>1.2.2</iotdb.version>
     </properties>
     <dependencies>
         <dependency>

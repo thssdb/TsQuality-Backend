@@ -25,7 +25,6 @@ public interface IoTDBConfigMapper {
             "VALUES (#{host}, #{port}, #{username}, #{password})")
     int insert(IoTDBConfig ioTDBConfig);
 
-
     // update an existing iotdb-config
     int update(IoTDBConfig ioTDBConfig);
 

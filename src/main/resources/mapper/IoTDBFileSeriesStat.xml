@@ -7,8 +7,8 @@
         CREATE TABLE IF NOT EXISTS ${fileSeriesStatTableName}(
             fid INTEGER,
             sid INTEGER,
-            start_timestamp BIGINT NOT NULL,
-            end_timestamp BIGINT NOT NULL,
+            min_timestamp BIGINT NOT NULL,
+            max_timestamp BIGINT NOT NULL,
             count INTEGER NOT NULL,
             miss_count INTEGER NOT NULL,
             special_count INTEGER NOT NULL,
@@ -17,11 +17,28 @@
             value_count INTEGER,
             variation_count INTEGER,
             speed_count INTEGER,
-            speed_change_count INTEGER,
+            acceleration_count INTEGER,
             PRIMARY KEY(fid, sid),
             FOREIGN KEY(fid) REFERENCES ${fileTableName}(fid) ON DELETE CASCADE,
             FOREIGN KEY(sid) REFERENCES ${seriesTableName}(sid) ON DELETE CASCADE
         )
     </update>
 
+    <insert id="insert">
+        INSERT IGNORE INTO ${tableName} VALUES (
+            #{fid},
+            #{sid},
+            #{stat.minTimestamp},
+            #{stat.maxTimestamp},
+            #{stat.cnt},
+            #{stat.missCnt},
+            #{stat.specialCnt},
+            #{stat.lateCnt},
+            #{stat.redundancyCnt},
+            #{stat.valueCnt},
+            #{stat.variationCnt},
+            #{stat.specialCnt},
+            #{stat.accelerationCnt}
+        )
+    </insert>
 </mapper>

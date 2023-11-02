@@ -10,5 +10,9 @@
             file_path VARCHAR(255) NOT NULL UNIQUE
         )
     </update>
+    <select id="selectIdByFilePath" resultType="java.lang.Integer">
+        SELECT fid FROM ${tableName}
+        WHERE file_path = #{filePath}
+    </select>
 
 </mapper>

@@ -6,8 +6,8 @@
     <update id="createChunkSeriesStatTable" parameterType="String">
        CREATE TABLE IF NOT EXISTS ${chunkSeriesStatTableName}(
             cid INTEGER PRIMARY KEY,
-            start_timestamp BIGINT NOT NULL,
-            end_timestamp BIGINT NOT NULL,
+            min_timestamp BIGINT NOT NULL,
+            max_timestamp BIGINT NOT NULL,
             count INTEGER NOT NULL,
             miss_count INTEGER NOT NULL,
             special_count INTEGER NOT NULL,
@@ -16,9 +16,25 @@
             value_count INTEGER,
             variation_count INTEGER,
             speed_count INTEGER,
-            speed_change_count INTEGER,
+            acceleration_count INTEGER,
             FOREIGN KEY(cid) REFERENCES ${chunkTableName}(cid) ON DELETE CASCADE
         )
     </update>
 
+    <insert id="insert">
+        INSERT IGNORE INTO ${tableName} VALUES (
+            #{cid},
+            #{stat.minTimestamp},
+            #{stat.maxTimestamp},
+            #{stat.cnt},
+            #{stat.missCnt},
+            #{stat.specialCnt},
+            #{stat.lateCnt},
+            #{stat.redundancyCnt},
+            #{stat.valueCnt},
+            #{stat.variationCnt},
+            #{stat.specialCnt},
+            #{stat.accelerationCnt}
+        )
+    </insert>
 </mapper>

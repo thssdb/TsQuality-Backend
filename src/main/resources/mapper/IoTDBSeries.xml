@@ -10,4 +10,11 @@
         )
     </update>
 
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT IGNORE INTO ${tableName} (ts_path)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.path})
+        </foreach>
+    </insert>
 </mapper>
