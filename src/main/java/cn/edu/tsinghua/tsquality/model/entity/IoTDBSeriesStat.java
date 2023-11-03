@@ -1,11 +1,13 @@
 package cn.edu.tsinghua.tsquality.model.entity;
 
+import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.library.util.Util;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 
 import java.util.ArrayList;
 
+@Data
 public class IoTDBSeriesStat {
     private int cnt;
     private int missCnt = 0;
@@ -20,6 +22,7 @@ public class IoTDBSeriesStat {
     private long maxTimestamp = Long.MIN_VALUE;
     private double[] valueList;
     private double[] timeList;
+    private String path;
 
     public IoTDBSeriesStat() {}
 

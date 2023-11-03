@@ -19,6 +19,8 @@ public class IoTDBMapper {
     @Autowired
     PreAggregationConfig config;
     @Autowired
+    IoTDBConfigMapper configMapper;
+    @Autowired
     IoTDBSeriesMapper seriesMapper;
     @Autowired
     IoTDBFileMapper fileMapper;
@@ -32,9 +34,12 @@ public class IoTDBMapper {
     IoTDBChunkSeriesStatMapper chunkSeriesStatMapper;
     @Autowired
     IoTDBPageSeriesStatMapper pageSeriesStatMapper;
+    @Autowired
+    DataQualityMapper dataQualityMapper;
 
     public void createTablesIfNotExists() {
         PreAggregationConfig.TableNames tables = config.tables;
+        configMapper.createIoTDBConfigTable();
         seriesMapper.createSeriesTable(tables.series);
         fileMapper.createFileTable(tables.file);
         chunkMapper.createChunkTable(tables.chunk, tables.file);
@@ -89,5 +94,17 @@ public class IoTDBMapper {
                 chunkSeriesStatMapper.insert(tables.chunkSeriesStat, cid, chunkEntry.getValue());
             }
         }
+    }
+
+    public List<IoTDBSeriesStat> selectSeriesStat() {
+        return dataQualityMapper.selectSeriesStat(config.tables.series, config.tables.fileSeriesStat, null);
+    }
+
+    public List<IoTDBSeriesStat> selectDeviceStat(String path) {
+        return dataQualityMapper.selectDeviceStat(config.tables.series, config.tables.fileSeriesStat, path);
+    }
+
+    public List<IoTDBSeriesStat> selectDatabaseStat(String path) {
+        return dataQualityMapper.selectDatabaseStat(config.tables.series, config.tables.fileSeriesStat, path);
     }
 }

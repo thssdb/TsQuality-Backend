@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface IoTDBConfigMapper {
+    // create iotdb_config table if not exists
+    void createIoTDBConfigTable();
+
     // get iotdb-config by id (without password)
     @Select("SELECT id, host, port, username FROM iotdb_configs WHERE id = #{id}")
     IoTDBConfig getById(@PathVariable("id") int id);

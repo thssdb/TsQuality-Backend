@@ -16,5 +16,6 @@ public interface IoTDBFileSeriesStatMapper {
             @Param("tableName") String tableName,
             @Param("fid") int fid,
             @Param("sid") int sid,
-            @Param("stat") IoTDBSeriesStat stat);
+            @Param("stat") IoTDBSeriesStat stat
+    );
 }

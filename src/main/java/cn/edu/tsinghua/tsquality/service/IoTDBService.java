@@ -2,6 +2,7 @@ package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBMapper;
+import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
@@ -63,8 +64,11 @@ public class IoTDBService {
     }
 
     public long getCountResult(int iotdbConfigID, String sql) {
-        IoTDBConfig ioTDBConfig = ioTDBConfigMapper.getWithPasswordById(iotdbConfigID);
-        try (Session session = buildSession(ioTDBConfig)) {
+        IoTDBConfig iotdbConfig = ioTDBConfigMapper.getWithPasswordById(iotdbConfigID);
+        if (iotdbConfig == null) {
+            return 0;
+        }
+        try (Session session = buildSession(iotdbConfig)) {
             if (session == null) {
                 return 0;
             }
@@ -95,6 +99,18 @@ public class IoTDBService {
 
     public long getNumsStorageGroups(int iotdbConfigId) {
         return getCountResult(iotdbConfigId, SQL_QUERY_NUMS_DATABASES);
+    }
+
+    public List<IoTDBSeriesOverview> getTimeSeriesOverview(int id) {
+        return iotdbMapper.selectSeriesStat().stream().map(IoTDBSeriesOverview::new).toList();
+    }
+
+    public List<IoTDBSeriesOverview> getDeviceOverview(int id, String path) {
+        return iotdbMapper.selectDeviceStat(path).stream().map(IoTDBSeriesOverview::new).toList();
+    }
+
+    public List<IoTDBSeriesOverview> getDatabaseOverview(int id, String path) {
+        return iotdbMapper.selectDatabaseStat(path).stream().map(IoTDBSeriesOverview::new).toList();
     }
 
     @PostConstruct
