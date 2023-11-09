@@ -43,7 +43,7 @@
     <select id="selectDeviceStat" resultType="IoTDBSeriesStat">
         SELECT
         <if test="path == null || path.isEmpty()">
-            ts_path path,
+            device,
         </if>
         <include refid="statColumns"/>
         FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
@@ -53,7 +53,7 @@
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY path
+            GROUP BY device
         </if>
     </select>
 

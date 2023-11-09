@@ -4,10 +4,17 @@ import lombok.Data;
 
 @Data
 public class IoTDBSeries {
-    public int sid;
-    public String path;
+    private int sid;
+    private String path;
+    private String device = "";
+    private String database = "";
 
     public IoTDBSeries(String path) {
         this.path = path;
+    }
+
+    public IoTDBSeries(String path, String device) {
+        this.path = path;
+        this.device = device;
     }
 }

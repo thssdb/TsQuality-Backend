@@ -23,6 +23,8 @@ public class IoTDBSeriesStat {
     private double[] valueList;
     private double[] timeList;
     private String path;
+    private String device;
+    private String database;
 
     public IoTDBSeriesStat() {}
 
@@ -112,7 +114,6 @@ public class IoTDBSeriesStat {
         double mid = median.evaluate(value);
         double sigma = Util.mad(value);
         int num = 0;
-        int var11 = value.length;
         for (double v : value) {
             if (Math.abs(v - mid) > k * sigma) {
                 ++num;

@@ -74,10 +74,9 @@ public class IoTDBMapper {
             fid = fileMapper.selectIdByFilePath(tables.file, file.getFilePath());
         }
         // insert multiple series into the series table
-        seriesMapper.insertList(
-                tables.series,
-                seriesPaths.stream().map(s -> new IoTDBSeries(s.getFullPath())).toList()
-        );
+        List<IoTDBSeries> seriesList =
+                seriesPaths.stream().map(s -> new IoTDBSeries(s.getFullPath(), s.getDevice())).toList();
+        seriesMapper.insertList(tables.series, seriesList);
         for (Map.Entry<Path, TsFileStat> entry: stats.entrySet()) {
             Path seriesPath = entry.getKey();
             int sid = seriesMapper.selectIdByPath(tables.series, seriesPath.getFullPath());
