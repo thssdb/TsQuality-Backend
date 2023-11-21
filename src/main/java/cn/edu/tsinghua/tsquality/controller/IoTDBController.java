@@ -1,5 +1,6 @@
 package cn.edu.tsinghua.tsquality.controller;
 
+import cn.edu.tsinghua.tsquality.model.dto.IoTDBAggregationInfoDto;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
@@ -33,6 +34,11 @@ public class IoTDBController {
     @GetMapping("/{id}/storage-group/count")
     public long getNumsStorageGroups(@PathVariable int id) {
         return iotdbService.getNumsStorageGroups(id);
+    }
+
+    @GetMapping("/{id}/aggregation-info")
+    public IoTDBAggregationInfoDto getAggregationInfo(@PathVariable int id) {
+        return iotdbService.getAggregationInfo(id);
     }
 
     @GetMapping("/{id}/time-series/overview")

@@ -106,4 +106,8 @@ public class IoTDBMapper {
     public List<IoTDBSeriesStat> selectDatabaseStat(String path) {
         return dataQualityMapper.selectDatabaseStat(config.tables.series, config.tables.fileSeriesStat, path);
     }
+
+    public IoTDBSeriesStat selectAllStat() {
+        return dataQualityMapper.selectAllStat(config.tables.fileSeriesStat);
+    }
 }

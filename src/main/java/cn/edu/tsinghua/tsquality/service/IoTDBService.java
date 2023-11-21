@@ -1,8 +1,10 @@
 package cn.edu.tsinghua.tsquality.service;
 
+import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBMapper;
+import cn.edu.tsinghua.tsquality.model.dto.IoTDBAggregationInfoDto;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
@@ -218,5 +220,23 @@ public class IoTDBService {
             IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
     ) {
 
+    }
+
+    public IoTDBAggregationInfoDto getAggregationInfo(int id) {
+        IoTDBSeriesStat stat = iotdbMapper.selectAllStat();
+        double completeness = DataQualityCalculationUtil.calculateCompleteness(stat);
+        double consistency = DataQualityCalculationUtil.calculateConsistency(stat);
+        double timeliness = DataQualityCalculationUtil.calculateTimeliness(stat);
+        double validity = DataQualityCalculationUtil.calculateValidity(stat);
+        return IoTDBAggregationInfoDto.builder()
+                .numDataPoints(stat.getCnt())
+                .numTimeSeries(getNumsTimeSeries(id))
+                .numDevices(getNumsDevices(id))
+                .numDatabases(getNumsDatabases(id))
+                .completeness(completeness)
+                .consistency(consistency)
+                .timeliness(timeliness)
+                .validity(validity)
+                .build();
     }
 }

@@ -73,4 +73,10 @@
             GROUP BY `path`
         </if>
     </select>
+
+    <select id="selectAllStat" resultType="IoTDBSeriesStat">
+        SELECT
+        <include refid="statColumns" />
+        FROM ${fileSeriesStatTableName}
+    </select>
 </mapper>

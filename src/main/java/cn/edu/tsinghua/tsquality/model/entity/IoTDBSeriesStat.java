@@ -9,15 +9,15 @@ import java.util.ArrayList;
 
 @Data
 public class IoTDBSeriesStat {
-    private int cnt;
-    private int missCnt = 0;
-    private int specialCnt = 0;
-    private int lateCnt = 0;
-    private int redundancyCnt = 0;
-    private int valueCnt = 0;
-    private int variationCnt = 0;
-    private int speedCnt = 0;
-    private int accelerationCnt = 0;
+    private long cnt;
+    private long missCnt = 0;
+    private long specialCnt = 0;
+    private long lateCnt = 0;
+    private long redundancyCnt = 0;
+    private long valueCnt = 0;
+    private long variationCnt = 0;
+    private long speedCnt = 0;
+    private long accelerationCnt = 0;
     private long minTimestamp = Long.MAX_VALUE;
     private long maxTimestamp = Long.MIN_VALUE;
     private double[] valueList;

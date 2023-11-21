@@ -5,18 +5,18 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBChunkSeriesStatMapper">
     <update id="createChunkSeriesStatTable" parameterType="String">
        CREATE TABLE IF NOT EXISTS ${chunkSeriesStatTableName}(
-            `cid` INTEGER PRIMARY KEY,
+            `cid` BIGINT PRIMARY KEY,
             `min_timestamp` BIGINT NOT NULL,
             `max_timestamp` BIGINT NOT NULL,
-            `count` INTEGER NOT NULL,
-            `miss_count` INTEGER NOT NULL,
-            `special_count` INTEGER NOT NULL,
-            `late_count` INTEGER,
-            `redundancy_count` INTEGER,
-            `value_count` INTEGER,
-            `variation_count` INTEGER,
-            `speed_count` INTEGER,
-            `acceleration_count` INTEGER,
+            `count` BIGINT NOT NULL,
+            `miss_count` BIGINT NOT NULL,
+            `special_count` BIGINT NOT NULL,
+            `late_count` BIGINT,
+            `redundancy_count` BIGINT,
+            `value_count` BIGINT,
+            `variation_count` BIGINT,
+            `speed_count` BIGINT,
+            `acceleration_count` BIGINT,
             FOREIGN KEY(`cid`) REFERENCES ${chunkTableName}(`cid`) ON DELETE CASCADE
         )
     </update>

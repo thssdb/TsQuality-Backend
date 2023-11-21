@@ -26,4 +26,8 @@ public interface DataQualityMapper {
             @Param("fileSeriesStatTableName") String fileSeriesStatTableName,
             @Param("path") String path
     );
+
+    IoTDBSeriesStat selectAllStat(
+            @Param("fileSeriesStatTableName") String fileSeriesStatTableName
+    );
 }
