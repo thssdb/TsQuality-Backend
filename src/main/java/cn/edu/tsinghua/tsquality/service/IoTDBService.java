@@ -1,12 +1,16 @@
 package cn.edu.tsinghua.tsquality.service;
 
+import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBMapper;
+import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
+import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
+import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
+import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import cn.edu.tsinghua.tsquality.preaggregation.Util;
 import org.apache.iotdb.commons.path.PartialPath;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
@@ -116,7 +120,7 @@ public class IoTDBService {
     @PostConstruct
     private void startPreAggregation() {
         iotdbMapper.createTablesIfNotExists();
-        Map<String, Long> tsFiles = Util.getAllTsFiles(dataDir);
+        Map<String, Long> tsFiles = PreAggregationUtil.getAllTsFiles(dataDir);
         if (tsFiles.isEmpty()) {
             return;
         }
@@ -143,7 +147,7 @@ public class IoTDBService {
                         modifications.add(modification);
                     }
                 }
-                Map<Long, IChunkReader> chunkReaders = Util.getChunkReaders(path, reader, modifications);
+                Map<Long, IChunkReader> chunkReaders = PreAggregationUtil.getChunkReaders(path, reader, modifications);
                 for (Map.Entry<Long, IChunkReader> entry: chunkReaders.entrySet()) {
                     tsFileStat.startNewChunk(entry.getKey());
                     IChunkReader chunkReader = entry.getValue();
@@ -164,5 +168,55 @@ public class IoTDBService {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+    public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
+            int id, IoTDBSeriesAnomalyDetectionRequest request
+    ) {
+        IoTDBSeriesAnomalyDetectionResult result = new IoTDBSeriesAnomalyDetectionResult(request);
+        IoTDBConfig iotdbConfig = ioTDBConfigMapper.getWithPasswordById(id);
+        if (iotdbConfig == null) {
+            return result;
+        }
+        try (Session session = buildSession(iotdbConfig)) {
+            if (session == null) {
+                return result;
+            }
+            session.open();
+            String sql = Util.constructQuerySQL(request.getSeriesPath(), request);
+            SessionDataSet dataset = session.executeQueryStatement(sql);
+            if (dataset.getColumnNames().size() != 2) {
+                return result;
+            }
+            SessionDataSet.DataIterator iterator = dataset.iterator();
+            List<IoTDBTimeValuePair> timeValuePairs = IoTDBTimeValuePair.buildFromDatasetIterator(iterator);
+            result.anomalyDetect(timeValuePairs);
+            return result;
+        } catch (IoTDBConnectionException | StatementExecutionException e) {
+            return result;
+        }
+    }
+
+    private void completenessAnomalyDetection(
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
+    ) {
+
+    }
+
+    private void consistencyAnomalyDetection(
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
+    ) {
+
+    }
+
+    private void timelinessAnomalyDetection(
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
+    ) {
+
+    }
+
+    private void validityAnomalyDetection(
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
+    ) {
+
     }
 }

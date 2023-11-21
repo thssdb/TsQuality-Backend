@@ -5,16 +5,16 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBChunkMapper">
     <update id="createChunkTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${chunkTableName}(
-            cid INTEGER PRIMARY KEY AUTO_INCREMENT,
-            fid INT,
-            sid INT,
-            offset BIGINT,
-            FOREIGN KEY (fid) REFERENCES ${fileTableName}(fid) ON DELETE CASCADE
+            `cid` INT PRIMARY KEY AUTO_INCREMENT,
+            `fid` INT,
+            `sid` INT,
+            `offset` BIGINT,
+            FOREIGN KEY (`fid`) REFERENCES ${fileTableName}(`fid`) ON DELETE CASCADE
         )
     </update>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="chunk.cid">
-        INSERT IGNORE INTO ${tableName} (fid, sid, offset)
+        INSERT IGNORE INTO ${tableName} (`fid`, `sid`, `offset`)
         VALUES (#{chunk.fid}, #{chunk.sid}, #{chunk.offset})
     </insert>
 </mapper>

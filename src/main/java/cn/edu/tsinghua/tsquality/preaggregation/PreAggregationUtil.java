@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Util {
+public class PreAggregationUtil {
     public static Map<String, Long> getAllTsFiles(String dataDir) {
         Map<String, Long> tsFiles = new HashMap<>();
         File dir = new File(dataDir);

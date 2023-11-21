@@ -5,11 +5,11 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBPageMapper">
     <update id="createPageTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${pageTableName}(
-            pid INTEGER PRIMARY KEY AUTO_INCREMENT,
-            cid INT,
-            sid INT,
-            page_index INT,
-            FOREIGN KEY (cid) REFERENCES ${chunkTableName}(cid) ON DELETE CASCADE
+            `pid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `cid` INT,
+            `sid` INT,
+            `page_index` INT,
+            FOREIGN KEY (`cid`) REFERENCES ${chunkTableName}(`cid`) ON DELETE CASCADE
         )
     </update>
 

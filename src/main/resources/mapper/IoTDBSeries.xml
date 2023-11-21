@@ -5,15 +5,15 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBSeriesMapper">
     <update id="createSeriesTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
-            sid INTEGER PRIMARY KEY AUTO_INCREMENT,
-            ts_path VARCHAR(255) NOT NULL UNIQUE,
-            device VARCHAR(255),
+            `sid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `ts_path` VARCHAR(255) NOT NULL UNIQUE,
+            `device` VARCHAR(255),
             `database` VARCHAR(255)
         )
     </update>
 
     <insert id="insertList" parameterType="java.util.List">
-        INSERT IGNORE INTO ${tableName} (ts_path, device, `database`)
+        INSERT IGNORE INTO ${tableName} (`ts_path`, `device`, `database`)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.path}, #{item.device}, #{item.database})

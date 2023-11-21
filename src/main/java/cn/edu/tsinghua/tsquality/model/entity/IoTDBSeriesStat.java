@@ -2,7 +2,7 @@ package cn.edu.tsinghua.tsquality.model.entity;
 
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import org.apache.iotdb.library.util.Util;
+import cn.edu.tsinghua.tsquality.common.Util;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 
 import java.util.ArrayList;
@@ -97,30 +97,18 @@ public class IoTDBSeriesStat {
             return;
         }
         double k = 3;
-        valueCnt = findOutliers(valueList, k);
+        valueCnt = Util.findOutliers(valueList, k);
         double[] variation = Util.variation(valueList);
-        variationCnt = findOutliers(variation, k);
+        variationCnt = Util.findOutliers(variation, k);
         double[] speed = Util.speed(valueList, timeList);
-        speedCnt = findOutliers(speed, k);
+        speedCnt = Util.findOutliers(speed, k);
         if (speed.length < 2) {
             return;
         }
         double[] speedChange = Util.variation(speed);
-        accelerationCnt = findOutliers(speedChange, k);
+        accelerationCnt = Util.findOutliers(speedChange, k);
     }
 
-    private int findOutliers(double[] value, double k) {
-        Median median = new Median();
-        double mid = median.evaluate(value);
-        double sigma = Util.mad(value);
-        int num = 0;
-        for (double v : value) {
-            if (Math.abs(v - mid) > k * sigma) {
-                ++num;
-            }
-        }
-        return num;
-    }
 
     public void timeDetect() {
         double[] interval = Util.variation(timeList);

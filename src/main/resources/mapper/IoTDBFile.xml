@@ -5,14 +5,14 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBFileMapper">
     <update id="createFileTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
-            fid INTEGER PRIMARY KEY AUTO_INCREMENT,
-            file_version BIGINT NOT NULL,
-            file_path VARCHAR(255) NOT NULL UNIQUE
+            `fid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `file_version` BIGINT NOT NULL,
+            `file_path` VARCHAR(255) NOT NULL UNIQUE
         )
     </update>
     <select id="selectIdByFilePath" resultType="java.lang.Integer">
-        SELECT fid FROM ${tableName}
-        WHERE file_path = #{filePath}
+        SELECT `fid` FROM ${tableName}
+        WHERE `file_path` = #{filePath}
     </select>
 
 </mapper>

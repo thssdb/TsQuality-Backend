@@ -6,7 +6,7 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import cn.edu.tsinghua.tsquality.preaggregation.Util;
+import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,7 +62,7 @@ public class IoTDBMapper {
     public void saveTsFileStat(
             String filePath, List<Path> seriesPaths, Map<Path, TsFileStat> stats) {
         PreAggregationConfig.TableNames tables = config.tables;
-        IoTDBFile file = new IoTDBFile(filePath, Util.getFileVersion(filePath));
+        IoTDBFile file = new IoTDBFile(filePath, PreAggregationUtil.getFileVersion(filePath));
         int fid;
         // insert one file into the file table
         int res = fileMapper.insert(tables.file, file);

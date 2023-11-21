@@ -5,11 +5,11 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper">
     <update id="createIoTDBConfigTable">
         CREATE TABLE IF NOT EXISTS iotdb_configs(
-            id INTEGER PRIMARY KEY AUTO_INCREMENT,
-            port INT NOT NULL,
-            host VARCHAR(255) NOT NULL,
-            username VARCHAR(255) NOT NULL,
-            password VARCHAR(255) NOT NULL
+            `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `port` INT NOT NULL,
+            `host` VARCHAR(255) NOT NULL,
+            `username` VARCHAR(255) NOT NULL,
+            `password` VARCHAR(255) NOT NULL
         )
     </update>
 

@@ -4,29 +4,29 @@
 <!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.DataQualityMapper">
     <sql id="statColumns">
-        MIN(min_timestamp) minTimestamp,
-        MAX(max_timestamp) maxTimestamp,
-        SUM(count) cnt,
-        SUM(miss_count) missCnt,
-        SUM(special_count) specialCnt,
-        SUM(late_count) lateCnt,
-        SUM(redundancy_count) redundancyCnt,
-        SUM(value_count) valueCnt,
-        SUM(variation_count) variatiCnt,
-        SUM(speed_count) speedCnt,
-        SUM(acceleration_count) accelerationCnt
+        MIN(`min_timestamp`) minTimestamp,
+        MAX(`max_timestamp`) maxTimestamp,
+        SUM(`count`) cnt,
+        SUM(`miss_count`) missCnt,
+        SUM(`special_count`) specialCnt,
+        SUM(`late_count`) lateCnt,
+        SUM(`redundancy_count`) redundancyCnt,
+        SUM(`value_count`) valueCnt,
+        SUM(`variation_count`) variatiCnt,
+        SUM(`speed_count`) speedCnt,
+        SUM(`acceleration_count`) accelerationCnt
     </sql>
     <sql id="equalPathWhereClause">
-        WHERE ts_path = #{path}
+        WHERE `ts_path` = #{path}
     </sql>
     <sql id="likePathWhereClause">
-        WHERE ts_path LIKE CONCAT(#{path}, '.%')
+        WHERE `ts_path` LIKE CONCAT(#{path}, '.%')
     </sql>
 
     <select id="selectSeriesStat" resultType="IoTDBSeriesStat">
         SELECT
         <if test="path == null || path.isEmpty()">
-            ts_path path,
+            `ts_path` `path`,
         </if>
         <include refid="statColumns"/>
         FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
@@ -36,14 +36,14 @@
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY path
+            GROUP BY `path`
         </if>
     </select>
 
     <select id="selectDeviceStat" resultType="IoTDBSeriesStat">
         SELECT
         <if test="path == null || path.isEmpty()">
-            device,
+            `device`,
         </if>
         <include refid="statColumns"/>
         FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
@@ -53,14 +53,14 @@
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY device
+            GROUP BY `device`
         </if>
     </select>
 
     <select id="selectDatabaseStat" resultType="IoTDBSeriesStat">
         SELECT
         <if test="path == null || path.isEmpty()">
-            ts_path path,
+            `ts_path` `path`,
         </if>
         <include refid="statColumns"/>
         FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
@@ -70,7 +70,7 @@
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY path
+            GROUP BY `path`
         </if>
     </select>
 </mapper>
