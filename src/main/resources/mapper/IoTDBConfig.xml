@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper">
     <update id="createIoTDBConfigTable">
         CREATE TABLE IF NOT EXISTS iotdb_configs(
@@ -11,6 +10,11 @@
             `username` VARCHAR(255) NOT NULL,
             `password` VARCHAR(255) NOT NULL
         )
+    </update>
+
+    <update id="create" useGeneratedKeys="true" keyProperty="config.id">
+        INSERT INTO iotdb_configs (`port`, `host`, `username`, `password`)
+        VALUES (#{config.port}, #{config.host}, #{config.username}, #{config.password})
     </update>
 
     <update id="update">

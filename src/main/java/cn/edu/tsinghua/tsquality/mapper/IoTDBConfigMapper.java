@@ -24,12 +24,10 @@ public interface IoTDBConfigMapper {
     List<IoTDBConfig> getAll();
 
     // create a new iotdb-config
-    @Insert("INSERT INTO iotdb_configs (host, port, username, password) " +
-            "VALUES (#{host}, #{port}, #{username}, #{password})")
-    int insert(IoTDBConfig ioTDBConfig);
+    void create(@Param("config") IoTDBConfig config);
 
     // update an existing iotdb-config
-    int update(IoTDBConfig ioTDBConfig);
+    int update(IoTDBConfig config);
 
     // delete an iotdb-config
     @Delete("DELETE FROM iotdb_configs WHERE id = #{id}")

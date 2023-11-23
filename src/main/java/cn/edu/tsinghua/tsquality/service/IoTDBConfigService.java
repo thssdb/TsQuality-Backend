@@ -25,18 +25,20 @@ public class IoTDBConfigService {
     }
 
     public int save(IoTDBConfig ioTDBConfig) {
-        if (ioTDBConfig.getId() == 0) {
+        if (ioTDBConfig.getId() <= 0) {
             return create(ioTDBConfig);
         }
         return update(ioTDBConfig);
     }
 
-    private int create(IoTDBConfig ioTDBConfig) {
-        return ioTDBConfigMapper.insert(ioTDBConfig);
+    private int create(IoTDBConfig config) {
+        ioTDBConfigMapper.create(config);
+        return config.getId();
     }
 
     private int update(IoTDBConfig ioTDBConfig)  {
-        return ioTDBConfigMapper.update(ioTDBConfig);
+        ioTDBConfigMapper.update(ioTDBConfig);
+        return ioTDBConfig.getId();
     }
 
     public int deleteById(int id) {
