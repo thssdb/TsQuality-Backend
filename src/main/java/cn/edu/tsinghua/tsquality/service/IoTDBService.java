@@ -9,6 +9,7 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
+import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
 import org.apache.iotdb.commons.path.PartialPath;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
@@ -24,7 +25,6 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.read.reader.IChunkReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,11 +46,14 @@ public class IoTDBService {
     @Value("${pre-aggregation.data-dir:.}")
     public String dataDir;
 
-    @Autowired
-    IoTDBMapper iotdbMapper;
+    final IoTDBMapper iotdbMapper;
 
-    @Autowired
-    IoTDBConfigMapper ioTDBConfigMapper;
+    final IoTDBConfigMapper ioTDBConfigMapper;
+
+    public IoTDBService(IoTDBMapper iotdbMapper, IoTDBConfigMapper ioTDBConfigMapper) {
+        this.iotdbMapper = iotdbMapper;
+        this.ioTDBConfigMapper = ioTDBConfigMapper;
+    }
 
     public static Session buildSession(IoTDBConfig ioTDBConfig) {
         Session session;
@@ -120,17 +123,18 @@ public class IoTDBService {
     @PostConstruct
     private void startPreAggregation() {
         iotdbMapper.createTablesIfNotExists();
-        Map<String, Long> tsFiles = PreAggregationUtil.getAllTsFiles(dataDir);
+        List<TsFileInfo> tsFiles = PreAggregationUtil.getAllTsFiles(dataDir);
         if (tsFiles.isEmpty()) {
             return;
         }
-        for (String filePath : tsFiles.keySet()) {
-            preAggregateTsFile(filePath);
+        for (TsFileInfo tsfile : tsFiles) {
+            preAggregateTsFile(tsfile);
         }
     }
 
     @Async("preAggregationTaskExecutor")
-    public void preAggregateTsFile(String filePath) {
+    public void preAggregateTsFile(TsFileInfo tsfile) {
+        String filePath = tsfile.getFilePath();
         Collection<Modification> allModifications =
                 new TsFileResource(new File(filePath)).getModFile().getModifications();
         try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
@@ -164,7 +168,7 @@ public class IoTDBService {
                 }
                 seriesStatMap.put(path, tsFileStat);
             }
-            iotdbMapper.saveTsFileStat(filePath, seriesPaths, seriesStatMap);
+            iotdbMapper.saveTsFileStat(tsfile, seriesPaths, seriesStatMap);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

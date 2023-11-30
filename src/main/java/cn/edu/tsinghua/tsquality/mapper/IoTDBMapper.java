@@ -5,8 +5,8 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
+import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,9 +60,10 @@ public class IoTDBMapper {
     }
 
     public void saveTsFileStat(
-            String filePath, List<Path> seriesPaths, Map<Path, TsFileStat> stats) {
+            TsFileInfo tsFile, List<Path> seriesPaths, Map<Path, TsFileStat> stats) {
         PreAggregationConfig.TableNames tables = config.tables;
-        IoTDBFile file = new IoTDBFile(filePath, PreAggregationUtil.getFileVersion(filePath));
+        String filePath = tsFile.getFilePath();
+        IoTDBFile file = new IoTDBFile(filePath, tsFile.getFileVersion());
         int fid;
         // insert one file into the file table
         int res = fileMapper.insert(tables.file, file);
@@ -74,8 +75,14 @@ public class IoTDBMapper {
             fid = fileMapper.selectIdByFilePath(tables.file, file.getFilePath());
         }
         // insert multiple series into the series table
-        List<IoTDBSeries> seriesList =
-                seriesPaths.stream().map(s -> new IoTDBSeries(s.getFullPath(), s.getDevice())).toList();
+        List<IoTDBSeries> seriesList = seriesPaths.stream().map(
+                s -> IoTDBSeries
+                        .builder()
+                        .path(s.getFullPath())
+                        .device(s.getDevice())
+                        .database(tsFile.getDatabase())
+                        .build()
+        ).toList();
         seriesMapper.insertList(tables.series, seriesList);
         for (Map.Entry<Path, TsFileStat> entry: stats.entrySet()) {
             Path seriesPath = entry.getKey();

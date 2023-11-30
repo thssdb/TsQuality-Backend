@@ -5,9 +5,9 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBChunkMapper">
     <update id="createChunkTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${chunkTableName}(
-            `cid` INT PRIMARY KEY AUTO_INCREMENT,
-            `fid` INT,
-            `sid` INT,
+            `cid` BIGINT PRIMARY KEY AUTO_INCREMENT,
+            `fid` BIGINT,
+            `sid` BIGINT,
             `offset` BIGINT,
             FOREIGN KEY (`fid`) REFERENCES ${fileTableName}(`fid`) ON DELETE CASCADE
         )

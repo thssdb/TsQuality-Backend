@@ -5,7 +5,7 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBPageSeriesStatMapper">
     <update id="createPageSeriesStatTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${pageSeriesStatTableName}(
-            `pid` INTEGER PRIMARY KEY,
+            `pid` BIGINT PRIMARY KEY,
             `min_timestamp` BIGINT NOT NULL,
             `max_timestamp` BIGINT NOT NULL,
             `count` BIGINT NOT NULL,

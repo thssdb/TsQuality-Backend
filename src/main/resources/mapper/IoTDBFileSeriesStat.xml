@@ -5,8 +5,8 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBFileSeriesStatMapper">
     <update id="createFileSeriesStatTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${fileSeriesStatTableName}(
-            `fid` INTEGER,
-            `sid` INTEGER,
+            `fid` BIGINT,
+            `sid` BIGINT,
             `min_timestamp` BIGINT NOT NULL,
             `max_timestamp` BIGINT NOT NULL,
             `count` BIGINT NOT NULL,

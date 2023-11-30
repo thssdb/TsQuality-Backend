@@ -5,7 +5,7 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBFileMapper">
     <update id="createFileTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
-            `fid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `fid` BIGINT PRIMARY KEY AUTO_INCREMENT,
             `file_version` BIGINT NOT NULL,
             `file_path` VARCHAR(255) NOT NULL UNIQUE
         )

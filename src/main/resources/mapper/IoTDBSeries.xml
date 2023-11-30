@@ -5,7 +5,7 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBSeriesMapper">
     <update id="createSeriesTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
-            `sid` INTEGER PRIMARY KEY AUTO_INCREMENT,
+            `sid` BIGINT PRIMARY KEY AUTO_INCREMENT,
             `ts_path` VARCHAR(255) NOT NULL UNIQUE,
             `device` VARCHAR(255),
             `database` VARCHAR(255)
