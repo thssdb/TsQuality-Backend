@@ -1,13 +1,10 @@
 package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
-import cn.edu.tsinghua.tsquality.common.Util;
+import cn.edu.tsinghua.tsquality.common.IoTDBUtil;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.mapper.IoTDBMapper;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBAggregationInfoDto;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
+import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
@@ -44,6 +41,7 @@ public class IoTDBService {
     private static final String SQL_QUERY_NUMS_TIME_SERIES = "COUNT TIMESERIES";
     private static final String SQL_QUERY_NUMS_DEVICES = "COUNT DEVICES";
     private static final String SQL_QUERY_NUMS_DATABASES = "COUNT DATABASES";
+    private static final String SQL_QUERY_SHOW_TIME_SERIES = "SHOW TIMESERIES";
 
     @Value("${pre-aggregation.data-dir:.}")
     public String dataDir;
@@ -54,7 +52,7 @@ public class IoTDBService {
     @Autowired
     IoTDBConfigMapper ioTDBConfigMapper;
 
-    private static Session buildSession(IoTDBConfig ioTDBConfig) {
+    public static Session buildSession(IoTDBConfig ioTDBConfig) {
         Session session;
         try {
             session = new Session.Builder()
@@ -126,7 +124,7 @@ public class IoTDBService {
         if (tsFiles.isEmpty()) {
             return;
         }
-        for (String filePath: tsFiles.keySet()) {
+        for (String filePath : tsFiles.keySet()) {
             preAggregateTsFile(filePath);
         }
     }
@@ -138,19 +136,19 @@ public class IoTDBService {
         try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
             List<Path> seriesPaths = reader.getAllPaths();
             Map<Path, TsFileStat> seriesStatMap = new HashMap<>();
-            for (Path path: seriesPaths) {
+            for (Path path : seriesPaths) {
                 if (path.getMeasurement().isEmpty()) {
                     continue;
                 }
                 TsFileStat tsFileStat = new TsFileStat(path);
                 List<Modification> modifications = new ArrayList<>();
-                for (Modification modification: allModifications) {
+                for (Modification modification : allModifications) {
                     if (modification.getPath().matchFullPath((PartialPath) path)) {
                         modifications.add(modification);
                     }
                 }
                 Map<Long, IChunkReader> chunkReaders = PreAggregationUtil.getChunkReaders(path, reader, modifications);
-                for (Map.Entry<Long, IChunkReader> entry: chunkReaders.entrySet()) {
+                for (Map.Entry<Long, IChunkReader> entry : chunkReaders.entrySet()) {
                     tsFileStat.startNewChunk(entry.getKey());
                     IChunkReader chunkReader = entry.getValue();
                     while (chunkReader.hasNextSatisfiedPage()) {
@@ -171,6 +169,7 @@ public class IoTDBService {
             System.out.println(e.getMessage());
         }
     }
+
     public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
             int id, IoTDBSeriesAnomalyDetectionRequest request
     ) {
@@ -184,7 +183,7 @@ public class IoTDBService {
                 return result;
             }
             session.open();
-            String sql = Util.constructQuerySQL(request.getSeriesPath(), request);
+            String sql = IoTDBUtil.constructQuerySQL(request.getSeriesPath(), request);
             SessionDataSet dataset = session.executeQueryStatement(sql);
             if (dataset.getColumnNames().size() != 2) {
                 return result;
@@ -238,5 +237,56 @@ public class IoTDBService {
                 .timeliness(timeliness)
                 .validity(validity)
                 .build();
+    }
+
+    // get the full path of the latest time series with type == DOUBLE | FLOAT | INT32 | INT64
+    public String getLatestNumericTimeSeriesPath(Session session)
+            throws IoTDBConnectionException, StatementExecutionException {
+        session.open();
+        SessionDataSet.DataIterator iterator = session.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES).iterator();
+        while (iterator.next()) {
+            if(IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
+                return iterator.getString("Timeseries");
+            }
+        }
+        return "";
+    }
+
+    public TimeSeriesRecentDataDto getTimeSeriesData(int id, String path) {
+        IoTDBConfig config = ioTDBConfigMapper.getWithPasswordById(id);
+        if (config == null) {
+            return new TimeSeriesRecentDataDto();
+        }
+        try (Session session = buildSession(config)) {
+            if (session == null) {
+                return new TimeSeriesRecentDataDto();
+            }
+            session.open();
+            if (path == null || path.isEmpty()) {
+                path = getLatestNumericTimeSeriesPath(session);
+            }
+            if (path.isEmpty()) {
+                return new TimeSeriesRecentDataDto();
+            }
+            return IoTDBUtil.query(session, path);
+        } catch (IoTDBConnectionException | StatementExecutionException e) {
+            return new TimeSeriesRecentDataDto();
+        }
+    }
+
+    public List<String> getLatestTimeSeriesPath(int id, String path, int limit) {
+        IoTDBConfig config = ioTDBConfigMapper.getWithPasswordById(id);
+        if (config == null) {
+            return new ArrayList<>();
+        }
+        try (Session session = buildSession(config)) {
+            if (session == null) {
+                return new ArrayList<>();
+            }
+            session.open();
+            return IoTDBUtil.showLatestTimeSeries(session, path, limit);
+        } catch (IoTDBConnectionException | StatementExecutionException e) {
+            return new ArrayList<>();
+        }
     }
 }

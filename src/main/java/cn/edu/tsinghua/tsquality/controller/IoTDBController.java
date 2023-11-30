@@ -1,9 +1,6 @@
 package cn.edu.tsinghua.tsquality.controller;
 
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBAggregationInfoDto;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
+import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +38,15 @@ public class IoTDBController {
         return iotdbService.getAggregationInfo(id);
     }
 
+    @GetMapping("/{id}/time-series/latest")
+    public List<String> getLatestTimeSeriesPaths(
+            @PathVariable int id,
+            @RequestParam(name = "path", required=false, defaultValue = "root") String path,
+            @RequestParam(name = "limit", required=false, defaultValue = "10") int limit
+    ) {
+        return iotdbService.getLatestTimeSeriesPath(id, path, limit);
+    }
+
     @GetMapping("/{id}/time-series/overview")
     public List<IoTDBSeriesOverview> getTimeSeriesOverview(@PathVariable int id) {
         return iotdbService.getTimeSeriesOverview(id);
@@ -65,5 +71,13 @@ public class IoTDBController {
             @PathVariable int id,
             @RequestParam(value = "path", required = false) String path) {
         return iotdbService.getDatabaseOverview(id, path);
+    }
+
+    @GetMapping("/{id}/time-series/data")
+    public TimeSeriesRecentDataDto getTimeSeriesData(
+            @PathVariable int id,
+            @RequestParam String path
+    ) {
+        return iotdbService.getTimeSeriesData(id, path);
     }
 }

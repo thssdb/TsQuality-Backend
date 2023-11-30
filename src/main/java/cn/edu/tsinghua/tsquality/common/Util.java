@@ -1,6 +1,5 @@
 package cn.edu.tsinghua.tsquality.common;
 
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 import java.time.Instant;
@@ -10,19 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Util {
-    // split time series path to {device}.{sensor}
-    public static String[] splitSeriesPath(String seriesPath) {
-        String[] result = new String[2];
-        int index = seriesPath.lastIndexOf('.');
-        if (index == -1) {
-            result[0] = seriesPath;
-            result[1] = "";
-        } else {
-            result[0] = seriesPath.substring(0, index);
-            result[1] = seriesPath.substring(index + 1);
-        }
-        return result;
-    }
 
     public static String formatTimestamp(long timestamp) {
         LocalDateTime time = LocalDateTime.ofInstant(
@@ -30,41 +16,6 @@ public class Util {
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return time.format(formatter);
-    }
-
-    public static String constructQuerySQL(String seriesPath, IoTDBSeriesAnomalyDetectionRequest request) {
-        IoTDBSeriesAnomalyDetectionRequest.TimeFilter timeFilter = request.getTimeFilter();
-        IoTDBSeriesAnomalyDetectionRequest.ValueFilter valueFilter = request.getValueFilter();
-        return constructQuerySQL(
-                seriesPath,
-                timeFilter == null ? 0 : timeFilter.getMinTimestamp(),
-                timeFilter == null ? 0 : timeFilter.getMaxTimestamp(),
-                valueFilter == null ? "" : valueFilter.getContent());
-    }
-
-    public static String constructQuerySQL(
-            String seriesPath, long minTimeFilter, long maxTimeFilter, String valueFilter
-    ) {
-        String[] splitRes = splitSeriesPath(seriesPath);
-        String device = splitRes[0];
-        String sensor = splitRes[1];
-        String sql = String.format("SELECT %s FROM %s", sensor, device);
-        if (minTimeFilter != 0) {
-            sql += String.format(" WHERE time > %d", minTimeFilter);
-        }
-        if (maxTimeFilter != 0) {
-            if (minTimeFilter != 0) {
-                sql += " AND";
-            }
-            sql += String.format(" time < %d", maxTimeFilter);
-        }
-        if (valueFilter != null && !valueFilter.isEmpty()) {
-            if (minTimeFilter != 0 || maxTimeFilter != 0) {
-                sql += " AND";
-            }
-            sql += String.format(" %s %s", sensor, valueFilter);
-        }
-        return sql;
     }
 
     public static double[] toDoubleArray(List<Double> list) {
