@@ -22,9 +22,10 @@ public class IoTDBSeriesStat {
     private long maxTimestamp = Long.MIN_VALUE;
     private double[] valueList;
     private double[] timeList;
+    // this field is not used in the code,
+    // only used to store results returned by SQL queries,
+    // it could represent the path of a time series or a device or a database
     private String path;
-    private String device;
-    private String database;
 
     public IoTDBSeriesStat() {}
 

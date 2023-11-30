@@ -13,8 +13,6 @@ public class IoTDBSeriesOverview {
     private double timeliness;
     private double validity;
     private String path;
-    private String device;
-    private String database;
 
     public IoTDBSeriesOverview(@NotNull IoTDBSeriesStat stat) {
         this.cnt = stat.getCnt();
@@ -23,8 +21,6 @@ public class IoTDBSeriesOverview {
         this.timeliness = DataQualityCalculationUtil.calculateTimeliness(stat);
         this.validity = DataQualityCalculationUtil.calculateValidity(stat);
         this.path = stat.getPath();
-        this.device = stat.getDevice();
-        this.database = stat.getDatabase();
     }
 
 }
