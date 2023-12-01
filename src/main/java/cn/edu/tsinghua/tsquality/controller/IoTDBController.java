@@ -18,17 +18,17 @@ public class IoTDBController {
         return iotdbService.getNumsTimeSeries(id);
     }
 
-    @GetMapping("/{id}/device/count")
+    @GetMapping("/{id}/devices/count")
     public long getNumsDevices(@PathVariable int id) {
         return iotdbService.getNumsDevices(id);
     }
 
-    @GetMapping("/{id}/database/count")
+    @GetMapping("/{id}/databases/count")
     public long getNumsDatabases(@PathVariable int id) {
         return iotdbService.getNumsDatabases(id);
     }
 
-    @GetMapping("/{id}/storage-group/count")
+    @GetMapping("/{id}/storage-groups/count")
     public long getNumsStorageGroups(@PathVariable int id) {
         return iotdbService.getNumsStorageGroups(id);
     }
@@ -59,14 +59,14 @@ public class IoTDBController {
         return iotdbService.getAnomalyDetectionResult(id, request);
     }
 
-    @GetMapping("/{id}/device/overview")
+    @GetMapping("/{id}/devices/overview")
     public List<IoTDBSeriesOverview> getDeviceOverview(
             @PathVariable int id,
             @RequestParam(value = "path", required = false) String path) {
         return iotdbService.getDeviceOverview(id, path);
     }
 
-    @GetMapping("/{id}/database/overview")
+    @GetMapping("/{id}/databases/overview")
     public List<IoTDBSeriesOverview> getDatabaseOverview(
             @PathVariable int id,
             @RequestParam(value = "path", required = false) String path) {
