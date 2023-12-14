@@ -1,10 +1,9 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
+import java.util.List;
 import org.apache.ibatis.annotations.*;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
 
 @Mapper
 public interface IoTDBConfigMapper {

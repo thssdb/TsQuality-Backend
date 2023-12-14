@@ -2,16 +2,14 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
 public class IoTDBController {
-    @Autowired
-    private IoTDBService iotdbService;
+    @Autowired private IoTDBService iotdbService;
 
     @GetMapping("/{id}/time-series/count")
     public long getNumsTimeSeries(@PathVariable int id) {
@@ -41,9 +39,8 @@ public class IoTDBController {
     @GetMapping("/{id}/time-series/latest")
     public List<String> getLatestTimeSeriesPaths(
             @PathVariable int id,
-            @RequestParam(name = "path", required=false, defaultValue = "root") String path,
-            @RequestParam(name = "limit", required=false, defaultValue = "10") int limit
-    ) {
+            @RequestParam(name = "path", required = false, defaultValue = "root") String path,
+            @RequestParam(name = "limit", required = false, defaultValue = "10") int limit) {
         return iotdbService.getLatestTimeSeriesPath(id, path, limit);
     }
 
@@ -61,15 +58,13 @@ public class IoTDBController {
 
     @GetMapping("/{id}/devices/overview")
     public List<IoTDBSeriesOverview> getDeviceOverview(
-            @PathVariable int id,
-            @RequestParam(value = "path", required = false) String path) {
+            @PathVariable int id, @RequestParam(value = "path", required = false) String path) {
         return iotdbService.getDeviceOverview(id, path);
     }
 
     @GetMapping("/{id}/databases/overview")
     public List<IoTDBSeriesOverview> getDatabaseOverview(
-            @PathVariable int id,
-            @RequestParam(value = "path", required = false) String path) {
+            @PathVariable int id, @RequestParam(value = "path", required = false) String path) {
         return iotdbService.getDatabaseOverview(id, path);
     }
 
@@ -77,8 +72,7 @@ public class IoTDBController {
     public TimeSeriesRecentDataDto getTimeSeriesData(
             @PathVariable int id,
             @RequestParam(required = false, defaultValue = "") String path,
-            @RequestParam(required = false, defaultValue = "10") Long limit
-    ) {
+            @RequestParam(required = false, defaultValue = "10") Long limit) {
         return iotdbService.getTimeSeriesData(id, path, limit);
     }
 }

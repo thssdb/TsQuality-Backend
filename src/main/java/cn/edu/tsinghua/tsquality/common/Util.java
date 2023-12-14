@@ -1,20 +1,18 @@
 package cn.edu.tsinghua.tsquality.common;
 
-import org.apache.commons.math3.stat.descriptive.rank.Median;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 public class Util {
 
     public static String formatTimestamp(long timestamp) {
-        LocalDateTime time = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime time =
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return time.format(formatter);
     }
 
@@ -25,7 +23,7 @@ public class Util {
     public static double[] variation(double[] origin) {
         int n = origin.length;
         double[] variance = new double[n - 1];
-        for(int i = 0; i < n - 1; ++i) {
+        for (int i = 0; i < n - 1; ++i) {
             variance[i] = origin[i + 1] - origin[i];
         }
         return variance;
@@ -34,7 +32,7 @@ public class Util {
     public static double[] speed(double[] origin, double[] time) {
         int n = origin.length;
         double[] speed = new double[n - 1];
-        for(int i = 0; i < n - 1; ++i) {
+        for (int i = 0; i < n - 1; ++i) {
             speed[i] = (origin[i + 1] - origin[i]) / (time[i + 1] - time[i]);
         }
         return speed;
@@ -44,7 +42,7 @@ public class Util {
         Median median = new Median();
         double mid = median.evaluate(value);
         double[] d = new double[value.length];
-        for(int i = 0; i < value.length; ++i) {
+        for (int i = 0; i < value.length; ++i) {
             d[i] = Math.abs(value[i] - mid);
         }
         return 1.4826 * median.evaluate(d);

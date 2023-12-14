@@ -3,14 +3,13 @@ package cn.edu.tsinghua.tsquality.common;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBDataPointDto;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.exception.write.UnSupportedDataTypeException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IoTDBUtil {
     public static boolean isNumericDataType(String dataType) {
@@ -20,18 +19,24 @@ public class IoTDBUtil {
                 || dataType.equals("DOUBLE");
     }
 
-    public static String constructQuerySQL(String seriesPath, IoTDBSeriesAnomalyDetectionRequest request) {
+    public static String constructQuerySQL(
+            String seriesPath, IoTDBSeriesAnomalyDetectionRequest request) {
         IoTDBSeriesAnomalyDetectionRequest.TimeFilter timeFilter = request.getTimeFilter();
         IoTDBSeriesAnomalyDetectionRequest.ValueFilter valueFilter = request.getValueFilter();
         return constructQuerySQL(
                 seriesPath,
                 timeFilter == null ? 0 : timeFilter.getMinTimestamp(),
                 timeFilter == null ? 0 : timeFilter.getMaxTimestamp(),
-                valueFilter == null ? "" : valueFilter.getContent(), 0);
+                valueFilter == null ? "" : valueFilter.getContent(),
+                0);
     }
 
     public static String constructQuerySQL(
-            String seriesPath, long minTimeFilter, long maxTimeFilter, String valueFilter, long limit) {
+            String seriesPath,
+            long minTimeFilter,
+            long maxTimeFilter,
+            String valueFilter,
+            long limit) {
         String[] splitRes = splitSeriesPath(seriesPath);
         String device = splitRes[0];
         String sensor = splitRes[1];
@@ -72,29 +77,28 @@ public class IoTDBUtil {
     }
 
     public static TimeSeriesRecentDataDto query(Session session, String path, long limit)
-            throws IoTDBConnectionException, StatementExecutionException, UnSupportedDataTypeException {
+            throws IoTDBConnectionException,
+                    StatementExecutionException,
+                    UnSupportedDataTypeException {
         String sql = constructQuerySQL(path, 0, 0, "", limit);
         SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
         List<IoTDBDataPointDto> points = new ArrayList<>();
         while (iterator.next()) {
             String dataType = iterator.getColumnTypeList().get(1);
-            double value = switch (dataType) {
-                case "INT32" -> iterator.getInt(2);
-                case "INT64" -> iterator.getLong(2);
-                case "FLOAT" -> iterator.getFloat(2);
-                case "DOUBLE" -> iterator.getDouble(2);
-                default -> throw new UnSupportedDataTypeException("Unexpected type: " + dataType);
-            };
-            IoTDBDataPointDto point = IoTDBDataPointDto.builder()
-                    .timestamp(iterator.getLong(1))
-                    .value(value)
-                    .build();
+            double value =
+                    switch (dataType) {
+                        case "INT32" -> iterator.getInt(2);
+                        case "INT64" -> iterator.getLong(2);
+                        case "FLOAT" -> iterator.getFloat(2);
+                        case "DOUBLE" -> iterator.getDouble(2);
+                        default -> throw new UnSupportedDataTypeException(
+                                "Unexpected type: " + dataType);
+                    };
+            IoTDBDataPointDto point =
+                    IoTDBDataPointDto.builder().timestamp(iterator.getLong(1)).value(value).build();
             points.add(point);
         }
-        return TimeSeriesRecentDataDto.builder()
-                .path(path)
-                .points(points)
-                .build();
+        return TimeSeriesRecentDataDto.builder().path(path).points(points).build();
     }
 
     public static List<String> showLatestTimeSeries(Session session, String path, int limit)

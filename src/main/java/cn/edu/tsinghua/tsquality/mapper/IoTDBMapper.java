@@ -7,35 +7,24 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
+import java.util.List;
+import java.util.Map;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-
 @Component
 public class IoTDBMapper {
-    @Autowired
-    PreAggregationConfig config;
-    @Autowired
-    IoTDBConfigMapper configMapper;
-    @Autowired
-    IoTDBSeriesMapper seriesMapper;
-    @Autowired
-    IoTDBFileMapper fileMapper;
-    @Autowired
-    IoTDBChunkMapper chunkMapper;
-    @Autowired
-    IoTDBPageMapper pageMapper;
-    @Autowired
-    IoTDBFileSeriesStatMapper fileSeriesStatMapper;
-    @Autowired
-    IoTDBChunkSeriesStatMapper chunkSeriesStatMapper;
-    @Autowired
-    IoTDBPageSeriesStatMapper pageSeriesStatMapper;
-    @Autowired
-    DataQualityMapper dataQualityMapper;
+    @Autowired PreAggregationConfig config;
+    @Autowired IoTDBConfigMapper configMapper;
+    @Autowired IoTDBSeriesMapper seriesMapper;
+    @Autowired IoTDBFileMapper fileMapper;
+    @Autowired IoTDBChunkMapper chunkMapper;
+    @Autowired IoTDBPageMapper pageMapper;
+    @Autowired IoTDBFileSeriesStatMapper fileSeriesStatMapper;
+    @Autowired IoTDBChunkSeriesStatMapper chunkSeriesStatMapper;
+    @Autowired IoTDBPageSeriesStatMapper pageSeriesStatMapper;
+    @Autowired DataQualityMapper dataQualityMapper;
 
     public void createTablesIfNotExists() {
         PreAggregationConfig.TableNames tables = config.tables;
@@ -45,18 +34,9 @@ public class IoTDBMapper {
         chunkMapper.createChunkTable(tables.chunk, tables.file);
         pageMapper.createPageTable(tables.page, tables.chunk);
         fileSeriesStatMapper.createFileSeriesStatTable(
-                tables.file,
-                tables.series,
-                tables.fileSeriesStat
-        );
-        chunkSeriesStatMapper.createChunkSeriesStatTable(
-                tables.chunk,
-                tables.chunkSeriesStat
-        );
-        pageSeriesStatMapper.createPageSeriesStatTable(
-                tables.page,
-                tables.pageSeriesStat
-        );
+                tables.file, tables.series, tables.fileSeriesStat);
+        chunkSeriesStatMapper.createChunkSeriesStatTable(tables.chunk, tables.chunkSeriesStat);
+        pageSeriesStatMapper.createPageSeriesStatTable(tables.page, tables.pageSeriesStat);
     }
 
     public void saveTsFileStat(
@@ -75,16 +55,18 @@ public class IoTDBMapper {
             fid = fileMapper.selectIdByFilePath(tables.file, file.getFilePath());
         }
         // insert multiple series into the series table
-        List<IoTDBSeries> seriesList = seriesPaths.stream().map(
-                s -> IoTDBSeries
-                        .builder()
-                        .path(s.getFullPath())
-                        .device(s.getDevice())
-                        .database(tsFile.getDatabase())
-                        .build()
-        ).toList();
+        List<IoTDBSeries> seriesList =
+                seriesPaths.stream()
+                        .map(
+                                s ->
+                                        IoTDBSeries.builder()
+                                                .path(s.getFullPath())
+                                                .device(s.getDevice())
+                                                .database(tsFile.getDatabase())
+                                                .build())
+                        .toList();
         seriesMapper.insertList(tables.series, seriesList);
-        for (Map.Entry<Path, TsFileStat> entry: stats.entrySet()) {
+        for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
             Path seriesPath = entry.getKey();
             int sid = seriesMapper.selectIdByPath(tables.series, seriesPath.getFullPath());
             TsFileStat stat = entry.getValue();
@@ -92,9 +74,9 @@ public class IoTDBMapper {
             Map<Long, IoTDBSeriesStat> chunkStats = stat.getChunkStats();
             // insert one file-series stat into the file-series-stat table
             fileSeriesStatMapper.insert(tables.fileSeriesStat, fid, sid, fileStat);
-            for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry: chunkStats.entrySet()) {
+            for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry : chunkStats.entrySet()) {
                 IoTDBChunk chunk = new IoTDBChunk(fid, sid, chunkEntry.getKey());
-                chunkMapper.insert(tables.chunk, chunk);  // insert one chunk into the chunk table
+                chunkMapper.insert(tables.chunk, chunk); // insert one chunk into the chunk table
                 int cid = chunk.getCid();
                 // insert one chunk-series stat into the chunk-series-stat table
                 chunkSeriesStatMapper.insert(tables.chunkSeriesStat, cid, chunkEntry.getValue());
@@ -103,15 +85,18 @@ public class IoTDBMapper {
     }
 
     public List<IoTDBSeriesStat> selectSeriesStat() {
-        return dataQualityMapper.selectSeriesStat(config.tables.series, config.tables.fileSeriesStat, null);
+        return dataQualityMapper.selectSeriesStat(
+                config.tables.series, config.tables.fileSeriesStat, null);
     }
 
     public List<IoTDBSeriesStat> selectDeviceStat(String path) {
-        return dataQualityMapper.selectDeviceStat(config.tables.series, config.tables.fileSeriesStat, path);
+        return dataQualityMapper.selectDeviceStat(
+                config.tables.series, config.tables.fileSeriesStat, path);
     }
 
     public List<IoTDBSeriesStat> selectDatabaseStat(String path) {
-        return dataQualityMapper.selectDatabaseStat(config.tables.series, config.tables.fileSeriesStat, path);
+        return dataQualityMapper.selectDatabaseStat(
+                config.tables.series, config.tables.fileSeriesStat, path);
     }
 
     public IoTDBSeriesStat selectAllStat() {

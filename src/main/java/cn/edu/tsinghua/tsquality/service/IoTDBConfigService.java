@@ -2,16 +2,14 @@ package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class IoTDBConfigService {
-    @Autowired
-    private IoTDBConfigMapper ioTDBConfigMapper;
-    
+    @Autowired private IoTDBConfigMapper ioTDBConfigMapper;
+
     public List<IoTDBConfig> getAll() {
         return ioTDBConfigMapper.getAll();
     }
@@ -36,7 +34,7 @@ public class IoTDBConfigService {
         return config.getId();
     }
 
-    private int update(IoTDBConfig ioTDBConfig)  {
+    private int update(IoTDBConfig ioTDBConfig) {
         ioTDBConfigMapper.update(ioTDBConfig);
         return ioTDBConfig.getId();
     }

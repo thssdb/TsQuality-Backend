@@ -17,8 +17,12 @@ public class DataQualityCalculationUtil {
     }
 
     public static double calculateValidity(@NotNull IoTDBSeriesStat stat) {
-        return 1 - (double) (
-                stat.getValueCnt() + stat.getVariationCnt() + stat.getSpecialCnt() + stat.getAccelerationCnt()
-        ) / (4 * stat.getCnt());
+        return 1
+                - (double)
+                                (stat.getValueCnt()
+                                        + stat.getVariationCnt()
+                                        + stat.getSpecialCnt()
+                                        + stat.getAccelerationCnt())
+                        / (4 * stat.getCnt());
     }
 }

@@ -1,19 +1,17 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class IoTDBChunkMapperTest {
-    @Autowired
-    PreAggregationConfig config;
-    @Autowired
-    IoTDBChunkMapper mapper;
+    @Autowired PreAggregationConfig config;
+    @Autowired IoTDBChunkMapper mapper;
 
     @Test
     void insert() {

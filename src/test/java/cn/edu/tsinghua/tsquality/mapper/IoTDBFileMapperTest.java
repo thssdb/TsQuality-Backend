@@ -1,22 +1,19 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class IoTDBFileMapperTest {
-    @Autowired
-    private IoTDBFileMapper ioTDBFileMapper;
+    @Autowired private IoTDBFileMapper ioTDBFileMapper;
 
-    @Autowired
-    private PreAggregationConfig config;
+    @Autowired private PreAggregationConfig config;
 
     @Test
     void insert() {

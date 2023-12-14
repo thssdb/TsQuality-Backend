@@ -22,5 +22,4 @@ public class IoTDBSeriesOverview {
         this.validity = DataQualityCalculationUtil.calculateValidity(stat);
         this.path = stat.getPath();
     }
-
 }

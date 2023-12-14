@@ -1,9 +1,8 @@
 package cn.edu.tsinghua.tsquality.model.dto;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class IoTDBSeriesAnomalyDetectionResult {
@@ -62,7 +61,5 @@ public class IoTDBSeriesAnomalyDetectionResult {
         private IoTDBTimeValuePair[] accelerationResult;
     }
 
-    public void anomalyDetect(List<IoTDBTimeValuePair> pairs) {
-
-    }
+    public void anomalyDetect(List<IoTDBTimeValuePair> pairs) {}
 }

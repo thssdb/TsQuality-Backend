@@ -11,6 +11,10 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import javax.annotation.PostConstruct;
 import org.apache.iotdb.commons.path.PartialPath;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
@@ -28,12 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 
 @Service
 public class IoTDBService {
@@ -58,12 +56,13 @@ public class IoTDBService {
     public static Session buildSession(IoTDBConfig ioTDBConfig) {
         Session session;
         try {
-            session = new Session.Builder()
-                    .host(ioTDBConfig.getHost())
-                    .port(ioTDBConfig.getPort())
-                    .username(ioTDBConfig.getUsername())
-                    .password(ioTDBConfig.getPassword())
-                    .build();
+            session =
+                    new Session.Builder()
+                            .host(ioTDBConfig.getHost())
+                            .port(ioTDBConfig.getPort())
+                            .username(ioTDBConfig.getUsername())
+                            .password(ioTDBConfig.getPassword())
+                            .build();
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -151,7 +150,8 @@ public class IoTDBService {
                         modifications.add(modification);
                     }
                 }
-                Map<Long, IChunkReader> chunkReaders = PreAggregationUtil.getChunkReaders(path, reader, modifications);
+                Map<Long, IChunkReader> chunkReaders =
+                        PreAggregationUtil.getChunkReaders(path, reader, modifications);
                 for (Map.Entry<Long, IChunkReader> entry : chunkReaders.entrySet()) {
                     tsFileStat.startNewChunk(entry.getKey());
                     IChunkReader chunkReader = entry.getValue();
@@ -175,8 +175,7 @@ public class IoTDBService {
     }
 
     public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
-            int id, IoTDBSeriesAnomalyDetectionRequest request
-    ) {
+            int id, IoTDBSeriesAnomalyDetectionRequest request) {
         IoTDBSeriesAnomalyDetectionResult result = new IoTDBSeriesAnomalyDetectionResult(request);
         IoTDBConfig iotdbConfig = ioTDBConfigMapper.getWithPasswordById(id);
         if (iotdbConfig == null) {
@@ -193,7 +192,8 @@ public class IoTDBService {
                 return result;
             }
             SessionDataSet.DataIterator iterator = dataset.iterator();
-            List<IoTDBTimeValuePair> timeValuePairs = IoTDBTimeValuePair.buildFromDatasetIterator(iterator);
+            List<IoTDBTimeValuePair> timeValuePairs =
+                    IoTDBTimeValuePair.buildFromDatasetIterator(iterator);
             result.anomalyDetect(timeValuePairs);
             return result;
         } catch (IoTDBConnectionException | StatementExecutionException e) {
@@ -202,28 +202,16 @@ public class IoTDBService {
     }
 
     private void completenessAnomalyDetection(
-            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
-    ) {
-
-    }
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
 
     private void consistencyAnomalyDetection(
-            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
-    ) {
-
-    }
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
 
     private void timelinessAnomalyDetection(
-            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
-    ) {
-
-    }
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
 
     private void validityAnomalyDetection(
-            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result
-    ) {
-
-    }
+            IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
 
     public IoTDBAggregationInfoDto getAggregationInfo(int id) {
         IoTDBSeriesStat stat = iotdbMapper.selectAllStat();
@@ -247,9 +235,10 @@ public class IoTDBService {
     public String getLatestNumericTimeSeriesPath(Session session)
             throws IoTDBConnectionException, StatementExecutionException {
         session.open();
-        SessionDataSet.DataIterator iterator = session.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES).iterator();
+        SessionDataSet.DataIterator iterator =
+                session.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES).iterator();
         while (iterator.next()) {
-            if(IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
+            if (IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
                 return iterator.getString("Timeseries");
             }
         }

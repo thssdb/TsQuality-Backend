@@ -11,14 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class IoTDBServiceTest {
-    @Autowired
-    IoTDBService service;
+    @Autowired IoTDBService service;
 
-    @Autowired
-    IoTDBConfigMapper mapper;
+    @Autowired IoTDBConfigMapper mapper;
 
     @Test
-    void getLatestNumericTimeSeriesPath() throws IoTDBConnectionException, StatementExecutionException {
+    void getLatestNumericTimeSeriesPath()
+            throws IoTDBConnectionException, StatementExecutionException {
         IoTDBConfig config = mapper.getWithPasswordById(1);
         try (Session session = IoTDBService.buildSession(config)) {
             assert session != null;

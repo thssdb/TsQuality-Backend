@@ -1,8 +1,7 @@
 package cn.edu.tsinghua.tsquality.common;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 
 class UtilTest {
 
@@ -18,7 +17,8 @@ class UtilTest {
 
     @Test
     void constructQuerySQL() {
-        System.out.println(IoTDBUtil.constructQuerySQL("root.sg0.d0.s0", 1600000000000L,
-                16900000000000L, "> 10.0", 10));
+        System.out.println(
+                IoTDBUtil.constructQuerySQL(
+                        "root.sg0.d0.s0", 1600000000000L, 16900000000000L, "> 10.0", 10));
     }
 }

@@ -1,5 +1,6 @@
 package cn.edu.tsinghua.tsquality.config;
 
+import java.util.concurrent.ThreadPoolExecutor;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +8,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Data
 @Component

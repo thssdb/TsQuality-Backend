@@ -1,12 +1,11 @@
 package cn.edu.tsinghua.tsquality.model.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class IoTDBTimeValuePair {
@@ -18,7 +17,8 @@ public class IoTDBTimeValuePair {
         this.value = value;
     }
 
-    public static List<IoTDBTimeValuePair> buildFromDatasetIterator(SessionDataSet.DataIterator iterator) {
+    public static List<IoTDBTimeValuePair> buildFromDatasetIterator(
+            SessionDataSet.DataIterator iterator) {
         List<IoTDBTimeValuePair> pairs = new ArrayList<>();
         try {
             while (iterator.next()) {

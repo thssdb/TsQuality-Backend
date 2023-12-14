@@ -1,11 +1,10 @@
 package cn.edu.tsinghua.tsquality.model.entity;
 
+import cn.edu.tsinghua.tsquality.common.Util;
+import java.util.ArrayList;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import cn.edu.tsinghua.tsquality.common.Util;
 import org.apache.iotdb.tsfile.read.common.BatchData;
-
-import java.util.ArrayList;
 
 @Data
 public class IoTDBSeriesStat {
@@ -109,7 +108,6 @@ public class IoTDBSeriesStat {
         double[] speedChange = Util.variation(speed);
         accelerationCnt = Util.findOutliers(speedChange, k);
     }
-
 
     public void timeDetect() {
         double[] interval = Util.variation(timeList);
