@@ -256,7 +256,7 @@ public class IoTDBService {
         return "";
     }
 
-    public TimeSeriesRecentDataDto getTimeSeriesData(int id, String path) {
+    public TimeSeriesRecentDataDto getTimeSeriesData(int id, String path, long limit) {
         IoTDBConfig config = ioTDBConfigMapper.getWithPasswordById(id);
         if (config == null) {
             return new TimeSeriesRecentDataDto();
@@ -272,7 +272,7 @@ public class IoTDBService {
             if (path.isEmpty()) {
                 return new TimeSeriesRecentDataDto();
             }
-            return IoTDBUtil.query(session, path);
+            return IoTDBUtil.query(session, path, limit);
         } catch (IoTDBConnectionException | StatementExecutionException e) {
             return new TimeSeriesRecentDataDto();
         }

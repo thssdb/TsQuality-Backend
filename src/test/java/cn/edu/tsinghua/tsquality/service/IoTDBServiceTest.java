@@ -29,6 +29,6 @@ class IoTDBServiceTest {
 
     @Test
     void getLatestTimeSeriesData() {
-        System.out.println(service.getTimeSeriesData(1, ""));
+        System.out.println(service.getTimeSeriesData(1, "", 10));
     }
 }

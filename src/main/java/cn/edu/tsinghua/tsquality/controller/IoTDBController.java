@@ -76,8 +76,9 @@ public class IoTDBController {
     @GetMapping("/{id}/time-series/data")
     public TimeSeriesRecentDataDto getTimeSeriesData(
             @PathVariable int id,
-            @RequestParam String path
+            @RequestParam(required = false, defaultValue = "") String path,
+            @RequestParam(required = false, defaultValue = "10") Long limit
     ) {
-        return iotdbService.getTimeSeriesData(id, path);
+        return iotdbService.getTimeSeriesData(id, path, limit);
     }
 }

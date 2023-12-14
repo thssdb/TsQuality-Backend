@@ -27,12 +27,11 @@ public class IoTDBUtil {
                 seriesPath,
                 timeFilter == null ? 0 : timeFilter.getMinTimestamp(),
                 timeFilter == null ? 0 : timeFilter.getMaxTimestamp(),
-                valueFilter == null ? "" : valueFilter.getContent());
+                valueFilter == null ? "" : valueFilter.getContent(), 0);
     }
 
     public static String constructQuerySQL(
-            String seriesPath, long minTimeFilter, long maxTimeFilter, String valueFilter
-    ) {
+            String seriesPath, long minTimeFilter, long maxTimeFilter, String valueFilter, long limit) {
         String[] splitRes = splitSeriesPath(seriesPath);
         String device = splitRes[0];
         String sensor = splitRes[1];
@@ -52,6 +51,9 @@ public class IoTDBUtil {
             }
             sql += String.format(" %s %s", sensor, valueFilter);
         }
+        if (limit != 0) {
+            sql += String.format(" LIMIT %d", limit);
+        }
         return sql;
     }
 
@@ -69,9 +71,9 @@ public class IoTDBUtil {
         return result;
     }
 
-    public static TimeSeriesRecentDataDto query(Session session, String path)
+    public static TimeSeriesRecentDataDto query(Session session, String path, long limit)
             throws IoTDBConnectionException, StatementExecutionException, UnSupportedDataTypeException {
-        String sql = constructQuerySQL(path, 0, 0, "");
+        String sql = constructQuerySQL(path, 0, 0, "", limit);
         SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
         List<IoTDBDataPointDto> points = new ArrayList<>();
         while (iterator.next()) {
