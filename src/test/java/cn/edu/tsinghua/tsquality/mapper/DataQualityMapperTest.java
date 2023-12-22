@@ -2,10 +2,13 @@ package cn.edu.tsinghua.tsquality.mapper;
 
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import java.util.List;
+import cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime;
+import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 class DataQualityMapperTest {
@@ -33,6 +36,14 @@ class DataQualityMapperTest {
         List<IoTDBSeriesStat> stats =
                 mapper.selectDatabaseStat(
                         config.tables.series, config.tables.fileSeriesStat, "root.sg2.d2");
+        System.out.println(stats);
+    }
+
+    @Test
+    void testGetDataQualityFromFileStat() {
+        List<SeriesStatWithTime> stats =
+            mapper.getDataQualityAggregationDetailFromFileStats(
+                "root.eastsidebuilding.device1.AB", DQAggregationType.MONTH.getType());
         System.out.println(stats);
     }
 }

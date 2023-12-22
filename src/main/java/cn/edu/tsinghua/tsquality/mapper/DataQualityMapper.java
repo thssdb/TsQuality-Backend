@@ -1,9 +1,11 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import java.util.List;
+import cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface DataQualityMapper {
@@ -24,4 +26,16 @@ public interface DataQualityMapper {
             @Param("path") String path);
 
     IoTDBSeriesStat selectAllStat(@Param("fileSeriesStatTableName") String fileSeriesStatTableName);
+
+    List<SeriesStatWithTime> getDataQualityAggregationDetailFromFileStats(
+            @Param("path") String path,
+            @Param("aggregationType") String aggregationType);
+
+    List<SeriesStatWithTime> getDataQualityAggregationDetailFromChunkStats(
+            @Param("path") String path,
+            @Param("aggregationType") String aggregationType);
+
+    List<SeriesStatWithTime> getDataQualityAggregationDetailFromPageStats(
+            @Param("path") String path,
+            @Param("aggregationType") String aggregationType);
 }

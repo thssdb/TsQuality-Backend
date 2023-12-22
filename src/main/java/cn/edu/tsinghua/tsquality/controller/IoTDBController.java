@@ -3,13 +3,16 @@ package cn.edu.tsinghua.tsquality.controller;
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
 public class IoTDBController {
-    @Autowired private IoTDBService iotdbService;
+    private final IoTDBService iotdbService;
+
+    public IoTDBController(IoTDBService iotdbService) {
+        this.iotdbService = iotdbService;
+    }
 
     @GetMapping("/{id}/time-series/count")
     public long getNumsTimeSeries(@PathVariable int id) {

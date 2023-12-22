@@ -79,4 +79,25 @@
         <include refid="statColumns" />
         FROM ${fileSeriesStatTableName}
     </select>
+
+    <select
+            id="getDataQualityAggregationDetailFromFileStats"
+            resultType="cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime"
+    >
+        SELECT
+        <choose>
+            <when test='aggregationType.equals("day")'>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m-%d') `time`,
+            </when>
+            <when test='aggregationType.equals("month")'>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m') `time`,
+            </when>
+            <otherwise>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y') `time`,
+            </otherwise>
+        </choose>
+        <include refid="statColumns" />
+        FROM iotdb_series NATURAL JOIN iotdb_file_series_stat
+        <include refid="equalPathWhereClause" />
+    </select>
 </mapper>
