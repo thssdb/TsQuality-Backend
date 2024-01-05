@@ -1,5 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair;
 
+import lombok.Data;
+
+@Data
 public abstract class TVPair {
   protected long timestamp = 0;
 
@@ -23,7 +26,7 @@ public abstract class TVPair {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public void setBinary(byte[] value) {
+  public void setText(String value) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
@@ -47,7 +50,7 @@ public abstract class TVPair {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public byte[] getBinary() {
+  public String getText() {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 }

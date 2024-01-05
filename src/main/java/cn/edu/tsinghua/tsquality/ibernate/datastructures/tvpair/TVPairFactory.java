@@ -10,7 +10,7 @@ public class TVPairFactory {
       case INT64 -> new LongTVPair();
       case FLOAT -> new FloatTVPair();
       case DOUBLE -> new DoubleTVPair();
-      case TEXT -> new BinaryTVPair();
+      case TEXT -> new TextTVPair();
       default -> throw new IllegalArgumentException("Unsupported data type: " + dataType);
     };
   }

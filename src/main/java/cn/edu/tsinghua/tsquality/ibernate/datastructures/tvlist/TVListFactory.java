@@ -10,7 +10,7 @@ public class TVListFactory {
       case INT64 -> new LongTVList();
       case FLOAT -> new FloatTVList();
       case DOUBLE -> new DoubleTVList();
-      case TEXT -> new BinaryTVList();
+      case TEXT -> new TextTVList();
       default -> throw new IllegalStateException("Unexpected value: " + dataType);
     };
   }

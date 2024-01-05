@@ -1,37 +1,37 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
-import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.BooleanTVPair;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TextTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BooleanTVList extends TVList {
-  protected List<BooleanTVPair> pairs = new ArrayList<>();
+public class TextTVList extends TVList {
+  protected List<TextTVPair> pairs = new ArrayList<>();
 
-  BooleanTVList() {}
+  TextTVList() {}
 
   @Override
   public TSDataType getDataType() {
-    return TSDataType.BOOLEAN;
+    return TSDataType.TEXT;
   }
 
   @Override
-  public void putBooleanPair(BooleanTVPair pair) {
+  public void putTextPair(TextTVPair pair) {
     pairs.add(pair);
   }
 
   @Override
-  public void putBooleanPair(long timestamp, boolean value) {
-    BooleanTVPair pair = (BooleanTVPair) TVPairFactory.createTVPair(TSDataType.BOOLEAN);
+  public void putTextPair(long timestamp, String value) {
+    TextTVPair pair = (TextTVPair) TVPairFactory.createTVPair(TSDataType.TEXT);
     pair.setTimestamp(timestamp);
-    pair.setBoolean(value);
+    pair.setText(value);
     pairs.add(pair);
   }
 
   @Override
-  public BooleanTVPair getBooleanPair(int index) {
+  public TextTVPair getTextPair(int index) {
     if (index >= pairs.size()) {
       throw new ArrayIndexOutOfBoundsException(index);
     }

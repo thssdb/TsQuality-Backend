@@ -1,9 +1,20 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.*;
+import lombok.Data;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
+@Data
 public abstract class TVList {
+  protected TSDataType dataType;
+
+  public abstract TSDataType getDataType();
+
   public void putBooleanPair(BooleanTVPair pair) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void putBooleanPair(long timestamp, boolean value) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
@@ -11,7 +22,15 @@ public abstract class TVList {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
+  public void putIntPair(long timestamp, int value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
   public void putLongPair(LongTVPair pair) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void putLongPair(long timestamp, long value) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
@@ -19,11 +38,23 @@ public abstract class TVList {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
+  public void putFloatPair(long timestamp, float value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
   public void putDoublePair(DoubleTVPair pair) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public void putBinaryPair(BinaryTVPair pair) {
+  public void putDoublePair(long timestamp, double value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void putTextPair(TextTVPair pair) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void putTextPair(long timestamp, String value) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
@@ -31,23 +62,23 @@ public abstract class TVList {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public TVPair getIntPair(int index) {
+  public IntTVPair getIntPair(int index) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public TVPair getLongPair(int index) {
+  public LongTVPair getLongPair(int index) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public TVPair getFloatPair(int index) {
+  public FloatTVPair getFloatPair(int index) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public TVPair getDoublePair(int index) {
+  public DoubleTVPair getDoublePair(int index) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 
-  public TVPair getBinaryPair(int index) {
+  public TextTVPair getTextPair(int index) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 }

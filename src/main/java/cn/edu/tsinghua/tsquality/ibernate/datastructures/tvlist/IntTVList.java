@@ -1,11 +1,21 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.IntTVPair;
-import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPair;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class IntTVList extends TVList {
-  protected List<TVPair> pairs;
+  protected List<IntTVPair> pairs = new ArrayList<>();
+
+  IntTVList() {}
+
+  @Override
+  public TSDataType getDataType() {
+    return TSDataType.INT32;
+  }
 
   @Override
   public void putIntPair(IntTVPair pair) {
@@ -13,7 +23,15 @@ public class IntTVList extends TVList {
   }
 
   @Override
-  public TVPair getIntPair(int index) {
+  public void putIntPair(long timestamp, int value) {
+    IntTVPair pair = (IntTVPair) TVPairFactory.createTVPair(TSDataType.INT32);
+    pair.setTimestamp(timestamp);
+    pair.setInt(value);
+    pairs.add(pair);
+  }
+
+  @Override
+  public IntTVPair getIntPair(int index) {
     if (index >= pairs.size()) {
       throw new ArrayIndexOutOfBoundsException(index);
     }

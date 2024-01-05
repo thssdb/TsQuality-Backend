@@ -1,13 +1,32 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.LongTVPair;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class LongTVList extends TVList {
-  protected List<LongTVPair> pairs;
+  protected List<LongTVPair> pairs = new ArrayList<>();
+
+  LongTVList() {}
+
+  @Override
+  public TSDataType getDataType() {
+    return TSDataType.INT64;
+  }
 
   @Override
   public void putLongPair(LongTVPair pair) {
+    pairs.add(pair);
+  }
+
+  @Override
+  public void putLongPair(long timestamp, long value) {
+    LongTVPair pair = (LongTVPair) TVPairFactory.createTVPair(TSDataType.INT64);
+    pair.setTimestamp(timestamp);
+    pair.setLong(value);
     pairs.add(pair);
   }
 
