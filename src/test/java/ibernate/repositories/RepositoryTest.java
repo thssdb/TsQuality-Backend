@@ -1,5 +1,7 @@
 package ibernate.repositories;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
@@ -10,7 +12,6 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,7 +112,8 @@ public class RepositoryTest {
     assertThat(repository).isNotNull();
   }
 
-  private void thenInsertedDataShouldEqualToTVList(Session session, IntTVList tvList) throws Exception {
+  private void thenInsertedDataShouldEqualToTVList(Session session, IntTVList tvList)
+      throws Exception {
     int index = 0;
     SessionDataSet.DataIterator iterator = session.executeQueryStatement(selectSql).iterator();
     while (iterator.next()) {

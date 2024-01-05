@@ -1,8 +1,9 @@
 package ibernate.datastructures.tvlist;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.*;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 public class TVListFactoryTest {

@@ -2,10 +2,9 @@ package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.IntTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public class IntTVList extends TVList {
   protected List<IntTVPair> pairs = new ArrayList<>();

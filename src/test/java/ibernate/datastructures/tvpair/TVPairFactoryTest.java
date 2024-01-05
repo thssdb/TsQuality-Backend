@@ -1,8 +1,9 @@
 package ibernate.datastructures.tvpair;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.*;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 public class TVPairFactoryTest {

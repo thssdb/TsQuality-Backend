@@ -23,14 +23,16 @@ public class RepositoryImpl implements Repository {
   private final TSDataType dataType;
   private final Session session;
 
-  public RepositoryImpl(Session session, Path path, TSDataType dataType) throws IoTDBConnectionException {
+  public RepositoryImpl(Session session, Path path, TSDataType dataType)
+      throws IoTDBConnectionException {
     this.path = path;
     this.dataType = dataType;
     this.session = session;
     this.session.open();
   }
 
-  public RepositoryImpl(Session session, String path, TSDataType dataType) throws IoTDBConnectionException {
+  public RepositoryImpl(Session session, String path, TSDataType dataType)
+      throws IoTDBConnectionException {
     this(session, new Path(path, true), dataType);
   }
 
@@ -38,9 +40,10 @@ public class RepositoryImpl implements Repository {
   public void createTimeSeries() {
     try {
       if (!session.checkTimeseriesExists(path.getFullPath())) {
-        session.createTimeseries(path.getFullPath(), dataType, TSEncoding.PLAIN, CompressionType.UNCOMPRESSED);
+        session.createTimeseries(
+            path.getFullPath(), dataType, TSEncoding.PLAIN, CompressionType.UNCOMPRESSED);
       }
-    } catch(IoTDBConnectionException | StatementExecutionException e) {
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
       throw new RuntimeException(e);
     }
   }
@@ -91,11 +94,13 @@ public class RepositoryImpl implements Repository {
     return sql;
   }
 
-  private SessionDataSet executeSelectSql(String sql) throws IoTDBConnectionException, StatementExecutionException {
+  private SessionDataSet executeSelectSql(String sql)
+      throws IoTDBConnectionException, StatementExecutionException {
     return session.executeQueryStatement(sql);
   }
 
-  private TVList datasetToTVList(SessionDataSet dataset) throws IoTDBConnectionException, StatementExecutionException {
+  private TVList datasetToTVList(SessionDataSet dataset)
+      throws IoTDBConnectionException, StatementExecutionException {
     TVList tvList = newTVList(dataType);
     populateDataSetToTVList(dataset, tvList);
     return tvList;
@@ -105,7 +110,8 @@ public class RepositoryImpl implements Repository {
     return TVListFactory.createTVList(dataType);
   }
 
-  private void populateDataSetToTVList(SessionDataSet dataset, TVList tvList) throws IoTDBConnectionException, StatementExecutionException {
+  private void populateDataSetToTVList(SessionDataSet dataset, TVList tvList)
+      throws IoTDBConnectionException, StatementExecutionException {
     SessionDataSet.DataIterator iterator = dataset.iterator();
     while (iterator.next()) {
       long timestamp = iterator.getLong(1);
@@ -132,7 +138,8 @@ public class RepositoryImpl implements Repository {
     return schemas;
   }
 
-  private void insertTablet(Tablet tablet) throws IoTDBConnectionException, StatementExecutionException {
+  private void insertTablet(Tablet tablet)
+      throws IoTDBConnectionException, StatementExecutionException {
     session.insertTablet(tablet);
   }
 }
