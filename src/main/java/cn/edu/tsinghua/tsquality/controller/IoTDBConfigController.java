@@ -2,9 +2,10 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.service.IoTDBConfigService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/iotdb-config")

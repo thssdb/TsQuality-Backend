@@ -27,7 +27,8 @@ public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualitySe
         List<TimeRange> remainingTimeRanges = rdbmsDQService.getRemainingTimeRanges();
         TimeSeriesDQAggregationDetailDto iotdbResult =
                 iotdbDQService.getTimeSeriesDQAggregationDetail(path, aggregationType, remainingTimeRanges);
-        return mergeDQAggregationDetailResults(rdbmsResult, iotdbResult);
+//        return mergeDQAggregationDetailResults(rdbmsResult, iotdbResult);
+        return randomDQAggregationDetail();
     }
 
     private TimeSeriesDQAggregationDetailDto mergeDQAggregationDetailResults(
