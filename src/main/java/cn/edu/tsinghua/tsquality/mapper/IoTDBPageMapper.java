@@ -5,7 +5,6 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IoTDBPageMapper {
-    void createPageTable(
-            @Param("pageTableName") String pageTableName,
-            @Param("chunkTableName") String chunkTableName);
+  void createPageTable(
+      @Param("pageTableName") String pageTableName, @Param("chunkTableName") String chunkTableName);
 }

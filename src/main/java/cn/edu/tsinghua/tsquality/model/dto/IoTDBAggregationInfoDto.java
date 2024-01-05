@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class IoTDBAggregationInfoDto {
-    private Long numDataPoints;
-    private Long numTimeSeries;
-    private Long numDevices;
-    private Long numDatabases;
-    private Double completeness;
-    private Double consistency;
-    private Double timeliness;
-    private Double validity;
+  private Long numDataPoints;
+  private Long numTimeSeries;
+  private Long numDevices;
+  private Long numDatabases;
+  private Double completeness;
+  private Double consistency;
+  private Double timeliness;
+  private Double validity;
 }

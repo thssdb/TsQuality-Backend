@@ -2,7 +2,6 @@ package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.IntTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPair;
-
 import java.util.List;
 
 public class IntTVList extends TVList {

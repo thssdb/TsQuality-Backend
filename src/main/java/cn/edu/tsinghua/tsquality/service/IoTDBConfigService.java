@@ -8,38 +8,38 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IoTDBConfigService {
-    @Autowired private IoTDBConfigMapper ioTDBConfigMapper;
+  @Autowired private IoTDBConfigMapper ioTDBConfigMapper;
 
-    public List<IoTDBConfig> getAll() {
-        return ioTDBConfigMapper.getAll();
-    }
+  public List<IoTDBConfig> getAll() {
+    return ioTDBConfigMapper.getAll();
+  }
 
-    public IoTDBConfig getById(int id) {
-        return ioTDBConfigMapper.getById(id);
-    }
+  public IoTDBConfig getById(int id) {
+    return ioTDBConfigMapper.getById(id);
+  }
 
-    public IoTDBConfig getWithPasswordById(int id) {
-        return ioTDBConfigMapper.getWithPasswordById(id);
-    }
+  public IoTDBConfig getWithPasswordById(int id) {
+    return ioTDBConfigMapper.getWithPasswordById(id);
+  }
 
-    public int save(IoTDBConfig ioTDBConfig) {
-        if (ioTDBConfig.getId() <= 0) {
-            return create(ioTDBConfig);
-        }
-        return update(ioTDBConfig);
+  public int save(IoTDBConfig ioTDBConfig) {
+    if (ioTDBConfig.getId() <= 0) {
+      return create(ioTDBConfig);
     }
+    return update(ioTDBConfig);
+  }
 
-    private int create(IoTDBConfig config) {
-        ioTDBConfigMapper.create(config);
-        return config.getId();
-    }
+  private int create(IoTDBConfig config) {
+    ioTDBConfigMapper.create(config);
+    return config.getId();
+  }
 
-    private int update(IoTDBConfig ioTDBConfig) {
-        ioTDBConfigMapper.update(ioTDBConfig);
-        return ioTDBConfig.getId();
-    }
+  private int update(IoTDBConfig ioTDBConfig) {
+    ioTDBConfigMapper.update(ioTDBConfig);
+    return ioTDBConfig.getId();
+  }
 
-    public int deleteById(int id) {
-        return ioTDBConfigMapper.deleteById(id);
-    }
+  public int deleteById(int id) {
+    return ioTDBConfigMapper.deleteById(id);
+  }
 }

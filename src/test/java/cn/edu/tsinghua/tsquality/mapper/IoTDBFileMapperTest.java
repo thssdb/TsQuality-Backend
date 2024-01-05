@@ -11,20 +11,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class IoTDBFileMapperTest {
-    @Autowired private IoTDBFileMapper ioTDBFileMapper;
+  @Autowired private IoTDBFileMapper ioTDBFileMapper;
 
-    @Autowired private PreAggregationConfig config;
+  @Autowired private PreAggregationConfig config;
 
-    @Test
-    void insert() {
-        IoTDBFile file = new IoTDBFile("test3.tsfile", 1);
-        ioTDBFileMapper.insert(config.tables.file, file);
-        System.out.println(file.getFid());
-    }
+  @Test
+  void insert() {
+    IoTDBFile file = new IoTDBFile("test3.tsfile", 1);
+    ioTDBFileMapper.insert(config.tables.file, file);
+    System.out.println(file.getFid());
+  }
 
-    @Test
-    void select() {
-        Map<String, Object> res = ioTDBFileMapper.select(config.tables.file);
-        System.out.println(res);
-    }
+  @Test
+  void select() {
+    Map<String, Object> res = ioTDBFileMapper.select(config.tables.file);
+    System.out.println(res);
+  }
 }

@@ -21,59 +21,59 @@ import org.apache.iotdb.tsfile.read.reader.chunk.ChunkReader;
 
 @Log4j2
 public class PreAggregationUtil {
-    private static final String DATABASE_REGEX = ".*?/data/datanode/data/sequence/(.*?)/.*";
+  private static final String DATABASE_REGEX = ".*?/data/datanode/data/sequence/(.*?)/.*";
 
-    public static List<TsFileInfo> getAllTsFiles(String dataDir) {
-        Pattern dbPattern = Pattern.compile(DATABASE_REGEX);
-        List<TsFileInfo> tsFiles = new ArrayList<>();
-        File dir = new File(dataDir);
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return tsFiles;
+  public static List<TsFileInfo> getAllTsFiles(String dataDir) {
+    Pattern dbPattern = Pattern.compile(DATABASE_REGEX);
+    List<TsFileInfo> tsFiles = new ArrayList<>();
+    File dir = new File(dataDir);
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return tsFiles;
+    }
+    for (File file : files) {
+      if (file.isDirectory()) {
+        tsFiles.addAll(getAllTsFiles(file.getAbsolutePath()));
+      } else if (file.getName().endsWith("tsfile")) {
+        String filePath = file.getAbsolutePath();
+        Matcher matcher = dbPattern.matcher(filePath);
+        if (!matcher.matches()) {
+          log.warn("Cannot get database name from file path: " + filePath);
+          continue;
         }
-        for (File file : files) {
-            if (file.isDirectory()) {
-                tsFiles.addAll(getAllTsFiles(file.getAbsolutePath()));
-            } else if (file.getName().endsWith("tsfile")) {
-                String filePath = file.getAbsolutePath();
-                Matcher matcher = dbPattern.matcher(filePath);
-                if (!matcher.matches()) {
-                    log.warn("Cannot get database name from file path: " + filePath);
-                    continue;
-                }
-                String database = matcher.group(1);
-                long fileVersion = getFileVersion(filePath);
-                tsFiles.add(
-                        TsFileInfo.builder()
-                                .filePath(filePath)
-                                .fileVersion(fileVersion)
-                                .database(database)
-                                .build());
-            }
-        }
-        return tsFiles;
+        String database = matcher.group(1);
+        long fileVersion = getFileVersion(filePath);
+        tsFiles.add(
+            TsFileInfo.builder()
+                .filePath(filePath)
+                .fileVersion(fileVersion)
+                .database(database)
+                .build());
+      }
+    }
+    return tsFiles;
+  }
+
+  public static long getFileVersion(String filePath) {
+    TsFileResource tsFileResource = new TsFileResource(new File(filePath));
+    return tsFileResource.getTsFileSize()
+        + new File(tsFileResource.getModFile().getFilePath()).length();
+  }
+
+  public static Map<Long, IChunkReader> getChunkReaders(
+      Path tsPath, TsFileSequenceReader reader, List<Modification> modifications)
+      throws IOException {
+    List<ChunkMetadata> chunkMetadataList = reader.getChunkMetadataList(tsPath, true);
+    if (!modifications.isEmpty()) {
+      ModificationUtils.modifyChunkMetaData(chunkMetadataList, modifications);
     }
 
-    public static long getFileVersion(String filePath) {
-        TsFileResource tsFileResource = new TsFileResource(new File(filePath));
-        return tsFileResource.getTsFileSize()
-                + new File(tsFileResource.getModFile().getFilePath()).length();
+    Map<Long, IChunkReader> chunkReaders = new HashMap<>();
+    for (ChunkMetadata metadata : chunkMetadataList) {
+      Chunk chunk = reader.readMemChunk(metadata);
+      IChunkReader chunkReader = new ChunkReader(chunk, null);
+      chunkReaders.put(metadata.getOffsetOfChunkHeader(), chunkReader);
     }
-
-    public static Map<Long, IChunkReader> getChunkReaders(
-            Path tsPath, TsFileSequenceReader reader, List<Modification> modifications)
-            throws IOException {
-        List<ChunkMetadata> chunkMetadataList = reader.getChunkMetadataList(tsPath, true);
-        if (!modifications.isEmpty()) {
-            ModificationUtils.modifyChunkMetaData(chunkMetadataList, modifications);
-        }
-
-        Map<Long, IChunkReader> chunkReaders = new HashMap<>();
-        for (ChunkMetadata metadata : chunkMetadataList) {
-            Chunk chunk = reader.readMemChunk(metadata);
-            IChunkReader chunkReader = new ChunkReader(chunk, null);
-            chunkReaders.put(metadata.getOffsetOfChunkHeader(), chunkReader);
-        }
-        return chunkReaders;
-    }
+    return chunkReaders;
+  }
 }

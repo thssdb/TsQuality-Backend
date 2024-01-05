@@ -86,7 +86,7 @@
                     <java>
                         <googleJavaFormat>
                             <version>1.18.0</version>
-                            <style>AOSP</style>
+                            <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
 

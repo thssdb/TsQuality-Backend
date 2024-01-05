@@ -1,7 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.LongTVPair;
-
 import java.util.List;
 
 public class LongTVList extends TVList {

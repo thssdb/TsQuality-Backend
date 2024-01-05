@@ -12,24 +12,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class IoTDBSeriesMapperTest {
-    @Autowired IoTDBSeriesMapper mapper;
+  @Autowired IoTDBSeriesMapper mapper;
 
-    @Autowired PreAggregationConfig config;
+  @Autowired PreAggregationConfig config;
 
-    @Test
-    void insertList() {
-        List<IoTDBSeries> seriesList = new ArrayList<>();
-        seriesList.add(new IoTDBSeries("root.test.g0.d0.s0"));
-        seriesList.add(new IoTDBSeries("root.test.g0.d0.s1"));
-        seriesList.add(new IoTDBSeries("root.test.g0.d0.s2"));
-        seriesList.add(new IoTDBSeries("root.test.g0.d0.s3"));
-        mapper.insertList(config.tables.series, seriesList);
-    }
+  @Test
+  void insertList() {
+    List<IoTDBSeries> seriesList = new ArrayList<>();
+    seriesList.add(new IoTDBSeries("root.test.g0.d0.s0"));
+    seriesList.add(new IoTDBSeries("root.test.g0.d0.s1"));
+    seriesList.add(new IoTDBSeries("root.test.g0.d0.s2"));
+    seriesList.add(new IoTDBSeries("root.test.g0.d0.s3"));
+    mapper.insertList(config.tables.series, seriesList);
+  }
 
-    @Test
-    void selectIdByPath() {
-        String path = "root.test.g0.d0.s2";
-        int id = mapper.selectIdByPath(config.tables.series, path);
-        System.out.println(id);
-    }
+  @Test
+  void selectIdByPath() {
+    String path = "root.test.g0.d0.s2";
+    int id = mapper.selectIdByPath(config.tables.series, path);
+    System.out.println(id);
+  }
 }

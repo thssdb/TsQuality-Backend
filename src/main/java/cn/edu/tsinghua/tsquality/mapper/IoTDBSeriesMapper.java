@@ -8,11 +8,11 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface IoTDBSeriesMapper {
-    void createSeriesTable(@Param("tableName") String tableName);
+  void createSeriesTable(@Param("tableName") String tableName);
 
-    void insertList(
-            @Param("tableName") String tableName, @Param("list") List<IoTDBSeries> seriesList);
+  void insertList(
+      @Param("tableName") String tableName, @Param("list") List<IoTDBSeries> seriesList);
 
-    @Select("SELECT sid FROM ${tableName} WHERE ts_path = #{path}")
-    int selectIdByPath(@Param("tableName") String tableName, @Param("path") String path);
+  @Select("SELECT sid FROM ${tableName} WHERE ts_path = #{path}")
+  int selectIdByPath(@Param("tableName") String tableName, @Param("path") String path);
 }

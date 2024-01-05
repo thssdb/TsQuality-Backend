@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class IoTDBDataPointDto {
-    private long timestamp;
-    private double value;
+  private long timestamp;
+  private double value;
 }

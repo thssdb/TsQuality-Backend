@@ -1,6 +1,5 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
-
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public class TVListFactory {

@@ -6,14 +6,14 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IoTDBFileSeriesStatMapper {
-    void createFileSeriesStatTable(
-            @Param("fileTableName") String fileTableName,
-            @Param("seriesTableName") String seriesTableName,
-            @Param("fileSeriesStatTableName") String fileSeriesStatTableName);
+  void createFileSeriesStatTable(
+      @Param("fileTableName") String fileTableName,
+      @Param("seriesTableName") String seriesTableName,
+      @Param("fileSeriesStatTableName") String fileSeriesStatTableName);
 
-    void insert(
-            @Param("tableName") String tableName,
-            @Param("fid") int fid,
-            @Param("sid") int sid,
-            @Param("stat") IoTDBSeriesStat stat);
+  void insert(
+      @Param("tableName") String tableName,
+      @Param("fid") int fid,
+      @Param("sid") int sid,
+      @Param("stat") IoTDBSeriesStat stat);
 }

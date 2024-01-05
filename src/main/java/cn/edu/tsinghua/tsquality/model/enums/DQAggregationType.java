@@ -4,14 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum DQAggregationType {
-    DAY("day"),
-    MONTH("month"),
+  DAY("day"),
+  MONTH("month"),
 
-    YEAR("year");
+  YEAR("year");
 
-    private final String type;
+  private final String type;
 
-    DQAggregationType(String type) {
-        this.type = type;
-    }
+  DQAggregationType(String type) {
+    this.type = type;
+  }
 }

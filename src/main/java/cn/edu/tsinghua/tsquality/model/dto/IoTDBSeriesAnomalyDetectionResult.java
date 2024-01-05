@@ -6,60 +6,60 @@ import lombok.Data;
 
 @Data
 public class IoTDBSeriesAnomalyDetectionResult {
-    private boolean isCompletenessConsidered;
-    private boolean isConsistencyConsidered;
-    private boolean isTimelinessConsidered;
-    private boolean isValidityConsidered;
-    private Completeness completeness;
-    private Consistency consistency;
-    private Timeliness timeliness;
-    private Validity validity;
+  private boolean isCompletenessConsidered;
+  private boolean isConsistencyConsidered;
+  private boolean isTimelinessConsidered;
+  private boolean isValidityConsidered;
+  private Completeness completeness;
+  private Consistency consistency;
+  private Timeliness timeliness;
+  private Validity validity;
 
-    public IoTDBSeriesAnomalyDetectionResult(IoTDBSeriesAnomalyDetectionRequest request) {
-        this.isCompletenessConsidered = request.isCompletenessConsidered();
-        this.isConsistencyConsidered = request.isConsistencyConsidered();
-        this.isTimelinessConsidered = request.isTimelinessConsidered();
-        this.isValidityConsidered = request.isValidityConsidered();
-        if (isCompletenessConsidered) {
-            completeness = new Completeness();
-        }
-        if (isConsistencyConsidered) {
-            consistency = new Consistency();
-        }
-        if (isTimelinessConsidered) {
-            timeliness = new Timeliness();
-        }
-        if (isValidityConsidered) {
-            validity = new Validity();
-        }
+  public IoTDBSeriesAnomalyDetectionResult(IoTDBSeriesAnomalyDetectionRequest request) {
+    this.isCompletenessConsidered = request.isCompletenessConsidered();
+    this.isConsistencyConsidered = request.isConsistencyConsidered();
+    this.isTimelinessConsidered = request.isTimelinessConsidered();
+    this.isValidityConsidered = request.isValidityConsidered();
+    if (isCompletenessConsidered) {
+      completeness = new Completeness();
     }
-
-    @Data
-    public static class Completeness {
-        private IoTDBTimeValuePair[] result;
+    if (isConsistencyConsidered) {
+      consistency = new Consistency();
     }
-
-    @Data
-    public static class Consistency {
-        private IoTDBTimeValuePair[] result;
+    if (isTimelinessConsidered) {
+      timeliness = new Timeliness();
     }
-
-    @Data
-    public static class Timeliness {
-        private IoTDBTimeValuePair[] result;
+    if (isValidityConsidered) {
+      validity = new Validity();
     }
+  }
 
-    @Data
-    public static class Validity {
-        private boolean isValueConsidered;
-        private boolean isVariationConsidered;
-        private boolean isSpeedConsidered;
-        private boolean isAccelerationConsidered;
-        private IoTDBTimeValuePair[] valueResult;
-        private IoTDBTimeValuePair[] variationResult;
-        private IoTDBTimeValuePair[] speedResult;
-        private IoTDBTimeValuePair[] accelerationResult;
-    }
+  @Data
+  public static class Completeness {
+    private IoTDBTimeValuePair[] result;
+  }
 
-    public void anomalyDetect(List<IoTDBTimeValuePair> pairs) {}
+  @Data
+  public static class Consistency {
+    private IoTDBTimeValuePair[] result;
+  }
+
+  @Data
+  public static class Timeliness {
+    private IoTDBTimeValuePair[] result;
+  }
+
+  @Data
+  public static class Validity {
+    private boolean isValueConsidered;
+    private boolean isVariationConsidered;
+    private boolean isSpeedConsidered;
+    private boolean isAccelerationConsidered;
+    private IoTDBTimeValuePair[] valueResult;
+    private IoTDBTimeValuePair[] variationResult;
+    private IoTDBTimeValuePair[] speedResult;
+    private IoTDBTimeValuePair[] accelerationResult;
+  }
+
+  public void anomalyDetect(List<IoTDBTimeValuePair> pairs) {}
 }

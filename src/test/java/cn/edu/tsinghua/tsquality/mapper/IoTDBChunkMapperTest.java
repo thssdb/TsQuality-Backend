@@ -10,13 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class IoTDBChunkMapperTest {
-    @Autowired PreAggregationConfig config;
-    @Autowired IoTDBChunkMapper mapper;
+  @Autowired PreAggregationConfig config;
+  @Autowired IoTDBChunkMapper mapper;
 
-    @Test
-    void insert() {
-        IoTDBChunk chunk = new IoTDBChunk(1, 1, 100);
-        mapper.insert(config.tables.chunk, chunk);
-        System.out.println(chunk.cid);
-    }
+  @Test
+  void insert() {
+    IoTDBChunk chunk = new IoTDBChunk(1, 1, 100);
+    mapper.insert(config.tables.chunk, chunk);
+    System.out.println(chunk.cid);
+  }
 }

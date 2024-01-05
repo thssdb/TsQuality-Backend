@@ -1,7 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.BooleanTVPair;
-
 import java.util.ArrayList;
 import java.util.List;
 

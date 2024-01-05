@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class IoTDBConfig {
-    int id;
-    int port;
-    String host;
-    String username;
-    String password;
+  int id;
+  int port;
+  String host;
+  String username;
+  String password;
 }
