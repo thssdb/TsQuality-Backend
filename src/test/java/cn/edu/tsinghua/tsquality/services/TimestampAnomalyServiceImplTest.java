@@ -12,22 +12,14 @@ public class TimestampAnomalyServiceImplTest {
   @Autowired private TimestampAnomalyServiceImpl underTests;
 
   @Test
-  void testAnomalyDetectionAndRepairWithNoArgs() {
-
-  }
+  void testAnomalyDetectionAndRepairWithNoArgs() {}
 
   @Test
-  void testAnomalyDetectionAndRepairWithStandardInterval() {
-
-  }
+  void testAnomalyDetectionAndRepairWithStandardInterval() {}
 
   @Test
-  void testAnomalyDetectionAndRepairWithDetectionMethod() {
-
-  }
+  void testAnomalyDetectionAndRepairWithDetectionMethod() {}
 
   @Test
-  void testAnomalyDetectionAndRepairWithFullArgs() {
-
-  }
+  void testAnomalyDetectionAndRepairWithFullArgs() {}
 }

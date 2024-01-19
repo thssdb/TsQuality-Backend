@@ -1,8 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
-import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;

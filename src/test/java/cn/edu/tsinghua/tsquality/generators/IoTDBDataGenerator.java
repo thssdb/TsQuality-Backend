@@ -1,5 +1,7 @@
 package cn.edu.tsinghua.tsquality.generators;
 
+import java.util.Arrays;
+import java.util.List;
 import lombok.Getter;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -13,19 +15,16 @@ import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Component
 public class IoTDBDataGenerator {
   public String[] pathStrings;
 
-  @Getter
-  private final Path[] paths;
+  @Getter private final Path[] paths;
 
   private final Session session;
 
-  public IoTDBDataGenerator(@Value("${iotdb.test.data.paths}") String[] pathStrings) throws IoTDBConnectionException {
+  public IoTDBDataGenerator(@Value("${iotdb.test.data.paths}") String[] pathStrings)
+      throws IoTDBConnectionException {
     this.pathStrings = pathStrings;
     this.session = new Session.Builder().build();
     this.paths = Arrays.stream(pathStrings).map(x -> new Path(x, true)).toArray(Path[]::new);
@@ -34,7 +33,7 @@ public class IoTDBDataGenerator {
   public void generateTimestampAnomalyData(int size) throws IoTDBConnectionException {
     try {
       session.open();
-      for (Path path: paths) {
+      for (Path path : paths) {
         createTimeseriesIfNotExists(path);
         insertTimestampAnomalyDataForTimeseries(path, size);
       }
@@ -48,7 +47,7 @@ public class IoTDBDataGenerator {
   public void deleteAll() throws IoTDBConnectionException {
     try {
       session.open();
-      for (Path path: paths) {
+      for (Path path : paths) {
         String fullPath = path.getFullPath();
         if (session.checkTimeseriesExists(fullPath)) {
           session.deleteTimeseries(fullPath);
@@ -61,9 +60,11 @@ public class IoTDBDataGenerator {
     }
   }
 
-  private void createTimeseriesIfNotExists(Path path) throws IoTDBConnectionException, StatementExecutionException {
+  private void createTimeseriesIfNotExists(Path path)
+      throws IoTDBConnectionException, StatementExecutionException {
     if (!session.checkTimeseriesExists(path.getFullPath())) {
-      session.createTimeseries(path.getFullPath(), TSDataType.DOUBLE, TSEncoding.RLE, CompressionType.SNAPPY);
+      session.createTimeseries(
+          path.getFullPath(), TSDataType.DOUBLE, TSEncoding.RLE, CompressionType.SNAPPY);
     }
   }
 
@@ -84,9 +85,11 @@ public class IoTDBDataGenerator {
   }
 
   private Tablet populateTablet(Path path, long[] timestamps, Object[] values) {
-    Tablet tablet = new Tablet(
-        path.getDevice(), List.of(new MeasurementSchema(path.getMeasurement(), TSDataType.DOUBLE, TSEncoding.RLE))
-    );
+    Tablet tablet =
+        new Tablet(
+            path.getDevice(),
+            List.of(
+                new MeasurementSchema(path.getMeasurement(), TSDataType.DOUBLE, TSEncoding.RLE)));
     tablet.rowSize = timestamps.length;
     for (int i = 0; i < timestamps.length; i++) {
       tablet.addTimestamp(i, timestamps[i]);
