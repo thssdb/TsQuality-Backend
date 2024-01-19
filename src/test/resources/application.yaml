@@ -26,3 +26,11 @@ pre-aggregation:
     file-series-stat: "iotdb_file_series_stat"
     chunk-series-stat: "iotdb_chunk_series_stat"
     page-series-stat: "iotdb_page_series_stat"
+
+iotdb:
+  test:
+    data:
+      paths: >
+        root.springboot.test.s1,
+        root.springboot.test.s2,
+        root.springboot.test.s3

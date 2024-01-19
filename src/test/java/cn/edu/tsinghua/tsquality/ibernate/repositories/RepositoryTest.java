@@ -1,12 +1,11 @@
-package ibernate.repositories;
+package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
+import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
-import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
-import ibernate.datacreators.IntTVListCreator;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
@@ -80,7 +79,7 @@ public class RepositoryTest {
   }
 
   @Test
-  void testSelectAfterInsertShouldReturnData() throws Exception {
+  void testSelectAfterInsertShouldReturnCorrectData() {
     IntTVList tvList = givenIntTVList();
     TVList result = whenPerformSelectAfterInsert(tvList);
     thenSelectResultShouldBeEqualToTVList(result, tvList);

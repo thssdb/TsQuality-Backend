@@ -1,4 +1,4 @@
-package ibernate.datastructures.tvpair;
+package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
