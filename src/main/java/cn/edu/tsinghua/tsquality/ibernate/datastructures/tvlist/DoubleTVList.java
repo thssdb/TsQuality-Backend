@@ -2,9 +2,10 @@ package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.DoubleTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public class DoubleTVList extends TVList {
   protected List<DoubleTVPair> pairs = new ArrayList<>();
@@ -14,6 +15,27 @@ public class DoubleTVList extends TVList {
   @Override
   public TSDataType getDataType() {
     return TSDataType.DOUBLE;
+  }
+
+  @Override
+  public int size() {
+    return pairs.size();
+  }
+
+  @Override
+  public long getTimestamp(int i) {
+    if (i >= pairs.size()) {
+      throw new ArrayIndexOutOfBoundsException(i);
+    }
+    return pairs.get(i).getTimestamp();
+  }
+
+  @Override
+  public Object getValue(int i) {
+    if (i >= pairs.size()) {
+      throw new ArrayIndexOutOfBoundsException(i);
+    }
+    return pairs.get(i).getDouble();
   }
 
   @Override

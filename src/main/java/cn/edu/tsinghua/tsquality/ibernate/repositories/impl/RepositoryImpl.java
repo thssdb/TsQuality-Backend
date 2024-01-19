@@ -129,13 +129,32 @@ public class RepositoryImpl implements Repository {
 
   private Tablet prepareTablet(TVList tvList) {
     List<MeasurementSchema> schemas = prepareSchemas(tvList);
-    return new Tablet(path.getDevice(), schemas);
+    Tablet tablet = new Tablet(path.getDevice(), schemas);
+    populateTVListToTablet(tvList, tablet);
+    return tablet;
   }
 
   private List<MeasurementSchema> prepareSchemas(TVList tvList) {
     List<MeasurementSchema> schemas = new ArrayList<>();
     schemas.add(new MeasurementSchema(path.getMeasurement(), tvList.getDataType()));
     return schemas;
+  }
+
+  private void populateTVListToTablet(TVList tvList, Tablet tablet) {
+    tablet.rowSize = tvList.size();
+    String measurement = path.getMeasurement();
+    for (int i = 0; i < tvList.size(); i++) {
+      tablet.addTimestamp(i, tvList.getTimestamp(i));
+      switch (dataType) {
+        case BOOLEAN -> tablet.addValue(measurement, i, tvList.getBooleanPair(i).getBoolean());
+        case INT32 -> tablet.addValue(measurement, i, tvList.getIntPair(i).getInt());
+        case INT64 -> tablet.addValue(measurement, i, tvList.getLongPair(i).getLong());
+        case FLOAT -> tablet.addValue(measurement, i, tvList.getFloatPair(i).getFloat());
+        case DOUBLE -> tablet.addValue(measurement, i, tvList.getDoublePair(i).getDouble());
+        case TEXT -> tablet.addValue(measurement, i, tvList.getTextPair(i).getText());
+        default -> throw new IllegalArgumentException("Unsupported data type");
+      }
+    }
   }
 
   private void insertTablet(Tablet tablet)

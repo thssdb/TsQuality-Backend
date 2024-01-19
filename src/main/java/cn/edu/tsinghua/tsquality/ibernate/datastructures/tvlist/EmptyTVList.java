@@ -7,4 +7,19 @@ public class EmptyTVList extends TVList {
   public TSDataType getDataType() {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public int size() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public long getTimestamp(int i) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Object getValue(int i) {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RepositoryTest {
+public class RepositoryImplTest {
   private static final String path = "root.tsquality.test.ts1";
   private static final String selectSql = "select ts1 from root.tsquality.test";
 
@@ -23,7 +23,7 @@ public class RepositoryTest {
 
   private final Session session;
 
-  RepositoryTest() throws IoTDBConnectionException {
+  RepositoryImplTest() throws IoTDBConnectionException {
     session = new Session.Builder().build();
     underTests = new RepositoryImpl(session, path, TSDataType.INT32);
   }
@@ -125,6 +125,9 @@ public class RepositoryTest {
   }
 
   private void thenSelectResultShouldBeEqualToTVList(TVList result, TVList tvList) {
-    assertThat(result).isEqualTo(tvList);
+    assertThat(result.size()).isEqualTo(tvList.size());
+    for (int i = 0; i < result.size(); i++) {
+      assertThat(result.getValue(i)).isEqualTo(tvList.getValue(i));
+    }
   }
 }

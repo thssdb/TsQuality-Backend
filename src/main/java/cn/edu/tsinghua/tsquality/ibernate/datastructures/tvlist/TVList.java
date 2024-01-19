@@ -10,6 +10,12 @@ public abstract class TVList {
 
   public abstract TSDataType getDataType();
 
+  public abstract int size();
+
+  public abstract long getTimestamp(int i);
+
+  public abstract Object getValue(int i);
+
   public void putBooleanPair(BooleanTVPair pair) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
