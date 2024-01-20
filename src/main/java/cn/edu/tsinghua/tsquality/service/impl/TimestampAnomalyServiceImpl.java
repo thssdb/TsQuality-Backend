@@ -2,10 +2,9 @@ package cn.edu.tsinghua.tsquality.service.impl;
 
 import cn.edu.tsinghua.tsquality.model.dto.TimestampAnomalyDto;
 import cn.edu.tsinghua.tsquality.service.TimestampAnomalyService;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TimestampAnomalyServiceImpl implements TimestampAnomalyService {
@@ -26,8 +25,7 @@ public class TimestampAnomalyServiceImpl implements TimestampAnomalyService {
   }
 
   private List<TimestampAnomalyDto> anomalyDetectionAndRepair(
-      String path, Long standardInterval, String detectionMethod
-  ) {
+      String path, Long standardInterval, String detectionMethod) {
     return new ArrayList<>();
   }
 }

@@ -1,9 +1,8 @@
 package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.model.dto.TimestampAnomalyDto;
-import org.apache.iotdb.tsfile.read.common.Path;
-
 import java.util.List;
+import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface TimestampAnomalyService {
   List<TimestampAnomalyDto> anomalyDetectionAndRepair(String path);

@@ -1,18 +1,18 @@
 package cn.edu.tsinghua.tsquality.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.model.dto.TimestampAnomalyDto;
 import cn.edu.tsinghua.tsquality.service.impl.TimestampAnomalyServiceImpl;
+import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -31,7 +31,6 @@ public class TimestampAnomalyServiceImplTest {
   void clearData() throws IoTDBConnectionException {
     dataGenerator.deleteAll();
   }
-
 
   @Test
   void testAnomalyDetectionAndRepairWithNoArgs() {

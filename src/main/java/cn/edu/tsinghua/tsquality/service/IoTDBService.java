@@ -11,6 +11,10 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import javax.annotation.PostConstruct;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -27,11 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 @Service
 public class IoTDBService {
@@ -126,9 +125,9 @@ public class IoTDBService {
     if (tsFiles.isEmpty()) {
       return;
     }
-//    for (TsFileInfo tsfile : tsFiles) {
-//      preAggregateTsFile(tsfile);
-//    }
+    //    for (TsFileInfo tsfile : tsFiles) {
+    //      preAggregateTsFile(tsfile);
+    //    }
   }
 
   @Async("preAggregationTaskExecutor")
