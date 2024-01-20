@@ -12,15 +12,18 @@ import lombok.NoArgsConstructor;
 public class IoTDBSeries {
   private int sid;
   private String path;
-  private String device = "";
-  private String database = "";
+  private String device;
+  private String database;
 
   public IoTDBSeries(String path) {
     this.path = path;
+    this.device = "";
+    this.database = "";
   }
 
   public IoTDBSeries(String path, String device) {
     this.path = path;
     this.device = device;
+    this.database = "";
   }
 }

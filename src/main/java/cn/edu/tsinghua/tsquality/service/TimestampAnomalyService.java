@@ -1,24 +1,26 @@
 package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.model.dto.TimestampAnomalyDto;
-import java.util.List;
 import org.apache.iotdb.tsfile.read.common.Path;
 
-public interface TimestampAnomalyService {
-  List<TimestampAnomalyDto> anomalyDetectionAndRepair(
-      String path,
-      Long startTimestamp,
-      Long endTimestamp,
-      Long standardInterval,
-      String detectionMethod);
+import java.util.List;
 
-  default List<TimestampAnomalyDto> anomalyDetectionAndRepair(
-      Path path,
-      Long startTimestamp,
-      Long endTimestamp,
-      Long standardInterval,
-      String detectionMethod) {
-    return anomalyDetectionAndRepair(
-        path.getFullPath(), startTimestamp, endTimestamp, standardInterval, detectionMethod);
+public interface TimestampAnomalyService {
+  List<TimestampAnomalyDto> anomalyDetectionAndRepair(String path);
+
+  List<TimestampAnomalyDto> anomalyDetectionAndRepair(String path, Long standardInterval);
+
+  List<TimestampAnomalyDto> anomalyDetectionAndRepair(String path, String detectionMethod);
+
+  default List<TimestampAnomalyDto> anomalyDetectionAndRepair(Path path) {
+    return anomalyDetectionAndRepair(path.getFullPath());
+  }
+
+  default List<TimestampAnomalyDto> anomalyDetectionAndRepair(Path path, Long standardInterval) {
+    return anomalyDetectionAndRepair(path.getFullPath(), standardInterval);
+  }
+
+  default List<TimestampAnomalyDto> anomalyDetectionAndRepair(Path path, String detectionMethod) {
+    return anomalyDetectionAndRepair(path.getFullPath(), detectionMethod);
   }
 }
