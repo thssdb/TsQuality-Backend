@@ -6,12 +6,17 @@ public class BooleanTVPair extends TVPair {
   BooleanTVPair() {}
 
   @Override
-  public void setBoolean(boolean value) {
-    this.value = value;
+  public Object getValue() {
+    return value;
   }
 
   @Override
   public boolean getBoolean() {
     return value;
+  }
+
+  @Override
+  public void setBoolean(boolean value) {
+    this.value = value;
   }
 }

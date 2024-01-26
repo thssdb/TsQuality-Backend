@@ -1,6 +1,6 @@
 package cn.edu.tsinghua.tsquality.services;
 
-import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import org.apache.iotdb.rpc.IoTDBConnectionException;

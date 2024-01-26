@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.mapper;
+package cn.edu.tsinghua.tsquality.mapper.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
 import java.util.HashMap;

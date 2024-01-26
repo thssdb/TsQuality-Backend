@@ -6,12 +6,17 @@ public class FloatTVPair extends TVPair {
   FloatTVPair() {}
 
   @Override
-  public void setFloat(float value) {
-    this.value = value;
+  public float getFloat() {
+    return value;
   }
 
   @Override
-  public float getFloat() {
+  public Object getValue() {
     return value;
+  }
+
+  @Override
+  public void setFloat(float value) {
+    this.value = value;
   }
 }

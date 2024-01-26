@@ -1,11 +1,11 @@
 package cn.edu.tsinghua.tsquality.ibernate.udfs;
 
-import org.apache.iotdb.tsfile.read.common.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import org.apache.iotdb.tsfile.read.common.Path;
+import org.junit.jupiter.api.Test;
 
 public class TimestampRepairUDFTest {
   private TimestampRepairUDF underTests;

@@ -2,8 +2,8 @@ package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
 import cn.edu.tsinghua.tsquality.common.IoTDBUtil;
-import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
-import cn.edu.tsinghua.tsquality.mapper.IoTDBMapper;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBConfigMapper;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBMapper;
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;

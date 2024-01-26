@@ -1,7 +1,7 @@
 package cn.edu.tsinghua.tsquality.common;
 
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBDataPointDto;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
+import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDataPointDto;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class IoTDBUtil {
       throws IoTDBConnectionException, StatementExecutionException, UnSupportedDataTypeException {
     String sql = constructQuerySQL(path, 0, 0, "", limit);
     SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
-    List<IoTDBDataPointDto> points = new ArrayList<>();
+    List<TimeSeriesDataPointDto> points = new ArrayList<>();
     while (iterator.next()) {
       String dataType = iterator.getColumnTypeList().get(1);
       double value =
@@ -87,8 +87,8 @@ public class IoTDBUtil {
             case "DOUBLE" -> iterator.getDouble(2);
             default -> throw new UnSupportedDataTypeException("Unexpected type: " + dataType);
           };
-      IoTDBDataPointDto point =
-          IoTDBDataPointDto.builder().timestamp(iterator.getLong(1)).value(value).build();
+      TimeSeriesDataPointDto point =
+          TimeSeriesDataPointDto.builder().timestamp(iterator.getLong(1)).value(value).build();
       points.add(point);
     }
     return TimeSeriesRecentDataDto.builder().path(path).points(points).build();

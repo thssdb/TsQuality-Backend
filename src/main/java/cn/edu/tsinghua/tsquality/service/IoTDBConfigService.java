@@ -1,6 +1,6 @@
 package cn.edu.tsinghua.tsquality.service;
 
-import cn.edu.tsinghua.tsquality.mapper.IoTDBConfigMapper;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

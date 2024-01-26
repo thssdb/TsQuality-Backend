@@ -33,7 +33,7 @@ public class TimestampRepairUDF extends AbstractUDF {
     if (!params.containsKey(INTERVAL)) {
       return false;
     }
-    return params.get(INTERVAL) instanceof Integer;
+    return params.get(INTERVAL) instanceof Number;
   }
 
   private boolean isValidMethod() {

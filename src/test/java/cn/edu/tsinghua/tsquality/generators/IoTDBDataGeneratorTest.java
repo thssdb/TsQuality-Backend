@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class IoTDBDataGeneratorTest {
+  public static final int TEST_DATA_SIZE = 100;
+
   @Autowired private IoTDBDataGenerator underTests;
 
   private final Session session;
@@ -29,17 +31,16 @@ public class IoTDBDataGeneratorTest {
 
   @Test
   void testGenerateDataShouldSucceed() throws Exception {
-    int size = 10;
-    underTests.generateTimestampAnomalyData(size);
+    underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
     for (Path path : underTests.getPaths()) {
       DataIterator result = whenQueryData(path);
-      thenCountResultShouldBeOfSize(result, size);
+      thenCountResultShouldBeOfSize(result, TEST_DATA_SIZE);
     }
   }
 
   @Test
   void testDeleteAllAfterGenerationShouldSucceed() throws Exception {
-    underTests.generateTimestampAnomalyData(10);
+    underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
     underTests.deleteAll();
     for (Path path : underTests.getPaths()) {
       DataIterator result = whenQueryData(path);

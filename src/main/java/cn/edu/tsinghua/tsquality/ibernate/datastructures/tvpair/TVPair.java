@@ -6,29 +6,11 @@ import lombok.Data;
 public abstract class TVPair {
   protected long timestamp = 0;
 
-  public void setBoolean(boolean value) {
-    throw new UnsupportedOperationException("DataType not consistent");
+  public Long getTimestamp() {
+    return timestamp;
   }
 
-  public void setInt(int value) {
-    throw new UnsupportedOperationException("DataType not consistent");
-  }
-
-  public void setLong(long value) {
-    throw new UnsupportedOperationException("DataType not consistent");
-  }
-
-  public void setFloat(float value) {
-    throw new UnsupportedOperationException("DataType not consistent");
-  }
-
-  public void setDouble(double value) {
-    throw new UnsupportedOperationException("DataType not consistent");
-  }
-
-  public void setText(String value) {
-    throw new UnsupportedOperationException("DataType not consistent");
-  }
+  public abstract Object getValue();
 
   public boolean getBoolean() {
     throw new UnsupportedOperationException("DataType not consistent");
@@ -51,6 +33,30 @@ public abstract class TVPair {
   }
 
   public String getText() {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setBoolean(boolean value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setInt(int value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setLong(long value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setFloat(float value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setDouble(double value) {
+    throw new UnsupportedOperationException("DataType not consistent");
+  }
+
+  public void setText(String value) {
     throw new UnsupportedOperationException("DataType not consistent");
   }
 }

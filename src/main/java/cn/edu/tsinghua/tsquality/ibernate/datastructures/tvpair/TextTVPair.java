@@ -6,12 +6,17 @@ public class TextTVPair extends TVPair {
   TextTVPair() {}
 
   @Override
-  public void setText(String value) {
-    this.value = value;
+  public Object getValue() {
+    return value;
   }
 
   @Override
   public String getText() {
     return value;
+  }
+
+  @Override
+  public void setText(String value) {
+    this.value = value;
   }
 }

@@ -33,6 +33,11 @@ public class TimestampGenerator {
   }
 
   private static long abnormalInterval(long interval) {
-    return new Random().nextLong() % (2 * interval) - interval;
+    long result;
+    Random random = new Random();
+    do {
+      result = random.nextLong() % (2 * interval) - interval;
+    } while (result == 0 || result == -interval);
+    return result;
   }
 }

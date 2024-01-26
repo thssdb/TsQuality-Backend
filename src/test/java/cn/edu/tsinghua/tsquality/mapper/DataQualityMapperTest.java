@@ -1,6 +1,7 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
+import cn.edu.tsinghua.tsquality.mapper.database.DataQualityMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime;
 import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;

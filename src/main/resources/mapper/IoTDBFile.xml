@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--namespace指向mapper.xml所对应的Mapper接口-->
-<mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBFileMapper">
+<mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.IoTDBFileMapper">
     <update id="createFileTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
             `fid` BIGINT PRIMARY KEY AUTO_INCREMENT,

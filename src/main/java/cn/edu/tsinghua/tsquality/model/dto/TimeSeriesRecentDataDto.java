@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TimeSeriesRecentDataDto {
   private String path;
-  private List<IoTDBDataPointDto> points;
+  private List<TimeSeriesDataPointDto> points;
 }

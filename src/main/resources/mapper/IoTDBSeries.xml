@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--namespace指向mapper.xml所对应的Mapper接口-->
-<mapper namespace="cn.edu.tsinghua.tsquality.mapper.IoTDBSeriesMapper">
+<mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.IoTDBSeriesMapper">
     <update id="createSeriesTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS ${tableName}(
             `sid` BIGINT PRIMARY KEY AUTO_INCREMENT,

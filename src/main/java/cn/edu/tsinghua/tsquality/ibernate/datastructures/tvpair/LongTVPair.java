@@ -6,12 +6,17 @@ public class LongTVPair extends TVPair {
   LongTVPair() {}
 
   @Override
-  public void setLong(long value) {
-    this.value = value;
+  public Object getValue() {
+    return value;
   }
 
   @Override
   public long getLong() {
     return value;
+  }
+
+  @Override
+  public void setLong(long value) {
+    this.value = value;
   }
 }

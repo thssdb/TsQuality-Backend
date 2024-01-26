@@ -6,12 +6,17 @@ public class DoubleTVPair extends TVPair {
   DoubleTVPair() {}
 
   @Override
-  public void setDouble(double value) {
-    this.value = value;
+  public Object getValue() {
+    return value;
   }
 
   @Override
   public double getDouble() {
     return value;
+  }
+
+  @Override
+  public void setDouble(double value) {
+    this.value = value;
   }
 }

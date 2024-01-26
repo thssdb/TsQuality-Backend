@@ -1,8 +1,7 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBSeriesMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,7 @@
 package cn.edu.tsinghua.tsquality.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import cn.edu.tsinghua.tsquality.config.PreAggregationConfig;
+import cn.edu.tsinghua.tsquality.mapper.database.IoTDBChunkMapper;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
