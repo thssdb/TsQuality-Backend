@@ -1,0 +1,68 @@
+package cn.edu.tsinghua.tsquality.controllers.timeseries;
+
+import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
+import org.apache.iotdb.rpc.IoTDBConnectionException;
+import static org.hamcrest.Matchers.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class TimestampAnomalyControllerTest {
+  private static final int TEST_DATA_SIZE = 100;
+
+  @Autowired private IoTDBDataGenerator dataGenerator;
+  @Autowired private MockMvc mockMvc;
+
+  private String path;
+
+  private String getEndpoint() {
+    return String.format("/api/v1/timestamp-anomaly?path=%s", path);
+  }
+
+  @BeforeEach
+  void insertDataWithTimestampAnomalies() throws IoTDBConnectionException {
+    dataGenerator.generateTimestampAnomalyData(TEST_DATA_SIZE);
+    path = dataGenerator.getPaths()[0].getFullPath();
+  }
+
+  @AfterEach
+  void clearData() throws IoTDBConnectionException {
+    dataGenerator.deleteAll();
+  }
+
+  @Test
+  void test() throws Exception {
+    MockHttpServletRequestBuilder request = givenAnomalyDetectionRequest();
+    ResultActions result = whenPerformRequest(request);
+    thenResultShouldBeOk(result);
+    thenResultShouldContainCorrectData(result);
+  }
+
+  private MockHttpServletRequestBuilder givenAnomalyDetectionRequest() {
+    String endpoint = getEndpoint();
+    return MockMvcRequestBuilders.get(endpoint);
+  }
+
+  private ResultActions whenPerformRequest(MockHttpServletRequestBuilder request) throws Exception {
+    return mockMvc.perform(request);
+  }
+
+  private void thenResultShouldBeOk(ResultActions result) throws Exception {
+    result.andExpect(MockMvcResultMatchers.status().isOk());
+  }
+
+  private void thenResultShouldContainCorrectData(ResultActions result) throws Exception {
+    result.andExpect(MockMvcResultMatchers.jsonPath("$.originalData", hasSize(TEST_DATA_SIZE)));
+    result.andExpect(MockMvcResultMatchers.jsonPath("$.repairedData", hasSize(greaterThan(0))));
+  }
+}

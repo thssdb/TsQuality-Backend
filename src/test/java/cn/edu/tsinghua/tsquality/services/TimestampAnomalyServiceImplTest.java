@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class TimestampAnomalyServiceImplTest {
-  public static final int TEST_DATA_SIZE = 100;
+  private static final int TEST_DATA_SIZE = 100;
 
   @Autowired private TimestampAnomalyServiceImpl underTests;
   @Autowired private IoTDBDataGenerator dataGenerator;
