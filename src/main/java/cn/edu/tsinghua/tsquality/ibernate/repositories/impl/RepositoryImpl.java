@@ -4,6 +4,7 @@ import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.EmptyTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVListFactory;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
+import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -59,6 +60,37 @@ public class RepositoryImpl implements Repository {
   }
 
   @Override
+  public TVList select(AbstractUDF udf, String timeFilter, String valueFilter) {
+    String sql = prepareSelectSql(udf, timeFilter, valueFilter);
+    try {
+      SessionDataSet dataset = executeSelectSql(sql);
+      return datasetToTVList(dataset);
+    } catch (Exception ignored) {
+      return new EmptyTVList();
+    }
+  }
+
+  private String prepareSelectSql(AbstractUDF udf, String timeFilter, String valueFilter) {
+    String selectClause = udf.getSql(path);
+    String whereClause = prepareWhereClause(timeFilter, valueFilter);
+    return selectClause + whereClause;
+  }
+
+  private String prepareWhereClause(String timeFilter, String valueFilter) {
+    boolean timeFilterValid = timeFilter != null && !timeFilter.isEmpty();
+    boolean valueFilterValid = valueFilter != null && !valueFilter.isEmpty();
+    if (timeFilterValid && valueFilterValid) {
+      return String.format(" where %s and %s", timeFilter, valueFilter);
+    } else if (timeFilterValid) {
+      return String.format(" where %s", timeFilter);
+    } else if (valueFilterValid) {
+      return String.format(" where %s", valueFilter);
+    } else {
+      return "";
+    }
+  }
+
+  @Override
   public TVList select(String timeFilter, String valueFilter) {
     String sql = prepareSelectSql(timeFilter, valueFilter);
     try {
@@ -69,28 +101,11 @@ public class RepositoryImpl implements Repository {
     }
   }
 
-  @Override
-  public void insert(TVList tvList) {
-    Tablet tablet = prepareTablet(tvList);
-    try {
-      insertTablet(tablet);
-    } catch (IoTDBConnectionException | StatementExecutionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   private String prepareSelectSql(String timeFilter, String valueFilter) {
-    String sql = String.format("select %s from %s", path.getMeasurement(), path.getDevice());
-    boolean timeFilterValid = timeFilter != null && !timeFilter.isEmpty();
-    boolean valueFilterValid = valueFilter != null && !valueFilter.isEmpty();
-    if (timeFilterValid && valueFilterValid) {
-      sql += String.format(" where %s and %s", timeFilter, valueFilter);
-    } else if (timeFilterValid) {
-      sql += String.format(" where %s", timeFilter);
-    } else if (valueFilterValid) {
-      sql += String.format(" where %s", valueFilter);
-    }
-    return sql;
+    String selectClause =
+        String.format("select %s from %s", path.getMeasurement(), path.getDevice());
+    String whereClause = prepareWhereClause(timeFilter, valueFilter);
+    return selectClause + whereClause;
   }
 
   private SessionDataSet executeSelectSql(String sql)
@@ -123,6 +138,16 @@ public class RepositoryImpl implements Repository {
         case TEXT -> tvList.putTextPair(timestamp, iterator.getString(2));
         default -> throw new IllegalArgumentException("Unsupported data type");
       }
+    }
+  }
+
+  @Override
+  public void insert(TVList tvList) {
+    Tablet tablet = prepareTablet(tvList);
+    try {
+      insertTablet(tablet);
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
+      throw new RuntimeException(e);
     }
   }
 

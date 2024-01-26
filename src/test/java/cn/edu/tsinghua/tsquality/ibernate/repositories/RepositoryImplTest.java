@@ -6,6 +6,8 @@ import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
+import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
+import java.util.Map;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
@@ -79,9 +81,33 @@ public class RepositoryImplTest {
   }
 
   @Test
-  void testSelectAfterInsertShouldReturnCorrectData() {
+  void testSelectShouldReturnCorrectData() {
     IntTVList tvList = givenIntTVList();
     TVList result = whenPerformSelectAfterInsert(tvList);
+    thenSelectResultShouldBeEqualToTVList(result, tvList);
+  }
+
+  @Test
+  void testTimestampRepairWithoutParamsShouldSucceed() {
+    IntTVList tvList = givenIntTVList();
+    TimestampRepairUDF udf = givenTimestampRepairUDFWithoutParams();
+    TVList result = whenPerformTimestampRepairAfterInsert(tvList, udf);
+    thenSelectResultShouldBeEqualToTVList(result, tvList);
+  }
+
+  @Test
+  void testTimestampRepairWithIntervalShouldSucceed() {
+    IntTVList tvList = givenIntTVList();
+    TimestampRepairUDF udf = givenTimestampRepairUDFWithInterval();
+    TVList result = whenPerformTimestampRepairAfterInsert(tvList, udf);
+    thenSelectResultShouldBeOfSize(result, 2);
+  }
+
+  @Test
+  void testTimestampRepairWithMethodShouldSucceed() {
+    IntTVList tvList = givenIntTVList();
+    TimestampRepairUDF udf = givenTimestampRepairUDFWithMethod();
+    TVList result = whenPerformTimestampRepairAfterInsert(tvList, udf);
     thenSelectResultShouldBeEqualToTVList(result, tvList);
   }
 
@@ -97,14 +123,35 @@ public class RepositoryImplTest {
     return IntTVListCreator.create(10);
   }
 
+  private TimestampRepairUDF givenTimestampRepairUDFWithoutParams() {
+    return new TimestampRepairUDF();
+  }
+
+  private TimestampRepairUDF givenTimestampRepairUDFWithInterval() {
+    return new TimestampRepairUDF(Map.of("interval", 1000));
+  }
+
+  private TimestampRepairUDF givenTimestampRepairUDFWithMethod() {
+    return new TimestampRepairUDF(Map.of("method", "mode"));
+  }
+
   private void whenPerformInsert(IntTVList tvList) {
     underTests.insert(tvList);
   }
 
   private TVList whenPerformSelectAfterInsert(TVList tvList) {
+    insertTVList(tvList);
+    return underTests.select(null, null);
+  }
+
+  private TVList whenPerformTimestampRepairAfterInsert(TVList tvList, TimestampRepairUDF udf) {
+    insertTVList(tvList);
+    return underTests.select(udf, null, null);
+  }
+
+  private void insertTVList(TVList tvList) {
     underTests.createTimeSeries();
     underTests.insert(tvList);
-    return underTests.select(null, null);
   }
 
   private void thenRepositoryIsNotNull(Repository repository) {
@@ -129,5 +176,9 @@ public class RepositoryImplTest {
     for (int i = 0; i < result.size(); i++) {
       assertThat(result.getValue(i)).isEqualTo(tvList.getValue(i));
     }
+  }
+
+  private void thenSelectResultShouldBeOfSize(TVList result, int size) {
+    assertThat(result.size()).isEqualTo(size);
   }
 }
