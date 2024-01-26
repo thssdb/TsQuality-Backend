@@ -5,8 +5,6 @@ import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVListFactory;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -18,26 +16,26 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.write.record.Tablet;
 import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RepositoryImpl implements Repository {
   private final Path path;
-  private final TSDataType dataType;
   private final Session session;
+  private TSDataType dataType;
 
-  public RepositoryImpl(Session session, Path path, TSDataType dataType)
-      throws IoTDBConnectionException {
+  public RepositoryImpl(Session session, Path path) throws IoTDBConnectionException{
     this.path = path;
-    this.dataType = dataType;
     this.session = session;
     this.session.open();
   }
 
-  public RepositoryImpl(Session session, String path, TSDataType dataType)
-      throws IoTDBConnectionException {
-    this(session, new Path(path, true), dataType);
+  public RepositoryImpl(Session session, String path) throws IoTDBConnectionException {
+    this(session, new Path(path, true));
   }
 
   @Override
-  public void createTimeSeries() {
+  public void createTimeSeries(TSDataType dataType) {
     try {
       if (!session.checkTimeseriesExists(path.getFullPath())) {
         session.createTimeseries(
@@ -61,12 +59,19 @@ public class RepositoryImpl implements Repository {
 
   @Override
   public TVList select(AbstractUDF udf, String timeFilter, String valueFilter) {
+    setDataTypeIfNeeded();
     String sql = prepareSelectSql(udf, timeFilter, valueFilter);
     try {
       SessionDataSet dataset = executeSelectSql(sql);
       return datasetToTVList(dataset);
     } catch (Exception ignored) {
       return new EmptyTVList();
+    }
+  }
+
+  private void setDataTypeIfNeeded() {
+    if (dataType == null) {
+      dataType = getDataType();
     }
   }
 
@@ -92,12 +97,27 @@ public class RepositoryImpl implements Repository {
 
   @Override
   public TVList select(String timeFilter, String valueFilter) {
+    setDataTypeIfNeeded();
     String sql = prepareSelectSql(timeFilter, valueFilter);
     try {
       SessionDataSet dataset = executeSelectSql(sql);
       return datasetToTVList(dataset);
     } catch (Exception ignored) {
       return new EmptyTVList();
+    }
+  }
+
+  private TSDataType getDataType() {
+    try {
+      String sql = String.format("show timeseries %s", path.getFullPath());
+      SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
+      if (!iterator.next()) {
+        throw new RuntimeException("No such timeseries");
+      }
+      String dataType = iterator.getString("DataType");
+      return TSDataType.valueOf(dataType);
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -129,7 +149,7 @@ public class RepositoryImpl implements Repository {
     SessionDataSet.DataIterator iterator = dataset.iterator();
     while (iterator.next()) {
       long timestamp = iterator.getLong(1);
-      switch (dataType) {
+      switch (tvList.getDataType()) {
         case BOOLEAN -> tvList.putBooleanPair(timestamp, iterator.getBoolean(2));
         case INT32 -> tvList.putIntPair(timestamp, iterator.getInt(2));
         case INT64 -> tvList.putLongPair(timestamp, iterator.getLong(2));
@@ -169,7 +189,7 @@ public class RepositoryImpl implements Repository {
     String measurement = path.getMeasurement();
     for (int i = 0; i < tvList.size(); i++) {
       tablet.addTimestamp(i, tvList.getTimestamp(i));
-      switch (dataType) {
+      switch (tvList.getDataType()) {
         case BOOLEAN -> tablet.addValue(measurement, i, tvList.getBooleanPair(i).getBoolean());
         case INT32 -> tablet.addValue(measurement, i, tvList.getIntPair(i).getInt());
         case INT64 -> tablet.addValue(measurement, i, tvList.getLongPair(i).getLong());

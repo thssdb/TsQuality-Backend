@@ -1,21 +1,21 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
-import java.util.Map;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 public class RepositoryImplTest {
   private static final String path = "root.tsquality.test.ts1";
@@ -27,12 +27,12 @@ public class RepositoryImplTest {
 
   RepositoryImplTest() throws IoTDBConnectionException {
     session = new Session.Builder().build();
-    underTests = new RepositoryImpl(session, path, TSDataType.INT32);
+    underTests = new RepositoryImpl(session, path);
   }
 
   @BeforeEach
   void createTimeSeries() {
-    underTests.createTimeSeries();
+    underTests.createTimeSeries(TSDataType.INT32);
   }
 
   @AfterEach
@@ -55,7 +55,7 @@ public class RepositoryImplTest {
 
   @Test
   void testCreateTimeSeriesShouldSucceed() throws Exception {
-    underTests.createTimeSeries();
+    underTests.createTimeSeries(TSDataType.INT32);
     assertThat(session.checkTimeseriesExists(path)).isTrue();
   }
 
@@ -67,7 +67,7 @@ public class RepositoryImplTest {
 
   @Test
   void testCreateAndDeleteTimeSeriesShouldSucceed() throws Exception {
-    underTests.createTimeSeries();
+    underTests.createTimeSeries(TSDataType.INT32);
     assertThat(session.checkTimeseriesExists(path)).isTrue();
     underTests.deleteTimeSeries();
     assertThat(session.checkTimeseriesExists(path)).isFalse();
@@ -111,12 +111,12 @@ public class RepositoryImplTest {
     thenSelectResultShouldBeEqualToTVList(result, tvList);
   }
 
-  private Repository givenRepositoryUsingPath() throws Exception {
-    return new RepositoryImpl(session, new Path(path), TSDataType.INT32);
+  private Repository givenRepositoryUsingPath() throws IoTDBConnectionException {
+    return new RepositoryImpl(session, new Path(path));
   }
 
   private Repository givenRepositoryUsingPathString() throws Exception {
-    return new RepositoryImpl(session, path, TSDataType.INT32);
+    return new RepositoryImpl(session, path);
   }
 
   private IntTVList givenIntTVList() {
@@ -140,18 +140,13 @@ public class RepositoryImplTest {
   }
 
   private TVList whenPerformSelectAfterInsert(TVList tvList) {
-    insertTVList(tvList);
+    underTests.insert(tvList);
     return underTests.select(null, null);
   }
 
   private TVList whenPerformTimestampRepairAfterInsert(TVList tvList, TimestampRepairUDF udf) {
-    insertTVList(tvList);
-    return underTests.select(udf, null, null);
-  }
-
-  private void insertTVList(TVList tvList) {
-    underTests.createTimeSeries();
     underTests.insert(tvList);
+    return underTests.select(udf, null, null);
   }
 
   private void thenRepositoryIsNotNull(Repository repository) {
