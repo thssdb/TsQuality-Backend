@@ -59,10 +59,11 @@ public class TimestampAnomalyControllerTest {
 
   private void thenResultShouldBeOk(ResultActions result) throws Exception {
     result.andExpect(MockMvcResultMatchers.status().isOk());
+    result.andExpect(MockMvcResultMatchers.jsonPath("$.code", is(0)));
   }
 
   private void thenResultShouldContainCorrectData(ResultActions result) throws Exception {
-    result.andExpect(MockMvcResultMatchers.jsonPath("$.originalData", hasSize(TEST_DATA_SIZE)));
-    result.andExpect(MockMvcResultMatchers.jsonPath("$.repairedData", hasSize(greaterThan(0))));
+    result.andExpect(MockMvcResultMatchers.jsonPath("$.data.originalData", hasSize(TEST_DATA_SIZE)));
+    result.andExpect(MockMvcResultMatchers.jsonPath("$.data.repairedData", hasSize(greaterThan(0))));
   }
 }
