@@ -1,18 +1,18 @@
 package cn.edu.tsinghua.tsquality.mapper.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface IoTDBSeriesMapper {
-  void createSeriesTable(@Param("tableName") String tableName);
+  void createSeriesTable();
 
-  void insertList(
-      @Param("tableName") String tableName, @Param("list") List<IoTDBSeries> seriesList);
+  void insertList(@Param("list") List<IoTDBSeries> seriesList);
 
-  @Select("SELECT sid FROM ${tableName} WHERE ts_path = #{path}")
-  int selectIdByPath(@Param("tableName") String tableName, @Param("path") String path);
+  @Select("SELECT sid FROM series WHERE path = #{path}")
+  int selectIdByPath(@Param("path") String path);
 }

@@ -18,14 +18,6 @@ pre-aggregation:
     queue-capacity: 1000
     name-prefix: pre-aggregation
   data-dir: /Users/tyty/Projects/apache-iotdb-1.1.1-all-bin/data/datanode/data/sequence
-  tables:
-    series: "iotdb_series"
-    file: "iotdb_file"
-    chunk: "iotdb_chunk"
-    page: "iotdb_page"
-    file-series-stat: "iotdb_file_series_stat"
-    chunk-series-stat: "iotdb_chunk_series_stat"
-    page-series-stat: "iotdb_page_series_stat"
 
 iotdb:
   test:

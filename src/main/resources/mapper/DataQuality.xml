@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.DataQualityMapper">
     <sql id="statColumns">
         MIN(`min_timestamp`) minTimestamp,
@@ -17,19 +16,19 @@
         SUM(`acceleration_count`) accelerationCnt
     </sql>
     <sql id="equalPathWhereClause">
-        WHERE `ts_path` = #{path}
+        WHERE `path` = #{path}
     </sql>
     <sql id="likePathWhereClause">
-        WHERE `ts_path` LIKE CONCAT(#{path}, '.%')
+        WHERE `path` LIKE CONCAT(#{path}, '.%')
     </sql>
 
     <select id="selectSeriesStat" resultType="IoTDBSeriesStat">
         SELECT
         <if test="path == null || path.isEmpty()">
-            `ts_path` `path`,
+            `path`,
         </if>
         <include refid="statColumns"/>
-        FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
+        FROM series NATURAL JOIN file_series_stats
         <if test="path != null">
             <include refid="equalPathWhereClause">
                 <property name="path" value="#{path}"/>
@@ -46,7 +45,7 @@
             `device` `path`,
         </if>
         <include refid="statColumns"/>
-        FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
+        FROM series NATURAL JOIN file_series_stats
         <if test="path != null">
             <include refid="likePathWhereClause">
                 <property name="path" value="#{path}"/>
@@ -63,7 +62,7 @@
             `database` `path`,
         </if>
         <include refid="statColumns"/>
-        FROM ${seriesTableName} NATURAL JOIN ${fileSeriesStatTableName}
+        FROM series NATURAL JOIN file_series_stats
         <if test="path != null">
             <include refid="likePathWhereClause">
                 <property name="path" value="#{path}"/>
@@ -77,7 +76,7 @@
     <select id="selectAllStat" resultType="IoTDBSeriesStat">
         SELECT
         <include refid="statColumns" />
-        FROM ${fileSeriesStatTableName}
+        FROM file_series_stats
     </select>
 
     <select
@@ -97,7 +96,7 @@
             </otherwise>
         </choose>
         <include refid="statColumns" />
-        FROM iotdb_series NATURAL JOIN iotdb_file_series_stat
+        FROM series NATURAL JOIN file_series_stats
         <include refid="equalPathWhereClause" />
     </select>
 </mapper>

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.IoTDBPageSeriesStatMapper">
     <update id="createPageSeriesStatTable" parameterType="String">
-        CREATE TABLE IF NOT EXISTS ${pageSeriesStatTableName}(
+        CREATE TABLE IF NOT EXISTS page_series_stats(
             `pid` BIGINT PRIMARY KEY,
             `min_timestamp` BIGINT NOT NULL,
             `max_timestamp` BIGINT NOT NULL,
@@ -17,12 +16,12 @@
             `variation_count` BIGINT,
             `speed_count` BIGINT,
             `acceleration_count` BIGINT,
-            FOREIGN KEY(`pid`) REFERENCES ${pageTableName}(`pid`) ON DELETE CASCADE
+            FOREIGN KEY(`pid`) REFERENCES pages(`pid`) ON DELETE CASCADE
         )
     </update>
 
     <insert id="insert">
-        INSERT IGNORE INTO ${tableName} VALUES (
+        INSERT IGNORE INTO page_series_stats VALUES (
             #{pid},
             #{stat.minTimestamp},
             #{stat.maxTimestamp},

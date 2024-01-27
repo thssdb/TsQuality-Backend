@@ -3,13 +3,15 @@ package cn.edu.tsinghua.tsquality.common;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDataPointDto;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
+import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-import org.apache.iotdb.session.Session;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.exception.write.UnSupportedDataTypeException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IoTDBUtil {
   public static boolean isNumericDataType(String dataType) {
@@ -72,36 +74,52 @@ public class IoTDBUtil {
     return result;
   }
 
-  public static TimeSeriesRecentDataDto query(Session session, String path, long limit)
+  public static TimeSeriesRecentDataDto query(SessionPool sessionPool, String path, long limit)
       throws IoTDBConnectionException, StatementExecutionException, UnSupportedDataTypeException {
     String sql = constructQuerySQL(path, 0, 0, "", limit);
-    SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
-    List<TimeSeriesDataPointDto> points = new ArrayList<>();
-    while (iterator.next()) {
-      String dataType = iterator.getColumnTypeList().get(1);
-      double value =
-          switch (dataType) {
-            case "INT32" -> iterator.getInt(2);
-            case "INT64" -> iterator.getLong(2);
-            case "FLOAT" -> iterator.getFloat(2);
-            case "DOUBLE" -> iterator.getDouble(2);
-            default -> throw new UnSupportedDataTypeException("Unexpected type: " + dataType);
-          };
-      TimeSeriesDataPointDto point =
-          TimeSeriesDataPointDto.builder().timestamp(iterator.getLong(1)).value(value).build();
-      points.add(point);
+    SessionDataSetWrapper wrapper = null;
+    try {
+      wrapper = sessionPool.executeQueryStatement(sql);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
+      List<TimeSeriesDataPointDto> points = new ArrayList<>();
+      while (iterator.next()) {
+        String dataType = iterator.getColumnTypeList().get(1);
+        double value =
+            switch (dataType) {
+              case "INT32" -> iterator.getInt(2);
+              case "INT64" -> iterator.getLong(2);
+              case "FLOAT" -> iterator.getFloat(2);
+              case "DOUBLE" -> iterator.getDouble(2);
+              default -> throw new UnSupportedDataTypeException("Unexpected type: " + dataType);
+            };
+        TimeSeriesDataPointDto point =
+            TimeSeriesDataPointDto.builder().timestamp(iterator.getLong(1)).value(value).build();
+        points.add(point);
+      }
+      return TimeSeriesRecentDataDto.builder().path(path).points(points).build();
+    } catch (IoTDBConnectionException | StatementExecutionException | UnSupportedDataTypeException e) {
+      throw e;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
-    return TimeSeriesRecentDataDto.builder().path(path).points(points).build();
   }
 
-  public static List<String> showLatestTimeSeries(Session session, String path, int limit)
+  public static List<String> showLatestTimeSeries(SessionPool sessionPool, String path, int limit)
       throws IoTDBConnectionException, StatementExecutionException {
     String sql = String.format("SHOW LATEST TIMESERIES %s.** LIMIT %d", path, limit);
-    SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
-    List<String> paths = new ArrayList<>();
-    while (iterator.next()) {
-      paths.add(iterator.getString(1));
+    SessionDataSetWrapper wrapper = null;
+    try {
+      wrapper = sessionPool.executeQueryStatement(sql);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
+      List<String> paths = new ArrayList<>();
+      while (iterator.next()) {
+        paths.add(iterator.getString(1));
+      }
+      return paths;
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
+      throw e;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
-    return paths;
   }
 }

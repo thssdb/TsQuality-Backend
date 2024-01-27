@@ -2,8 +2,9 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
-import java.util.List;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
@@ -14,68 +15,63 @@ public class IoTDBController {
     this.iotdbService = iotdbService;
   }
 
-  @GetMapping("/{id}/time-series/count")
-  public long getNumsTimeSeries(@PathVariable int id) {
-    return iotdbService.getNumsTimeSeries(id);
+  @GetMapping("/time-series/count")
+  public long getNumsTimeSeries() {
+    return iotdbService.getNumsTimeSeries();
   }
 
-  @GetMapping("/{id}/devices/count")
-  public long getNumsDevices(@PathVariable int id) {
-    return iotdbService.getNumsDevices(id);
+  @GetMapping("/devices/count")
+  public long getNumsDevices() {
+    return iotdbService.getNumsDevices();
   }
 
-  @GetMapping("/{id}/databases/count")
-  public long getNumsDatabases(@PathVariable int id) {
-    return iotdbService.getNumsDatabases(id);
+  @GetMapping("/databases/count")
+  public long getNumsDatabases() {
+    return iotdbService.getNumsDatabases();
   }
 
-  @GetMapping("/{id}/storage-groups/count")
-  public long getNumsStorageGroups(@PathVariable int id) {
-    return iotdbService.getNumsStorageGroups(id);
+  @GetMapping("/storage-groups/count")
+  public long getNumsStorageGroups() {
+    return iotdbService.getNumsStorageGroups();
   }
 
-  @GetMapping("/{id}/aggregation-info")
-  public IoTDBAggregationInfoDto getAggregationInfo(@PathVariable int id) {
-    return iotdbService.getAggregationInfo(id);
+  @GetMapping("/aggregation-info")
+  public IoTDBAggregationInfoDto getAggregationInfo() {
+    return iotdbService.getAggregationInfo();
   }
 
-  @GetMapping("/{id}/time-series/latest")
+  @GetMapping("/time-series/latest")
   public List<String> getLatestTimeSeriesPaths(
-      @PathVariable int id,
       @RequestParam(name = "path", required = false, defaultValue = "root") String path,
       @RequestParam(name = "limit", required = false, defaultValue = "10") int limit) {
-    return iotdbService.getLatestTimeSeriesPath(id, path, limit);
+    return iotdbService.getLatestTimeSeriesPath(path, limit);
   }
 
-  @GetMapping("/{id}/time-series/overview")
-  public List<IoTDBSeriesOverview> getTimeSeriesOverview(@PathVariable int id) {
-    return iotdbService.getTimeSeriesOverview(id);
+  @GetMapping("/time-series/overview")
+  public List<IoTDBSeriesOverview> getTimeSeriesOverview() {
+    return iotdbService.getTimeSeriesOverview();
   }
 
-  @PostMapping("/{id}/time-series/anomaly-detection")
+  @PostMapping("/time-series/anomaly-detection")
   public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
-      @PathVariable int id,
       @RequestBody(required = false) IoTDBSeriesAnomalyDetectionRequest request) {
-    return iotdbService.getAnomalyDetectionResult(id, request);
+    return iotdbService.getAnomalyDetectionResult(request);
   }
 
-  @GetMapping("/{id}/devices/overview")
-  public List<IoTDBSeriesOverview> getDeviceOverview(
-      @PathVariable int id, @RequestParam(value = "path", required = false) String path) {
-    return iotdbService.getDeviceOverview(id, path);
+  @GetMapping("/devices/overview")
+  public List<IoTDBSeriesOverview> getDeviceOverview(@RequestParam(value = "path", required = false) String path) {
+    return iotdbService.getDeviceOverview(path);
   }
 
-  @GetMapping("/{id}/databases/overview")
-  public List<IoTDBSeriesOverview> getDatabaseOverview(
-      @PathVariable int id, @RequestParam(value = "path", required = false) String path) {
-    return iotdbService.getDatabaseOverview(id, path);
+  @GetMapping("/databases/overview")
+  public List<IoTDBSeriesOverview> getDatabaseOverview(@RequestParam(value = "path", required = false) String path) {
+    return iotdbService.getDatabaseOverview(path);
   }
 
-  @GetMapping("/{id}/time-series/data")
+  @GetMapping("/time-series/data")
   public TimeSeriesRecentDataDto getTimeSeriesData(
-      @PathVariable int id,
       @RequestParam(required = false, defaultValue = "") String path,
       @RequestParam(required = false, defaultValue = "10") Long limit) {
-    return iotdbService.getTimeSeriesData(id, path, limit);
+    return iotdbService.getTimeSeriesData(path, limit);
   }
 }

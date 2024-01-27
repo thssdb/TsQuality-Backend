@@ -2,39 +2,38 @@ package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
 import cn.edu.tsinghua.tsquality.common.IoTDBUtil;
-import cn.edu.tsinghua.tsquality.mapper.database.IoTDBConfigMapper;
 import cn.edu.tsinghua.tsquality.mapper.database.IoTDBMapper;
 import cn.edu.tsinghua.tsquality.model.dto.*;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBConfig;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.PostConstruct;
+import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
 import org.apache.iotdb.isession.SessionDataSet;
+import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-import org.apache.iotdb.session.Session;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.TsFileSequenceReader;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.read.reader.IChunkReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+@Log4j2
 @Service
 public class IoTDBService {
-  public static final Logger LOGGER = LoggerFactory.getLogger(IoTDBService.class);
   private static final String SQL_QUERY_NUMS_TIME_SERIES = "COUNT TIMESERIES";
   private static final String SQL_QUERY_NUMS_DEVICES = "COUNT DEVICES";
   private static final String SQL_QUERY_NUMS_DATABASES = "COUNT DATABASES";
@@ -43,78 +42,56 @@ public class IoTDBService {
   @Value("${pre-aggregation.data-dir:.}")
   public String dataDir;
 
-  final IoTDBMapper iotdbMapper;
+  private final IoTDBMapper iotdbMapper;
 
-  final IoTDBConfigMapper ioTDBConfigMapper;
+  private final SessionPool sessionPool;
 
-  public IoTDBService(IoTDBMapper iotdbMapper, IoTDBConfigMapper ioTDBConfigMapper) {
+  public IoTDBService(IoTDBMapper iotdbMapper, SessionPool sessionPool) {
     this.iotdbMapper = iotdbMapper;
-    this.ioTDBConfigMapper = ioTDBConfigMapper;
+    this.sessionPool = sessionPool;
   }
 
-  public static Session buildSession(IoTDBConfig ioTDBConfig) {
-    Session session;
+  public long getCountResult(String sql) {
+    SessionDataSetWrapper wrapper = null;
     try {
-      session =
-          new Session.Builder()
-              .host(ioTDBConfig.getHost())
-              .port(ioTDBConfig.getPort())
-              .username(ioTDBConfig.getUsername())
-              .password(ioTDBConfig.getPassword())
-              .build();
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
-    return session;
-  }
-
-  public long getCountResult(int iotdbConfigID, String sql) {
-    IoTDBConfig iotdbConfig = ioTDBConfigMapper.getWithPasswordById(iotdbConfigID);
-    if (iotdbConfig == null) {
-      return 0;
-    }
-    try (Session session = buildSession(iotdbConfig)) {
-      if (session == null) {
-        return 0;
-      }
-      session.open();
-      SessionDataSet dataSet = session.executeQueryStatement(sql);
-      SessionDataSet.DataIterator iterator = dataSet.iterator();
+      wrapper = sessionPool.executeQueryStatement(sql);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
       if (iterator.next()) {
         return iterator.getLong(1);
       }
     } catch (IoTDBConnectionException | StatementExecutionException e) {
-      System.out.println(e.getMessage());
-      return 0;
+      log.error(e);
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
     return 0;
   }
 
-  public long getNumsTimeSeries(int iotdbConfigId) {
-    return getCountResult(iotdbConfigId, SQL_QUERY_NUMS_TIME_SERIES);
+  public long getNumsTimeSeries() {
+    return getCountResult(SQL_QUERY_NUMS_TIME_SERIES);
   }
 
-  public long getNumsDevices(int iotdbConfigId) {
-    return getCountResult(iotdbConfigId, SQL_QUERY_NUMS_DEVICES);
+  public long getNumsDevices() {
+    return getCountResult(SQL_QUERY_NUMS_DEVICES);
   }
 
-  public long getNumsDatabases(int iotdbConfigId) {
-    return getCountResult(iotdbConfigId, SQL_QUERY_NUMS_DATABASES);
+  public long getNumsDatabases() {
+    return getCountResult(SQL_QUERY_NUMS_DATABASES);
   }
 
-  public long getNumsStorageGroups(int iotdbConfigId) {
-    return getCountResult(iotdbConfigId, SQL_QUERY_NUMS_DATABASES);
+  public long getNumsStorageGroups() {
+    return getCountResult(SQL_QUERY_NUMS_DATABASES);
   }
 
-  public List<IoTDBSeriesOverview> getTimeSeriesOverview(int id) {
+  public List<IoTDBSeriesOverview> getTimeSeriesOverview() {
     return iotdbMapper.selectSeriesStat().stream().map(IoTDBSeriesOverview::new).toList();
   }
 
-  public List<IoTDBSeriesOverview> getDeviceOverview(int id, String path) {
+  public List<IoTDBSeriesOverview> getDeviceOverview(String path) {
     return iotdbMapper.selectDeviceStat(path).stream().map(IoTDBSeriesOverview::new).toList();
   }
 
-  public List<IoTDBSeriesOverview> getDatabaseOverview(int id, String path) {
+  public List<IoTDBSeriesOverview> getDatabaseOverview(String path) {
     return iotdbMapper.selectDatabaseStat(path).stream().map(IoTDBSeriesOverview::new).toList();
   }
 
@@ -125,16 +102,19 @@ public class IoTDBService {
     if (tsFiles.isEmpty()) {
       return;
     }
-    //    for (TsFileInfo tsfile : tsFiles) {
-    //      preAggregateTsFile(tsfile);
-    //    }
+    for (TsFileInfo tsfile : tsFiles) {
+      preAggregateTsFile(tsfile);
+    }
   }
 
   @Async("preAggregationTaskExecutor")
   public void preAggregateTsFile(TsFileInfo tsfile) {
     String filePath = tsfile.getFilePath();
-    Collection<Modification> allModifications =
-        new TsFileResource(new File(filePath)).getModFile().getModifications();
+    TsFileResource resource = new TsFileResource(new File(filePath));
+    if (!resource.isClosed()) {
+      return;
+    }
+    Collection<Modification> allModifications = resource.getModFile().getModifications();
     try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
       List<Path> seriesPaths = reader.getAllPaths();
       Map<Path, TsFileStat> seriesStatMap = new HashMap<>();
@@ -173,46 +153,28 @@ public class IoTDBService {
     }
   }
 
-  public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
-      int id, IoTDBSeriesAnomalyDetectionRequest request) {
+  public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(IoTDBSeriesAnomalyDetectionRequest request) {
     IoTDBSeriesAnomalyDetectionResult result = new IoTDBSeriesAnomalyDetectionResult(request);
-    IoTDBConfig iotdbConfig = ioTDBConfigMapper.getWithPasswordById(id);
-    if (iotdbConfig == null) {
-      return result;
-    }
-    try (Session session = buildSession(iotdbConfig)) {
-      if (session == null) {
-        return result;
-      }
-      session.open();
+    SessionDataSetWrapper wrapper = null;
+    try {
       String sql = IoTDBUtil.constructQuerySQL(request.getSeriesPath(), request);
-      SessionDataSet dataset = session.executeQueryStatement(sql);
-      if (dataset.getColumnNames().size() != 2) {
+      wrapper = sessionPool.executeQueryStatement(sql);
+      if (wrapper.getColumnNames().size() != 2) {
         return result;
       }
-      SessionDataSet.DataIterator iterator = dataset.iterator();
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
       List<IoTDBTimeValuePair> timeValuePairs =
           IoTDBTimeValuePair.buildFromDatasetIterator(iterator);
       result.anomalyDetect(timeValuePairs);
       return result;
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return result;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
   }
 
-  private void completenessAnomalyDetection(
-      IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
-
-  private void consistencyAnomalyDetection(
-      IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
-
-  private void timelinessAnomalyDetection(
-      IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
-
-  private void validityAnomalyDetection(
-      IoTDBSeriesAnomalyDetectionRequest request, IoTDBSeriesAnomalyDetectionResult result) {}
-
-  public IoTDBAggregationInfoDto getAggregationInfo(int id) {
+  public IoTDBAggregationInfoDto getAggregationInfo() {
     IoTDBSeriesStat stat = iotdbMapper.selectAllStat();
     double completeness = DataQualityCalculationUtil.calculateCompleteness(stat);
     double consistency = DataQualityCalculationUtil.calculateConsistency(stat);
@@ -220,9 +182,9 @@ public class IoTDBService {
     double validity = DataQualityCalculationUtil.calculateValidity(stat);
     return IoTDBAggregationInfoDto.builder()
         .numDataPoints(stat.getCnt())
-        .numTimeSeries(getNumsTimeSeries(id))
-        .numDevices(getNumsDevices(id))
-        .numDatabases(getNumsDatabases(id))
+        .numTimeSeries(getNumsTimeSeries())
+        .numDevices(getNumsDevices())
+        .numDatabases(getNumsDatabases())
         .completeness(completeness)
         .consistency(consistency)
         .timeliness(timeliness)
@@ -231,52 +193,42 @@ public class IoTDBService {
   }
 
   // get the full path of the latest time series with type == DOUBLE | FLOAT | INT32 | INT64
-  public String getLatestNumericTimeSeriesPath(Session session)
-      throws IoTDBConnectionException, StatementExecutionException {
-    session.open();
-    SessionDataSet.DataIterator iterator =
-        session.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES).iterator();
-    while (iterator.next()) {
-      if (IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
-        return iterator.getString("Timeseries");
+  public String getLatestNumericTimeSeriesPath() {
+    SessionDataSetWrapper wrapper = null;
+    try {
+      wrapper = sessionPool.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
+      while (iterator.next()) {
+        if (IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
+          return iterator.getString("Timeseries");
+        }
       }
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
+      log.error(e);
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
     return "";
   }
 
-  public TimeSeriesRecentDataDto getTimeSeriesData(int id, String path, long limit) {
-    IoTDBConfig config = ioTDBConfigMapper.getWithPasswordById(id);
-    if (config == null) {
-      return new TimeSeriesRecentDataDto();
-    }
-    try (Session session = buildSession(config)) {
-      if (session == null) {
-        return new TimeSeriesRecentDataDto();
-      }
-      session.open();
+  public TimeSeriesRecentDataDto getTimeSeriesData(String path, long limit) {
+    try {
       if (path == null || path.isEmpty()) {
-        path = getLatestNumericTimeSeriesPath(session);
+        path = getLatestNumericTimeSeriesPath();
       }
       if (path.isEmpty()) {
         return new TimeSeriesRecentDataDto();
       }
-      return IoTDBUtil.query(session, path, limit);
+      return IoTDBUtil.query(sessionPool, path, limit);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return new TimeSeriesRecentDataDto();
     }
   }
 
-  public List<String> getLatestTimeSeriesPath(int id, String path, int limit) {
-    IoTDBConfig config = ioTDBConfigMapper.getWithPasswordById(id);
-    if (config == null) {
-      return new ArrayList<>();
-    }
-    try (Session session = buildSession(config)) {
-      if (session == null) {
-        return new ArrayList<>();
-      }
-      session.open();
-      return IoTDBUtil.showLatestTimeSeries(session, path, limit);
+  public List<String> getLatestTimeSeriesPath(String path, int limit) {
+    SessionDataSetWrapper wrapper = null;
+    try {
+      return IoTDBUtil.showLatestTimeSeries(sessionPool, path, limit);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return new ArrayList<>();
     }

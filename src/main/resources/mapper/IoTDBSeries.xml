@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.IoTDBSeriesMapper">
     <update id="createSeriesTable" parameterType="String">
-        CREATE TABLE IF NOT EXISTS ${tableName}(
+        CREATE TABLE IF NOT EXISTS series(
             `sid` BIGINT PRIMARY KEY AUTO_INCREMENT,
-            `ts_path` VARCHAR(255) NOT NULL UNIQUE,
+            `path` VARCHAR(255) NOT NULL UNIQUE,
             `device` VARCHAR(255),
             `database` VARCHAR(255)
         )
     </update>
 
     <insert id="insertList" parameterType="java.util.List">
-        INSERT IGNORE INTO ${tableName} (`ts_path`, `device`, `database`)
-        VALUES
+        INSERT IGNORE INTO series (`path`, `device`, `database`) VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.path}, #{item.device}, #{item.database})
         </foreach>

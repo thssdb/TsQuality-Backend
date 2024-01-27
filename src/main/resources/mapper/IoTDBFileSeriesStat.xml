@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!--namespace指向mapper.xml所对应的Mapper接口-->
 <mapper namespace="cn.edu.tsinghua.tsquality.mapper.database.IoTDBFileSeriesStatMapper">
     <update id="createFileSeriesStatTable" parameterType="String">
-        CREATE TABLE IF NOT EXISTS ${fileSeriesStatTableName}(
+        CREATE TABLE IF NOT EXISTS file_series_stats(
             `fid` BIGINT,
             `sid` BIGINT,
             `min_timestamp` BIGINT NOT NULL,
@@ -19,13 +18,13 @@
             `speed_count` BIGINT,
             `acceleration_count` BIGINT,
             PRIMARY KEY(`fid`, `sid`),
-            FOREIGN KEY(`fid`) REFERENCES ${fileTableName}(`fid`) ON DELETE CASCADE,
-            FOREIGN KEY(`sid`) REFERENCES ${seriesTableName}(`sid`) ON DELETE CASCADE
+            FOREIGN KEY(`fid`) REFERENCES files(`fid`) ON DELETE CASCADE,
+            FOREIGN KEY(`sid`) REFERENCES series(`sid`) ON DELETE CASCADE
         )
     </update>
 
     <insert id="insert">
-        INSERT IGNORE INTO ${tableName} VALUES (
+        INSERT IGNORE INTO file_series_stats VALUES (
             #{fid},
             #{sid},
             #{stat.minTimestamp},

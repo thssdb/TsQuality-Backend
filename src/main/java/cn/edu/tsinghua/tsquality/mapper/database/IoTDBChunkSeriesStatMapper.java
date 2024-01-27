@@ -6,12 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IoTDBChunkSeriesStatMapper {
-  void createChunkSeriesStatTable(
-      @Param("chunkTableName") String chunkTableName,
-      @Param("chunkSeriesStatTableName") String chunkSeriesStatTableName);
+  void createChunkSeriesStatTable();
 
-  void insert(
-      @Param("tableName") String tableName,
-      @Param("cid") int cid,
-      @Param("stat") IoTDBSeriesStat stat);
+  void insert(@Param("cid") int cid, @Param("stat") IoTDBSeriesStat stat);
 }

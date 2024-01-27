@@ -6,12 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IoTDBPageSeriesStatMapper {
-  void createPageSeriesStatTable(
-      @Param("pageTableName") String pageTableName,
-      @Param("pageSeriesStatTableName") String pageSeriesStatTableName);
+  void createPageSeriesStatTable();
 
-  void insert(
-      @Param("tableName") String tableName,
-      @Param("pid") int pid,
-      @Param("stat") IoTDBSeriesStat stat);
+  void insert(@Param("pid") int pid, @Param("stat") IoTDBSeriesStat stat);
 }
