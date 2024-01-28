@@ -9,6 +9,10 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import javax.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
@@ -25,11 +29,6 @@ import org.apache.iotdb.tsfile.read.reader.IChunkReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 @Log4j2
 @Service
@@ -153,7 +152,8 @@ public class IoTDBService {
     }
   }
 
-  public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(IoTDBSeriesAnomalyDetectionRequest request) {
+  public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
+      IoTDBSeriesAnomalyDetectionRequest request) {
     IoTDBSeriesAnomalyDetectionResult result = new IoTDBSeriesAnomalyDetectionResult(request);
     SessionDataSetWrapper wrapper = null;
     try {

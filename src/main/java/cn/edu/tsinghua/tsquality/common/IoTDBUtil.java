@@ -3,15 +3,14 @@ package cn.edu.tsinghua.tsquality.common;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDataPointDto;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.exception.write.UnSupportedDataTypeException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IoTDBUtil {
   public static boolean isNumericDataType(String dataType) {
@@ -97,7 +96,9 @@ public class IoTDBUtil {
         points.add(point);
       }
       return TimeSeriesRecentDataDto.builder().path(path).points(points).build();
-    } catch (IoTDBConnectionException | StatementExecutionException | UnSupportedDataTypeException e) {
+    } catch (IoTDBConnectionException
+        | StatementExecutionException
+        | UnSupportedDataTypeException e) {
       throw e;
     } finally {
       sessionPool.closeResultSet(wrapper);

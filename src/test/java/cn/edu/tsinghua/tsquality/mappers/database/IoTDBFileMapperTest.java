@@ -1,11 +1,10 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Map;
 
 @SpringBootTest
 class IoTDBFileMapperTest {

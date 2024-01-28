@@ -2,9 +2,8 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
@@ -59,12 +58,14 @@ public class IoTDBController {
   }
 
   @GetMapping("/devices/overview")
-  public List<IoTDBSeriesOverview> getDeviceOverview(@RequestParam(value = "path", required = false) String path) {
+  public List<IoTDBSeriesOverview> getDeviceOverview(
+      @RequestParam(value = "path", required = false) String path) {
     return iotdbService.getDeviceOverview(path);
   }
 
   @GetMapping("/databases/overview")
-  public List<IoTDBSeriesOverview> getDatabaseOverview(@RequestParam(value = "path", required = false) String path) {
+  public List<IoTDBSeriesOverview> getDatabaseOverview(
+      @RequestParam(value = "path", required = false) String path) {
     return iotdbService.getDatabaseOverview(path);
   }
 

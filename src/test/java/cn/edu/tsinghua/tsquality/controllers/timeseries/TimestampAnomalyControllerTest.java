@@ -1,8 +1,9 @@
 package cn.edu.tsinghua.tsquality.controllers.timeseries;
 
+import static org.hamcrest.Matchers.*;
+
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
-import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,9 @@ public class TimestampAnomalyControllerTest {
   }
 
   private void thenResultShouldContainCorrectData(ResultActions result) throws Exception {
-    result.andExpect(MockMvcResultMatchers.jsonPath("$.data.originalData", hasSize(TEST_DATA_SIZE)));
-    result.andExpect(MockMvcResultMatchers.jsonPath("$.data.repairedData", hasSize(greaterThan(0))));
+    result.andExpect(
+        MockMvcResultMatchers.jsonPath("$.data.originalData", hasSize(TEST_DATA_SIZE)));
+    result.andExpect(
+        MockMvcResultMatchers.jsonPath("$.data.repairedData", hasSize(greaterThan(0))));
   }
 }

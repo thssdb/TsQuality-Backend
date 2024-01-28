@@ -6,11 +6,10 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import org.apache.iotdb.tsfile.read.common.Path;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
+import org.apache.iotdb.tsfile.read.common.Path;
+import org.springframework.stereotype.Component;
 
 @Component
 public class IoTDBMapper {
@@ -23,7 +22,15 @@ public class IoTDBMapper {
   private final IoTDBPageSeriesStatMapper pageSeriesStatMapper;
   private final DataQualityMapper dataQualityMapper;
 
-  public IoTDBMapper(IoTDBSeriesMapper seriesMapper, IoTDBFileMapper fileMapper, IoTDBChunkMapper chunkMapper, IoTDBPageMapper pageMapper, IoTDBFileSeriesStatMapper fileSeriesStatMapper, IoTDBChunkSeriesStatMapper chunkSeriesStatMapper, IoTDBPageSeriesStatMapper pageSeriesStatMapper, DataQualityMapper dataQualityMapper) {
+  public IoTDBMapper(
+      IoTDBSeriesMapper seriesMapper,
+      IoTDBFileMapper fileMapper,
+      IoTDBChunkMapper chunkMapper,
+      IoTDBPageMapper pageMapper,
+      IoTDBFileSeriesStatMapper fileSeriesStatMapper,
+      IoTDBChunkSeriesStatMapper chunkSeriesStatMapper,
+      IoTDBPageSeriesStatMapper pageSeriesStatMapper,
+      DataQualityMapper dataQualityMapper) {
     this.seriesMapper = seriesMapper;
     this.fileMapper = fileMapper;
     this.chunkMapper = chunkMapper;

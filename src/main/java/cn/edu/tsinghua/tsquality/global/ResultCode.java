@@ -5,8 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ResultCode {
   SUCCESS(0, "success"),
-  FAIL(1, "fail")
-  ;
+  FAIL(1, "fail");
 
   private final int code;
 

@@ -1,10 +1,9 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
-import org.apache.ibatis.annotations.*;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface IoTDBFileMapper {
