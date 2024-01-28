@@ -2,6 +2,8 @@ package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
+import org.apache.iotdb.rpc.IoTDBConnectionException;
+import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public interface Repository {
@@ -14,4 +16,6 @@ public interface Repository {
   TVList select(String timeFilter, String valueFilter);
 
   void insert(TVList tvList);
+
+  void flush() throws IoTDBConnectionException, StatementExecutionException;
 }

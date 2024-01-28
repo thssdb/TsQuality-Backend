@@ -1,21 +1,22 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
-import java.util.Map;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 public class RepositoryImplTest {
   private static final String path = "root.tsquality.test.ts1";
@@ -111,6 +112,13 @@ public class RepositoryImplTest {
     thenSelectResultShouldBeEqualToTVList(result, tvList);
   }
 
+  @Test
+  void testFlushShouldSucceed() {
+    IntTVList tvList = givenIntTVList();
+    whenPerformInsert(tvList);
+    thenFlushShouldSucceed();
+  }
+
   private Repository givenRepositoryUsingPath() throws IoTDBConnectionException {
     return new RepositoryImpl(session, new Path(path));
   }
@@ -175,5 +183,9 @@ public class RepositoryImplTest {
 
   private void thenSelectResultShouldBeOfSize(TVList result, int size) {
     assertThat(result.size()).isEqualTo(size);
+  }
+
+  private void thenFlushShouldSucceed() {
+    assertDoesNotThrow(underTests::flush);
   }
 }
