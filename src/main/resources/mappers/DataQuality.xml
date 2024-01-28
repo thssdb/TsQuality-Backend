@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper">
+    <sql id="statColumns">
+        MIN(`min_timestamp`) minTimestamp,
+        MAX(`max_timestamp`) maxTimestamp,
+        SUM(`count`) cnt,
+        SUM(`miss_count`) missCnt,
+        SUM(`special_count`) specialCnt,
+        SUM(`late_count`) lateCnt,
+        SUM(`redundancy_count`) redundancyCnt,
+        SUM(`value_count`) valueCnt,
+        SUM(`variation_count`) variatiCnt,
+        SUM(`speed_count`) speedCnt,
+        SUM(`acceleration_count`) accelerationCnt
+    </sql>
+    <sql id="equalPathWhereClause">
+        WHERE `path` = #{path}
+    </sql>
+    <sql id="likePathWhereClause">
+        WHERE `path` LIKE CONCAT(#{path}, '.%')
+    </sql>
+
+    <select id="selectSeriesStat" resultType="IoTDBSeriesStat">
+        SELECT
+        <if test="path == null || path.isEmpty()">
+            `path`,
+        </if>
+        <include refid="statColumns"/>
+        FROM series NATURAL JOIN file_series_stats
+        <if test="path != null">
+            <include refid="equalPathWhereClause">
+                <property name="path" value="#{path}"/>
+            </include>
+        </if>
+        <if test="path == null || path.isEmpty()">
+            GROUP BY `path`
+        </if>
+    </select>
+
+    <select id="selectDeviceStat" resultType="IoTDBSeriesStat">
+        SELECT
+        <if test="path == null || path.isEmpty()">
+            `device` `path`,
+        </if>
+        <include refid="statColumns"/>
+        FROM series NATURAL JOIN file_series_stats
+        <if test="path != null">
+            <include refid="likePathWhereClause">
+                <property name="path" value="#{path}"/>
+            </include>
+        </if>
+        <if test="path == null || path.isEmpty()">
+            GROUP BY `device`
+        </if>
+    </select>
+
+    <select id="selectDatabaseStat" resultType="IoTDBSeriesStat">
+        SELECT
+        <if test="path == null || path.isEmpty()">
+            `database` `path`,
+        </if>
+        <include refid="statColumns"/>
+        FROM series NATURAL JOIN file_series_stats
+        <if test="path != null">
+            <include refid="likePathWhereClause">
+                <property name="path" value="#{path}"/>
+            </include>
+        </if>
+        <if test="path == null || path.isEmpty()">
+            GROUP BY `database`
+        </if>
+    </select>
+
+    <select id="selectAllStat" resultType="IoTDBSeriesStat">
+        SELECT
+        <include refid="statColumns" />
+        FROM file_series_stats
+    </select>
+
+    <select
+            id="getDataQualityAggregationDetailFromFileStats"
+            resultType="cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime"
+    >
+        SELECT
+        <choose>
+            <when test='aggregationType.equals("day")'>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m-%d') `time`,
+            </when>
+            <when test='aggregationType.equals("month")'>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m') `time`,
+            </when>
+            <otherwise>
+                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y') `time`,
+            </otherwise>
+        </choose>
+        <include refid="statColumns" />
+        FROM series NATURAL JOIN file_series_stats
+        <include refid="equalPathWhereClause" />
+    </select>
+</mapper>

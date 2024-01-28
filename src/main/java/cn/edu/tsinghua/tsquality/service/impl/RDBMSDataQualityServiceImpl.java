@@ -1,7 +1,7 @@
 package cn.edu.tsinghua.tsquality.service.impl;
 
 import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
-import cn.edu.tsinghua.tsquality.mapper.database.DataQualityMapper;
+import cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
 import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
 import cn.edu.tsinghua.tsquality.service.TimeSeriesDataQualityService;

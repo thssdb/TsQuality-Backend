@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.IoTDBChunkMapper">
+    <update id="createChunkTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS chunks(
+            `cid` BIGINT PRIMARY KEY AUTO_INCREMENT,
+            `fid` BIGINT,
+            `sid` BIGINT,
+            `offset` BIGINT,
+            FOREIGN KEY (`fid`) REFERENCES files(`fid`) ON DELETE CASCADE
+        )
+    </update>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="chunk.cid">
+        INSERT IGNORE INTO chunks (`fid`, `sid`, `offset`)
+        VALUES (#{chunk.fid}, #{chunk.sid}, #{chunk.offset})
+    </insert>
+</mapper>

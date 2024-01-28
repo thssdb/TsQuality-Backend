@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.IoTDBFileMapper">
+    <update id="createFileTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS files(
+            `fid` BIGINT PRIMARY KEY AUTO_INCREMENT,
+            `file_version` BIGINT NOT NULL,
+            `file_path` VARCHAR(255) NOT NULL UNIQUE
+        )
+    </update>
+    <select id="selectIdByFilePath" resultType="java.lang.Integer">
+        SELECT `fid` FROM files
+        WHERE `file_path` = #{filePath}
+    </select>
+</mapper>

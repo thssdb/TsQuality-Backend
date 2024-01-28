@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.IoTDBPageSeriesStatMapper">
+    <update id="createPageSeriesStatTable" parameterType="String">
+        CREATE TABLE IF NOT EXISTS page_series_stats(
+            `pid` BIGINT PRIMARY KEY,
+            `min_timestamp` BIGINT NOT NULL,
+            `max_timestamp` BIGINT NOT NULL,
+            `count` BIGINT NOT NULL,
+            `miss_count` BIGINT NOT NULL,
+            `special_count` BIGINT NOT NULL,
+            `late_count` BIGINT,
+            `redundancy_count` BIGINT,
+            `value_count` BIGINT,
+            `variation_count` BIGINT,
+            `speed_count` BIGINT,
+            `acceleration_count` BIGINT,
+            FOREIGN KEY(`pid`) REFERENCES pages(`pid`) ON DELETE CASCADE
+        )
+    </update>
+
+    <insert id="insert">
+        INSERT IGNORE INTO page_series_stats VALUES (
+            #{pid},
+            #{stat.minTimestamp},
+            #{stat.maxTimestamp},
+            #{stat.cnt},
+            #{stat.missCnt},
+            #{stat.specialCnt},
+            #{stat.lateCnt},
+            #{stat.redundancyCnt},
+            #{stat.valueCnt},
+            #{stat.variationCnt},
+            #{stat.specialCnt},
+            #{stat.accelerationCnt}
+        )
+    </insert>
+</mapper>
