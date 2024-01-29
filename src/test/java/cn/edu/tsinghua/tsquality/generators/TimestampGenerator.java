@@ -1,12 +1,15 @@
 package cn.edu.tsinghua.tsquality.generators;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Random;
 
+@Component
 public class TimestampGenerator {
   public static final long START_TIMESTAMP = 1600_000_000_000L;
   public static final long INTERVAL = 1_000L;
 
-  public static long[] timestampsWithHalfAnomalies(int size) {
+  public long[] timestampsWithHalfAnomalies(int size) {
     long[] timestamps = standardTimestamps(size);
     for (int i = 0; i < size; i++) {
       if (i % 2 == 0) {
@@ -16,11 +19,11 @@ public class TimestampGenerator {
     return timestamps;
   }
 
-  public static long[] standardTimestamps(int size) {
+  public long[] standardTimestamps(int size) {
     return standardTimestamps(size, INTERVAL);
   }
 
-  public static long[] standardTimestamps(int size, long interval) {
+  public long[] standardTimestamps(int size, long interval) {
     long[] timestamps = new long[size];
     for (int i = 0; i < size; i++) {
       timestamps[i] = START_TIMESTAMP + i * interval;
@@ -28,11 +31,11 @@ public class TimestampGenerator {
     return timestamps;
   }
 
-  private static long abnormalInterval() {
+  private long abnormalInterval() {
     return abnormalInterval(INTERVAL);
   }
 
-  private static long abnormalInterval(long interval) {
+  private long abnormalInterval(long interval) {
     long result;
     Random random = new Random();
     do {

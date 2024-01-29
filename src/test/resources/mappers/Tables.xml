@@ -7,4 +7,16 @@
         from information_schema.tables
         where table_schema = 'tsquality'
     </select>
+
+    <update id="truncateAllTables">
+        set foreign_key_checks = 0;
+        truncate table series;
+        truncate table files;
+        truncate table chunks;
+        truncate table pages;
+        truncate table file_series_stats;
+        truncate table chunk_series_stats;
+        truncate table page_series_stats;
+        set foreign_key_checks = 1;
+    </update>
 </mapper>

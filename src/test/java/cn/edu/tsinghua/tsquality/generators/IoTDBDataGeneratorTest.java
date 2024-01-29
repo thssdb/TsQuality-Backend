@@ -1,12 +1,11 @@
 package cn.edu.tsinghua.tsquality.generators;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.apache.iotdb.isession.SessionDataSet.DataIterator;
-import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,17 +23,26 @@ public class IoTDBDataGeneratorTest {
   }
 
   @AfterEach
-  void closeSession() throws IoTDBConnectionException {
+  void closeSession() throws Exception {
     session.close();
     underTests.deleteAll();
   }
 
   @Test
-  void testGenerateDataShouldSucceed() throws Exception {
-    underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
-    for (Path path : underTests.getPaths()) {
+  void testDataGenerationShouldSucceed() throws Exception {
+    underTests.generateData(TEST_DATA_SIZE);
+    for (Path path : IoTDBDataGenerator.getPaths()) {
       DataIterator result = whenQueryData(path);
-      thenCountResultShouldBeOfSize(result, TEST_DATA_SIZE);
+      thenCountResultShouldBeOfCorrectSize(result);
+    }
+  }
+
+  @Test
+  void testTimestampAnomaliesGenerationShouldSucceed() throws Exception {
+    underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
+    for (Path path : IoTDBDataGenerator.getPaths()) {
+      DataIterator result = whenQueryData(path);
+      thenCountResultShouldBeOfCorrectSize(result);
     }
   }
 
@@ -42,10 +50,21 @@ public class IoTDBDataGeneratorTest {
   void testDeleteAllAfterGenerationShouldSucceed() throws Exception {
     underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
     underTests.deleteAll();
-    for (Path path : underTests.getPaths()) {
+    for (Path path : IoTDBDataGenerator.getPaths()) {
       DataIterator result = whenQueryData(path);
       thenCountResultShouldBeEmpty(result);
     }
+  }
+
+  @Test
+  void testFlushAfterInsertShouldNotThrow() throws Exception {
+    underTests.generateData(TEST_DATA_SIZE);
+    assertDoesNotThrow(() -> underTests.flush());
+  }
+
+  @Test
+  void testDeleteStaleTestDataFoldersShouldNotThrow() {
+    assertDoesNotThrow(() -> underTests.deleteDatabase());
   }
 
   private DataIterator whenQueryData(Path path) throws Exception {
@@ -57,9 +76,9 @@ public class IoTDBDataGeneratorTest {
         .iterator();
   }
 
-  private void thenCountResultShouldBeOfSize(DataIterator result, int size) throws Exception {
+  private void thenCountResultShouldBeOfCorrectSize(DataIterator result) throws Exception {
     assertThat(result.next()).isTrue();
-    assertThat(result.getLong(1)).isEqualTo(size);
+    assertThat(result.getLong(1)).isEqualTo(IoTDBDataGeneratorTest.TEST_DATA_SIZE);
   }
 
   private void thenCountResultShouldBeEmpty(DataIterator result) throws Exception {

@@ -1,11 +1,9 @@
 package cn.edu.tsinghua.tsquality.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
 import cn.edu.tsinghua.tsquality.service.impl.TimestampAnomalyServiceImpl;
-import org.apache.iotdb.rpc.IoTDBConnectionException;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,13 +20,13 @@ public class TimestampAnomalyServiceImplTest {
   private String path;
 
   @BeforeEach
-  void insertDataWithTimestampAnomalies() throws IoTDBConnectionException {
+  void insertDataWithTimestampAnomalies() throws Exception {
     dataGenerator.generateTimestampAnomalyData(TEST_DATA_SIZE);
-    path = dataGenerator.getPaths()[0].getFullPath();
+    path = dataGenerator.getPaths().getFirst().getFullPath();
   }
 
   @AfterEach
-  void clearData() throws IoTDBConnectionException {
+  void clearData() throws Exception {
     dataGenerator.deleteAll();
   }
 

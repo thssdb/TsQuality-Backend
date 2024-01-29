@@ -1,9 +1,7 @@
 package cn.edu.tsinghua.tsquality.controllers.timeseries;
 
-import static org.hamcrest.Matchers.*;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
-import org.apache.iotdb.rpc.IoTDBConnectionException;
+import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,13 +29,13 @@ public class TimestampAnomalyControllerTest {
   }
 
   @BeforeEach
-  void insertDataWithTimestampAnomalies() throws IoTDBConnectionException {
+  void insertDataWithTimestampAnomalies() throws Exception {
     dataGenerator.generateTimestampAnomalyData(TEST_DATA_SIZE);
-    path = dataGenerator.getPaths()[0].getFullPath();
+    path = dataGenerator.getPaths().getFirst().getFullPath();
   }
 
   @AfterEach
-  void clearData() throws IoTDBConnectionException {
+  void clearData() throws Exception {
     dataGenerator.deleteAll();
   }
 

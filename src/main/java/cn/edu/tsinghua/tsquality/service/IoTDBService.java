@@ -9,10 +9,6 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
 import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import javax.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
@@ -27,8 +23,12 @@ import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.read.reader.IChunkReader;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -94,8 +94,8 @@ public class IoTDBService {
     return iotdbMapper.selectDatabaseStat(path).stream().map(IoTDBSeriesOverview::new).toList();
   }
 
-  @PostConstruct
-  private void startPreAggregation() {
+  @Scheduled(cron = "${pre-aggregation.scan-cron:0 */10 * * * ?}")
+  public void preAggregateTsFiles() {
     iotdbMapper.createTablesIfNotExists();
     List<TsFileInfo> tsFiles = PreAggregationUtil.getAllTsFiles(dataDir);
     if (tsFiles.isEmpty()) {
@@ -106,13 +106,9 @@ public class IoTDBService {
     }
   }
 
-  @Async("preAggregationTaskExecutor")
   public void preAggregateTsFile(TsFileInfo tsfile) {
     String filePath = tsfile.getFilePath();
     TsFileResource resource = new TsFileResource(new File(filePath));
-    if (!resource.isClosed()) {
-      return;
-    }
     Collection<Modification> allModifications = resource.getModFile().getModifications();
     try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
       List<Path> seriesPaths = reader.getAllPaths();
@@ -226,7 +222,6 @@ public class IoTDBService {
   }
 
   public List<String> getLatestTimeSeriesPath(String path, int limit) {
-    SessionDataSetWrapper wrapper = null;
     try {
       return IoTDBUtil.showLatestTimeSeries(sessionPool, path, limit);
     } catch (IoTDBConnectionException | StatementExecutionException e) {

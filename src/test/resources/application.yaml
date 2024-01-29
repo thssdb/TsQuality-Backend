@@ -2,27 +2,18 @@ server:
   port: 8888
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/tsquality
+    url: jdbc:mariadb://localhost:3306/tsquality_test?allowMultiQueries=true
     username: qiu
     password: 0924
 mybatis:
   mapper-locations: classpath*:mappers/*.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: cn.edu.tsinghua.tsquality.model.entity
 
 pre-aggregation:
+  scan-cron: "* * * * * ?"
   executor:
     core-pool-size: 9
     max-pool-size: 15
     queue-capacity: 1000
     name-prefix: pre-aggregation
   data-dir: /Users/tyty/Projects/apache-iotdb-1.1.1-all-bin/data/datanode/data/sequence
-
-iotdb:
-  test:
-    data:
-      paths: >
-        root.springboot.test.s1,
-        root.springboot.test.s2,
-        root.springboot.test.s3
