@@ -11,7 +11,6 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseDto<String> handleException(Exception e) {
     log.error(e);
-    e.printStackTrace();
     return ResponseDto.fail(ResultCode.FAIL, e.getMessage());
   }
 }

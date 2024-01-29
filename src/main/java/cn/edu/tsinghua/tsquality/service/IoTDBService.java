@@ -6,29 +6,15 @@ import cn.edu.tsinghua.tsquality.mappers.database.IoTDBMapper;
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
-import cn.edu.tsinghua.tsquality.preaggregation.PreAggregationUtil;
-import cn.edu.tsinghua.tsquality.preaggregation.TsFileInfo;
-import cn.edu.tsinghua.tsquality.preaggregation.TsFileStat;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
-import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-import org.apache.iotdb.tsfile.read.TsFileSequenceReader;
-import org.apache.iotdb.tsfile.read.common.BatchData;
-import org.apache.iotdb.tsfile.read.common.Path;
-import org.apache.iotdb.tsfile.read.reader.IChunkReader;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 @Log4j2
 @Service
@@ -37,9 +23,6 @@ public class IoTDBService {
   private static final String SQL_QUERY_NUMS_DEVICES = "COUNT DEVICES";
   private static final String SQL_QUERY_NUMS_DATABASES = "COUNT DATABASES";
   private static final String SQL_QUERY_SHOW_TIME_SERIES = "SHOW TIMESERIES";
-
-  @Value("${pre-aggregation.data-dir:.}")
-  public String dataDir;
 
   private final IoTDBMapper iotdbMapper;
 
@@ -92,60 +75,6 @@ public class IoTDBService {
 
   public List<IoTDBSeriesOverview> getDatabaseOverview(String path) {
     return iotdbMapper.selectDatabaseStat(path).stream().map(IoTDBSeriesOverview::new).toList();
-  }
-
-  @Scheduled(cron = "${pre-aggregation.scan-cron:0 */10 * * * ?}")
-  public void preAggregateTsFiles() {
-    iotdbMapper.createTablesIfNotExists();
-    List<TsFileInfo> tsFiles = PreAggregationUtil.getAllTsFiles(dataDir);
-    if (tsFiles.isEmpty()) {
-      return;
-    }
-    for (TsFileInfo tsfile : tsFiles) {
-      preAggregateTsFile(tsfile);
-    }
-  }
-
-  public void preAggregateTsFile(TsFileInfo tsfile) {
-    String filePath = tsfile.getFilePath();
-    TsFileResource resource = new TsFileResource(new File(filePath));
-    Collection<Modification> allModifications = resource.getModFile().getModifications();
-    try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
-      List<Path> seriesPaths = reader.getAllPaths();
-      Map<Path, TsFileStat> seriesStatMap = new HashMap<>();
-      for (Path path : seriesPaths) {
-        if (path.getMeasurement().isEmpty()) {
-          continue;
-        }
-        TsFileStat tsFileStat = new TsFileStat(path);
-        List<Modification> modifications = new ArrayList<>();
-        for (Modification modification : allModifications) {
-          if (modification.getPath().getFullPath().equals(path.getFullPath())) {
-            modifications.add(modification);
-          }
-        }
-        Map<Long, IChunkReader> chunkReaders =
-            PreAggregationUtil.getChunkReaders(path, reader, modifications);
-        for (Map.Entry<Long, IChunkReader> entry : chunkReaders.entrySet()) {
-          tsFileStat.startNewChunk(entry.getKey());
-          IChunkReader chunkReader = entry.getValue();
-          while (chunkReader.hasNextSatisfiedPage()) {
-            BatchData batchData = chunkReader.nextPageData();
-            if (batchData.getDataType() == TSDataType.VECTOR) {
-              // ignore vector type
-              continue;
-            }
-            IoTDBSeriesStat stat = new IoTDBSeriesStat(batchData);
-            tsFileStat.addPageSeriesStat(entry.getKey(), stat);
-          }
-          tsFileStat.endChunk(entry.getKey());
-        }
-        seriesStatMap.put(path, tsFileStat);
-      }
-      iotdbMapper.saveTsFileStat(tsfile, seriesPaths, seriesStatMap);
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-    }
   }
 
   public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(

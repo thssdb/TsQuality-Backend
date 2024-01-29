@@ -1,11 +1,12 @@
 package cn.edu.tsinghua.tsquality.generators;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.apache.iotdb.isession.SessionDataSet.DataIterator;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.read.common.Path;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +26,7 @@ public class IoTDBDataGeneratorTest {
   @AfterEach
   void closeSession() throws Exception {
     session.close();
-    underTests.deleteAll();
+    underTests.deleteDatabase();
   }
 
   @Test

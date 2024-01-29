@@ -13,5 +13,5 @@ public interface IoTDBSeriesMapper {
   void insertList(@Param("list") List<IoTDBSeries> seriesList);
 
   @Select("SELECT sid FROM series WHERE path = #{path}")
-  int selectIdByPath(@Param("path") String path);
+  Integer selectIdByPath(@Param("path") String path);
 }

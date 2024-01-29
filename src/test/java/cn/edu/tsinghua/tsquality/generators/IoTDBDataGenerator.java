@@ -1,5 +1,7 @@
 package cn.edu.tsinghua.tsquality.generators;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -15,9 +17,6 @@ import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class IoTDBDataGenerator {
@@ -47,7 +46,8 @@ public class IoTDBDataGenerator {
     this.session = new Session.Builder().build();
   }
 
-  public void generateTimestampAnomalyData(int size) throws IoTDBConnectionException, StatementExecutionException {
+  public void generateTimestampAnomalyData(int size)
+      throws IoTDBConnectionException, StatementExecutionException {
     try {
       session.open();
       for (Path path : paths) {
@@ -80,8 +80,8 @@ public class IoTDBDataGenerator {
   }
 
   private Tablet populateTablet(Path path, long[] timestamps, Object[] values) {
-    List<MeasurementSchema> schemas = List.of(
-        new MeasurementSchema(path.getMeasurement(), TSDataType.DOUBLE, TSEncoding.RLE));
+    List<MeasurementSchema> schemas =
+        List.of(new MeasurementSchema(path.getMeasurement(), TSDataType.DOUBLE, TSEncoding.RLE));
     Tablet tablet = new Tablet(path.getDevice(), schemas);
     tablet.rowSize = timestamps.length;
     for (int i = 0; i < timestamps.length; i++) {
@@ -145,7 +145,8 @@ public class IoTDBDataGenerator {
     }
   }
 
-  public boolean checkDatabaseExists(String database) throws IoTDBConnectionException, StatementExecutionException {
+  public boolean checkDatabaseExists(String database)
+      throws IoTDBConnectionException, StatementExecutionException {
     try {
       String sql = "show databases " + database;
       session.open();
