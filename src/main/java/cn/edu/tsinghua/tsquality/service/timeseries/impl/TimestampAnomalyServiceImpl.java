@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.service.impl;
+package cn.edu.tsinghua.tsquality.service.timeseries.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
@@ -6,7 +6,7 @@ import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.EmptyTimestampAnomalyResultDto;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
-import cn.edu.tsinghua.tsquality.service.TimestampAnomalyService;
+import cn.edu.tsinghua.tsquality.service.timeseries.TimestampAnomalyService;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;

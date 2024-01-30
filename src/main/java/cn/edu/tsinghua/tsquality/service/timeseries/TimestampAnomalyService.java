@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.service;
+package cn.edu.tsinghua.tsquality.service.timeseries;
 
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
 import org.apache.iotdb.tsfile.read.common.Path;

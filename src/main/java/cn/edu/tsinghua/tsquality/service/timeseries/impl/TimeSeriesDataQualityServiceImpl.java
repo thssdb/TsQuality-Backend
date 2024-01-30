@@ -1,9 +1,11 @@
-package cn.edu.tsinghua.tsquality.service.impl;
+package cn.edu.tsinghua.tsquality.service.timeseries.impl;
 
 import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
 import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
-import cn.edu.tsinghua.tsquality.service.TimeSeriesDataQualityService;
+import cn.edu.tsinghua.tsquality.service.impl.IoTDBDataQualityServiceImpl;
+import cn.edu.tsinghua.tsquality.service.impl.RDBMSDataQualityServiceImpl;
+import cn.edu.tsinghua.tsquality.service.timeseries.TimeSeriesDataQualityService;
 import java.util.List;
 import java.util.Random;
 import org.springframework.stereotype.Service;

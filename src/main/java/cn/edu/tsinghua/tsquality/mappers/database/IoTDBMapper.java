@@ -1,9 +1,8 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class IoTDBMapper {

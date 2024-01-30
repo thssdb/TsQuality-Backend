@@ -1,7 +1,7 @@
 package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
-import cn.edu.tsinghua.tsquality.service.TimestampAnomalyService;
+import cn.edu.tsinghua.tsquality.service.timeseries.TimestampAnomalyService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

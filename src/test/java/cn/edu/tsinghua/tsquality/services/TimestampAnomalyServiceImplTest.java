@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
-import cn.edu.tsinghua.tsquality.service.impl.TimestampAnomalyServiceImpl;
+import cn.edu.tsinghua.tsquality.service.timeseries.impl.TimestampAnomalyServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -2,7 +2,7 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
 import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
-import cn.edu.tsinghua.tsquality.service.impl.TimeSeriesDataQualityServiceImpl;
+import cn.edu.tsinghua.tsquality.service.timeseries.impl.TimeSeriesDataQualityServiceImpl;
 import java.util.Collections;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

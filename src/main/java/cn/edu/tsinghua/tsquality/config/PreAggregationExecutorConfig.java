@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.config.preaggregation;
+package cn.edu.tsinghua.tsquality.config;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import lombok.Data;
