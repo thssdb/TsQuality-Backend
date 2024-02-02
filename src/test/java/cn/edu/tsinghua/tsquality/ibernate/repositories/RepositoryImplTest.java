@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-import org.apache.iotdb.session.Session;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.junit.jupiter.api.AfterEach;
@@ -27,26 +27,20 @@ public class RepositoryImplTest {
   private static final String path = "root.tsquality.test.ts1";
   private static final String selectSql = "select ts1 from root.tsquality.test";
 
-  private final RepositoryImpl underTests;
+  private RepositoryImpl underTests;
 
   @Autowired private IoTDBDataGenerator dataGenerator;
-
-  private final Session session;
-
-  RepositoryImplTest() throws IoTDBConnectionException {
-    session = new Session.Builder().build();
-    underTests = new RepositoryImpl(session, path);
-  }
+  @Autowired private SessionPool sessionPool;
 
   @BeforeEach
   void createTimeSeries() {
+    underTests = new RepositoryImpl(sessionPool, path);
     underTests.createTimeSeries(TSDataType.INT32);
   }
 
   @AfterEach
   void deleteData() throws IoTDBConnectionException, StatementExecutionException {
     dataGenerator.deleteDatabase();
-    session.close();
   }
 
   @Test
@@ -64,28 +58,28 @@ public class RepositoryImplTest {
   @Test
   void testCreateTimeSeriesShouldSucceed() throws Exception {
     underTests.createTimeSeries(TSDataType.INT32);
-    assertThat(session.checkTimeseriesExists(path)).isTrue();
+    assertThat(sessionPool.checkTimeseriesExists(path)).isTrue();
   }
 
   @Test
   void testDeleteTimeSeriesShouldSucceed() throws Exception {
     underTests.deleteTimeSeries();
-    assertThat(session.checkTimeseriesExists(path)).isFalse();
+    assertThat(sessionPool.checkTimeseriesExists(path)).isFalse();
   }
 
   @Test
   void testCreateAndDeleteTimeSeriesShouldSucceed() throws Exception {
     underTests.createTimeSeries(TSDataType.INT32);
-    assertThat(session.checkTimeseriesExists(path)).isTrue();
+    assertThat(sessionPool.checkTimeseriesExists(path)).isTrue();
     underTests.deleteTimeSeries();
-    assertThat(session.checkTimeseriesExists(path)).isFalse();
+    assertThat(sessionPool.checkTimeseriesExists(path)).isFalse();
   }
 
   @Test
   void testInsertShouldSucceed() throws Exception {
     IntTVList tvList = givenIntTVList();
     whenPerformInsert(tvList);
-    thenInsertedDataShouldEqualToTVList(session, tvList);
+    thenInsertedDataShouldEqualToTVList(sessionPool, tvList);
   }
 
   @Test
@@ -127,11 +121,11 @@ public class RepositoryImplTest {
   }
 
   private Repository givenRepositoryUsingPath() throws IoTDBConnectionException {
-    return new RepositoryImpl(session, new Path(path));
+    return new RepositoryImpl(sessionPool, new Path(path));
   }
 
   private Repository givenRepositoryUsingPathString() throws Exception {
-    return new RepositoryImpl(session, path);
+    return new RepositoryImpl(sessionPool, path);
   }
 
   private IntTVList givenIntTVList() {
@@ -168,10 +162,10 @@ public class RepositoryImplTest {
     assertThat(repository).isNotNull();
   }
 
-  private void thenInsertedDataShouldEqualToTVList(Session session, IntTVList tvList)
+  private void thenInsertedDataShouldEqualToTVList(SessionPool sessionPool, IntTVList tvList)
       throws Exception {
     int index = 0;
-    SessionDataSet.DataIterator iterator = session.executeQueryStatement(selectSql).iterator();
+    SessionDataSet.DataIterator iterator = sessionPool.executeQueryStatement(selectSql).iterator();
     while (iterator.next()) {
       long timestamp = iterator.getLong(1);
       int value = iterator.getInt(2);

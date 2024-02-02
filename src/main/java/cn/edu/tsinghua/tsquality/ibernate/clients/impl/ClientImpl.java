@@ -1,6 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.clients.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.clients.Client;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
@@ -15,6 +17,10 @@ public class ClientImpl implements Client {
   private static final String SQL_COUNT_NUM_TIME_SERIES = "count timeseries";
   private static final String SQL_COUNT_NUM_DEVICES = "count devices";
   private static final String SQL_COUNT_NUM_DATABASES = "count databases";
+
+  private static String showLatestTimeSeriesSql(String path, int limit) {
+    return String.format("SHOW LATEST TIMESERIES %s.** LIMIT %d", path, limit);
+  }
 
   private final SessionPool sessionPool;
 
@@ -35,6 +41,24 @@ public class ClientImpl implements Client {
   @Override
   public long countDatabases() {
     return getCountResult(SQL_COUNT_NUM_DATABASES);
+  }
+
+  @Override
+  public List<String> queryLatestTimeSeries(String path, int limit)
+      throws IoTDBConnectionException, StatementExecutionException {
+    SessionDataSetWrapper wrapper = null;
+    List<String> result = new ArrayList<>();
+    try {
+      String sql = showLatestTimeSeriesSql(path, limit);
+      wrapper = sessionPool.executeQueryStatement(sql);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
+      while (iterator.next()) {
+        result.add(iterator.getString(1));
+      }
+      return result;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
+    }
   }
 
   private long getCountResult(String sql) {

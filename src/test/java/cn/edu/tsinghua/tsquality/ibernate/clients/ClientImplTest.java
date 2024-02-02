@@ -1,16 +1,18 @@
 package cn.edu.tsinghua.tsquality.ibernate.clients;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.ibernate.clients.impl.ClientImpl;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
+import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class ClientImplTest {
@@ -30,20 +32,31 @@ public class ClientImplTest {
   }
 
   @Test
-  void testCountTimeSeriesShouldSucceed() {
+  void testCountTimeSeriesShouldReturnCorrectResult() {
     long count = underTests.countTimeSeries();
     assertThat(count).isEqualTo(IoTDBDataGenerator.SERIES_COUNT);
   }
 
   @Test
-  void testCountDevicesShouldSucceed() {
+  void testCountDevicesShouldReturnCorrectResult() {
     long count = underTests.countDevices();
     assertThat(count).isEqualTo(IoTDBDataGenerator.DEVICE_COUNT);
   }
 
   @Test
-  void testCountDatabasesShouldSucceed() {
+  void testCountDatabasesShouldReturnCorrectResult() {
     long count = underTests.countDatabases();
     assertThat(count).isEqualTo(IoTDBDataGenerator.DATABASE_COUNT);
+  }
+
+  @Test
+  void testQueryLatestTimeSeriesShouldReturnCorrectResult()
+      throws IoTDBConnectionException, StatementExecutionException {
+    List<String> paths = IoTDBDataGenerator.getPaths().stream().map(Path::toString).toList();
+    List<String> result = underTests.queryLatestTimeSeries("root", 10);
+    assertThat(result).hasSize(IoTDBDataGenerator.SERIES_COUNT);
+    for (String path : result) {
+      assertThat(paths).contains(path);
+    }
   }
 }

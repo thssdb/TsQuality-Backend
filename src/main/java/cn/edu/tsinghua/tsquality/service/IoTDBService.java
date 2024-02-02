@@ -1,12 +1,11 @@
 package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.common.IoTDBUtil;
+import cn.edu.tsinghua.tsquality.ibernate.clients.Client;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
@@ -15,15 +14,20 @@ import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Log4j2
 @Service
 public class IoTDBService {
   private static final String SQL_QUERY_SHOW_TIME_SERIES = "SHOW TIMESERIES";
 
   private final SessionPool sessionPool;
+  private final Client iotdbClient;
 
-  public IoTDBService(SessionPool sessionPool) {
+  public IoTDBService(SessionPool sessionPool, Client iotdbClient) {
     this.sessionPool = sessionPool;
+    this.iotdbClient = iotdbClient;
   }
 
   public IoTDBSeriesAnomalyDetectionResult getAnomalyDetectionResult(
@@ -68,13 +72,13 @@ public class IoTDBService {
   }
 
   public TimeSeriesRecentDataDto getTimeSeriesData(String path, long limit) {
+    if (path == null || path.isEmpty()) {
+      path = getLatestNumericTimeSeriesPath();
+    }
+    if (path.isEmpty()) {
+      return new TimeSeriesRecentDataDto();
+    }
     try {
-      if (path == null || path.isEmpty()) {
-        path = getLatestNumericTimeSeriesPath();
-      }
-      if (path.isEmpty()) {
-        return new TimeSeriesRecentDataDto();
-      }
       return IoTDBUtil.query(sessionPool, path, limit);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return new TimeSeriesRecentDataDto();
@@ -83,7 +87,7 @@ public class IoTDBService {
 
   public List<String> getLatestTimeSeriesPath(String path, int limit) {
     try {
-      return IoTDBUtil.showLatestTimeSeries(sessionPool, path, limit);
+      return iotdbClient.queryLatestTimeSeries(path, limit);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return new ArrayList<>();
     }

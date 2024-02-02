@@ -7,10 +7,9 @@ import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Log4j2
 @Service

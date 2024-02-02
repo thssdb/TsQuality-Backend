@@ -96,29 +96,6 @@ public class IoTDBUtil {
         points.add(point);
       }
       return TimeSeriesRecentDataDto.builder().path(path).points(points).build();
-    } catch (IoTDBConnectionException
-        | StatementExecutionException
-        | UnSupportedDataTypeException e) {
-      throw e;
-    } finally {
-      sessionPool.closeResultSet(wrapper);
-    }
-  }
-
-  public static List<String> showLatestTimeSeries(SessionPool sessionPool, String path, int limit)
-      throws IoTDBConnectionException, StatementExecutionException {
-    String sql = String.format("SHOW LATEST TIMESERIES %s.** LIMIT %d", path, limit);
-    SessionDataSetWrapper wrapper = null;
-    try {
-      wrapper = sessionPool.executeQueryStatement(sql);
-      SessionDataSet.DataIterator iterator = wrapper.iterator();
-      List<String> paths = new ArrayList<>();
-      while (iterator.next()) {
-        paths.add(iterator.getString(1));
-      }
-      return paths;
-    } catch (IoTDBConnectionException | StatementExecutionException e) {
-      throw e;
     } finally {
       sessionPool.closeResultSet(wrapper);
     }

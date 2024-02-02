@@ -5,12 +5,11 @@ import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVListFactory;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
+import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-import org.apache.iotdb.session.Session;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
@@ -18,26 +17,29 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.write.record.Tablet;
 import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RepositoryImpl implements Repository {
   private final Path path;
-  private final Session session;
+  private final SessionPool sessionPool;
   private TSDataType dataType;
 
-  public RepositoryImpl(Session session, Path path) throws IoTDBConnectionException {
+  public RepositoryImpl(SessionPool sessionPool, Path path) {
     this.path = path;
-    this.session = session;
-    this.session.open();
+    this.sessionPool = sessionPool;
   }
 
-  public RepositoryImpl(Session session, String path) throws IoTDBConnectionException {
-    this(session, new Path(path, true));
+  public RepositoryImpl(SessionPool sessionPool, String path) {
+    this.path = new Path(path, true);
+    this.sessionPool = sessionPool;
   }
 
   @Override
   public void createTimeSeries(TSDataType dataType) {
     try {
-      if (!session.checkTimeseriesExists(path.getFullPath())) {
-        session.createTimeseries(
+      if (!sessionPool.checkTimeseriesExists(path.getFullPath())) {
+        sessionPool.createTimeseries(
             path.getFullPath(), dataType, TSEncoding.PLAIN, CompressionType.UNCOMPRESSED);
       }
     } catch (IoTDBConnectionException | StatementExecutionException e) {
@@ -49,8 +51,8 @@ public class RepositoryImpl implements Repository {
   public void deleteTimeSeries() {
     try {
       String fullPath = path.getFullPath();
-      if (session.checkTimeseriesExists(fullPath)) {
-        session.deleteTimeseries(fullPath);
+      if (sessionPool.checkTimeseriesExists(fullPath)) {
+        sessionPool.deleteTimeseries(fullPath);
       }
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       throw new RuntimeException(e);
@@ -62,8 +64,8 @@ public class RepositoryImpl implements Repository {
     setDataTypeIfNeeded();
     String sql = prepareSelectSql(udf, timeFilter, valueFilter);
     try {
-      SessionDataSet dataset = executeSelectSql(sql);
-      return datasetToTVList(dataset);
+      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      return datasetToTVList(wrapper);
     } catch (Exception ignored) {
       return new EmptyTVList();
     }
@@ -100,8 +102,8 @@ public class RepositoryImpl implements Repository {
     setDataTypeIfNeeded();
     String sql = prepareSelectSql(timeFilter, valueFilter);
     try {
-      SessionDataSet dataset = executeSelectSql(sql);
-      return datasetToTVList(dataset);
+      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      return datasetToTVList(wrapper);
     } catch (Exception ignored) {
       return new EmptyTVList();
     }
@@ -110,7 +112,7 @@ public class RepositoryImpl implements Repository {
   private TSDataType getDataType() {
     try {
       String sql = String.format("show timeseries %s", path.getFullPath());
-      SessionDataSet.DataIterator iterator = session.executeQueryStatement(sql).iterator();
+      SessionDataSet.DataIterator iterator = sessionPool.executeQueryStatement(sql).iterator();
       if (!iterator.next()) {
         throw new RuntimeException("No such timeseries");
       }
@@ -128,15 +130,15 @@ public class RepositoryImpl implements Repository {
     return selectClause + whereClause;
   }
 
-  private SessionDataSet executeSelectSql(String sql)
+  private SessionDataSetWrapper executeSelectSql(String sql)
       throws IoTDBConnectionException, StatementExecutionException {
-    return session.executeQueryStatement(sql);
+    return sessionPool.executeQueryStatement(sql);
   }
 
-  private TVList datasetToTVList(SessionDataSet dataset)
+  private TVList datasetToTVList(SessionDataSetWrapper wrapper)
       throws IoTDBConnectionException, StatementExecutionException {
     TVList tvList = newTVList(dataType);
-    populateDataSetToTVList(dataset, tvList);
+    populateDataSetToTVList(wrapper, tvList);
     return tvList;
   }
 
@@ -144,9 +146,9 @@ public class RepositoryImpl implements Repository {
     return TVListFactory.createTVList(dataType);
   }
 
-  private void populateDataSetToTVList(SessionDataSet dataset, TVList tvList)
+  private void populateDataSetToTVList(SessionDataSetWrapper wrapper, TVList tvList)
       throws IoTDBConnectionException, StatementExecutionException {
-    SessionDataSet.DataIterator iterator = dataset.iterator();
+    SessionDataSet.DataIterator iterator = wrapper.iterator();
     while (iterator.next()) {
       long timestamp = iterator.getLong(1);
       switch (tvList.getDataType()) {
@@ -203,10 +205,10 @@ public class RepositoryImpl implements Repository {
 
   private void insertTablet(Tablet tablet)
       throws IoTDBConnectionException, StatementExecutionException {
-    session.insertTablet(tablet);
+    sessionPool.insertTablet(tablet);
   }
 
   public void flush() throws IoTDBConnectionException, StatementExecutionException {
-    session.executeNonQueryStatement("flush");
+    sessionPool.executeNonQueryStatement("flush");
   }
 }

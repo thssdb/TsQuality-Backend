@@ -14,11 +14,4 @@ class UtilTest {
   void formatTimestamp() {
     System.out.println(Util.formatTimestamp(1600000000000L));
   }
-
-  @Test
-  void constructQuerySQL() {
-    System.out.println(
-        IoTDBUtil.constructQuerySQL(
-            "root.sg0.d0.s0", 1600000000000L, 16900000000000L, "> 10.0", 10));
-  }
 }
