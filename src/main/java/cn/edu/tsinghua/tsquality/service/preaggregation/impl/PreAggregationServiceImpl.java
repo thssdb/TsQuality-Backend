@@ -1,13 +1,15 @@
 package cn.edu.tsinghua.tsquality.service.preaggregation.impl;
 
-import cn.edu.tsinghua.tsquality.mappers.database.*;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.PreAggregationService;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
+import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
@@ -24,12 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Log4j2
 @Service
 public class PreAggregationServiceImpl implements PreAggregationService {
@@ -38,40 +34,10 @@ public class PreAggregationServiceImpl implements PreAggregationService {
   @Value("${pre-aggregation.data-dir:.}")
   private String dataDir;
 
-  private final IoTDBSeriesMapper seriesMapper;
-  private final IoTDBFileMapper fileMapper;
-  private final IoTDBChunkMapper chunkMapper;
-  private final IoTDBPageMapper pageMapper;
-  private final IoTDBFileSeriesStatMapper fileSeriesStatMapper;
-  private final IoTDBChunkSeriesStatMapper chunkSeriesStatMapper;
-  private final IoTDBPageSeriesStatMapper pageSeriesStatMapper;
+  private final MetadataStorageEngine storageEngine;
 
-  PreAggregationServiceImpl(
-      IoTDBSeriesMapper seriesMapper,
-      IoTDBFileMapper fileMapper,
-      IoTDBChunkMapper chunkMapper,
-      IoTDBPageMapper pageMapper,
-      IoTDBFileSeriesStatMapper fileSeriesStatMapper,
-      IoTDBChunkSeriesStatMapper chunkSeriesStatMapper,
-      IoTDBPageSeriesStatMapper pageSeriesStatMapper) {
-    this.seriesMapper = seriesMapper;
-    this.fileMapper = fileMapper;
-    this.chunkMapper = chunkMapper;
-    this.pageMapper = pageMapper;
-    this.fileSeriesStatMapper = fileSeriesStatMapper;
-    this.chunkSeriesStatMapper = chunkSeriesStatMapper;
-    this.pageSeriesStatMapper = pageSeriesStatMapper;
-    createTablesIfNotExists();
-  }
-
-  private void createTablesIfNotExists() {
-    seriesMapper.createSeriesTable();
-    fileMapper.createFileTable();
-    chunkMapper.createChunkTable();
-    pageMapper.createPageTable();
-    fileSeriesStatMapper.createFileSeriesStatTable();
-    chunkSeriesStatMapper.createChunkSeriesStatTable();
-    pageSeriesStatMapper.createPageSeriesStatTable();
+  public PreAggregationServiceImpl(MetadataStorageEngine storageEngine) {
+    this.storageEngine = storageEngine;
   }
 
   @Override
@@ -100,7 +66,7 @@ public class PreAggregationServiceImpl implements PreAggregationService {
       for (Path path : paths) {
         preAggregatePath(path, allModifications, reader, tsFileStats);
       }
-      saveTsFileStats(tsfile, paths, tsFileStats);
+      storageEngine.saveTsFileStats(tsfile, tsFileStats);
     } catch (IOException e) {
       log.error(e);
     }
@@ -149,7 +115,6 @@ public class PreAggregationServiceImpl implements PreAggregationService {
     String filePath = file.getAbsolutePath();
     Matcher matcher = Pattern.compile(DATABASE_REGEX).matcher(filePath);
     if (!matcher.matches()) {
-      log.warn(String.format("Skip file %s due to database matching failure...", filePath));
       return "";
     }
     return matcher.group(1);
@@ -237,74 +202,5 @@ public class PreAggregationServiceImpl implements PreAggregationService {
     }
     IoTDBSeriesStat stat = new IoTDBSeriesStat(batchData);
     tsFileStat.addPageSeriesStat(entry.getKey(), stat);
-  }
-
-  public void saveTsFileStats(
-      TsFileInfo tsFileInfo, List<Path> paths, Map<Path, TsFileStat> stats) {
-    updateIoTDBSeries(tsFileInfo, paths);
-    int fid = updateIoTDBFiles(tsFileInfo);
-    for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
-      saveTsFileStatForPath(fid, entry);
-    }
-  }
-
-  private int updateIoTDBFiles(TsFileInfo tsFileInfo) {
-    IoTDBFile file = new IoTDBFile(tsFileInfo.getFilePath(), tsFileInfo.getFileVersion());
-    return insertIoTDBFile(file);
-  }
-
-  private int insertIoTDBFile(IoTDBFile file) {
-    int res = fileMapper.insert(file);
-    if (res == 1) {
-      // insert succeed
-      return file.getFid();
-    }
-    // already inserted before
-    return fileMapper.selectIdByFilePath(file.getFilePath());
-  }
-
-  private void updateIoTDBSeries(TsFileInfo tsFileInfo, List<Path> paths) {
-    List<IoTDBSeries> seriesList = getIoTDBSeriesList(paths, tsFileInfo.getDatabase());
-    seriesMapper.insertList(seriesList);
-  }
-
-  private List<IoTDBSeries> getIoTDBSeriesList(List<Path> paths, String database) {
-    return paths.stream().map(x -> pathToIoTDBSeries(x, database)).toList();
-  }
-
-  private IoTDBSeries pathToIoTDBSeries(Path path, String database) {
-    return IoTDBSeries.builder()
-        .path(path.getFullPath())
-        .device(path.getDevice())
-        .database(database)
-        .build();
-  }
-
-  private void saveTsFileStatForPath(int fid, Map.Entry<Path, TsFileStat> entry) {
-    int sid = seriesMapper.selectIdByPath(entry.getKey().getFullPath());
-    updateFileSeriesStats(fid, sid, entry.getValue().getFileStat());
-    Map<Long, IoTDBSeriesStat> chunkStats = entry.getValue().getChunkStats();
-    for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry : chunkStats.entrySet()) {
-      saveTsFileStatForChunk(fid, sid, chunkEntry);
-    }
-  }
-
-  private void updateFileSeriesStats(int fid, int sid, IoTDBSeriesStat stat) {
-    fileSeriesStatMapper.insert(fid, sid, stat);
-  }
-
-  private void saveTsFileStatForChunk(int fid, int sid, Map.Entry<Long, IoTDBSeriesStat> entry) {
-    int cid = updateIoTDBChunks(fid, sid, entry.getKey());
-    updateChunkSeriesStats(cid, entry.getValue());
-  }
-
-  private int updateIoTDBChunks(int fid, int sid, long offset) {
-    IoTDBChunk chunk = new IoTDBChunk(fid, sid, offset);
-    chunkMapper.insert(chunk);
-    return chunk.getCid();
-  }
-
-  private void updateChunkSeriesStats(int cid, IoTDBSeriesStat stat) {
-    chunkSeriesStatMapper.insert(cid, stat);
   }
 }

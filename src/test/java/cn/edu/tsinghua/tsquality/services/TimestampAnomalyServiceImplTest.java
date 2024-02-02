@@ -28,7 +28,7 @@ public class TimestampAnomalyServiceImplTest {
 
   @AfterEach
   void clearData() throws Exception {
-    dataGenerator.deleteAll();
+    dataGenerator.deleteDatabase();
   }
 
   @Test

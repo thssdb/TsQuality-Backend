@@ -1,13 +1,12 @@
 package cn.edu.tsinghua.tsquality.service.preaggregation.datastructures;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import lombok.Getter;
-import org.apache.iotdb.tsfile.read.common.Path;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import org.apache.iotdb.tsfile.read.common.Path;
 
 public class TsFileStat {
   private final Path seriesPath;

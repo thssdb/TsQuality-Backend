@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 public class Util {
-
   public static String formatTimestamp(long timestamp) {
     LocalDateTime time =
         LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());

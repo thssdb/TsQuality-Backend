@@ -1,30 +1,31 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
+import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class IoTDBMapper {
-  private final DataQualityMapper dataQualityMapper;
+  private final MetadataStorageEngine storageEngine;
 
-  public IoTDBMapper(DataQualityMapper dataQualityMapper) {
-    this.dataQualityMapper = dataQualityMapper;
+  public IoTDBMapper(MetadataStorageEngine storageEngine) {
+    this.storageEngine = storageEngine;
   }
 
   public List<IoTDBSeriesStat> selectSeriesStat() {
-    return dataQualityMapper.selectSeriesStat(null);
+    return storageEngine.selectSeriesStats(null);
   }
 
   public List<IoTDBSeriesStat> selectDeviceStat(String path) {
-    return dataQualityMapper.selectDeviceStat(path);
+    return storageEngine.selectDeviceStats(path);
   }
 
   public List<IoTDBSeriesStat> selectDatabaseStat(String path) {
-    return dataQualityMapper.selectDatabaseStat(path);
+    return storageEngine.selectDatabaseStats(path);
   }
 
   public IoTDBSeriesStat selectAllStat() {
-    return dataQualityMapper.selectAllStat();
+    return storageEngine.selectAllStats();
   }
 }

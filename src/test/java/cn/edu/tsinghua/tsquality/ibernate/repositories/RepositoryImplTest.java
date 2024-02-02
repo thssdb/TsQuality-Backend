@@ -1,28 +1,35 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
+import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.ibernate.datacreators.IntTVListCreator;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.IntTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
-import java.util.Map;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
+import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.Session;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Map;
+
+@SpringBootTest
 public class RepositoryImplTest {
   private static final String path = "root.tsquality.test.ts1";
   private static final String selectSql = "select ts1 from root.tsquality.test";
 
   private final RepositoryImpl underTests;
+
+  @Autowired private IoTDBDataGenerator dataGenerator;
 
   private final Session session;
 
@@ -37,8 +44,8 @@ public class RepositoryImplTest {
   }
 
   @AfterEach
-  void deleteTimeSeries() throws IoTDBConnectionException {
-    underTests.deleteTimeSeries();
+  void deleteData() throws IoTDBConnectionException, StatementExecutionException {
+    dataGenerator.deleteDatabase();
     session.close();
   }
 

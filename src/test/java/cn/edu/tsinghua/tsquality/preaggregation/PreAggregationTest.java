@@ -3,7 +3,10 @@ package cn.edu.tsinghua.tsquality.preaggregation;
 import static org.awaitility.Awaitility.await;
 
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
-import cn.edu.tsinghua.tsquality.mappers.database.*;
+import cn.edu.tsinghua.tsquality.mappers.database.ChunkTestMapper;
+import cn.edu.tsinghua.tsquality.mappers.database.FileTestMapper;
+import cn.edu.tsinghua.tsquality.mappers.database.SeriesTestMapper;
+import cn.edu.tsinghua.tsquality.mappers.database.TableMapper;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -27,6 +30,7 @@ public class PreAggregationTest {
 
   @BeforeEach
   void insertData() throws Exception {
+    dataGenerator.flush();
     tableMapper.truncateAllTables();
     dataGenerator.deleteDatabase();
     dataGenerator.generateData(TEST_DATA_SIZE);

@@ -2,6 +2,7 @@ package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
+import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,34 +10,31 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/iotdb")
 public class IoTDBController {
   private final IoTDBService iotdbService;
+  private final DataProfileService dataProfileService;
 
-  public IoTDBController(IoTDBService iotdbService) {
+  public IoTDBController(IoTDBService iotdbService, DataProfileService dataProfileService) {
     this.iotdbService = iotdbService;
+    this.dataProfileService = dataProfileService;
   }
 
   @GetMapping("/time-series/count")
   public long getNumsTimeSeries() {
-    return iotdbService.getNumsTimeSeries();
+    return dataProfileService.getNumTimeSeries();
   }
 
   @GetMapping("/devices/count")
   public long getNumsDevices() {
-    return iotdbService.getNumsDevices();
+    return dataProfileService.getNumDevices();
   }
 
   @GetMapping("/databases/count")
   public long getNumsDatabases() {
-    return iotdbService.getNumsDatabases();
+    return dataProfileService.getNumDatabases();
   }
 
-  @GetMapping("/storage-groups/count")
-  public long getNumsStorageGroups() {
-    return iotdbService.getNumsStorageGroups();
-  }
-
-  @GetMapping("/aggregation-info")
-  public IoTDBAggregationInfoDto getAggregationInfo() {
-    return iotdbService.getAggregationInfo();
+  @GetMapping("/overall-data-profile")
+  public IoTDBDataProfile getOverallDataProfile() {
+    return dataProfileService.getOverallDataProfile();
   }
 
   @GetMapping("/time-series/latest")
@@ -48,7 +46,7 @@ public class IoTDBController {
 
   @GetMapping("/time-series/overview")
   public List<IoTDBSeriesOverview> getTimeSeriesOverview() {
-    return iotdbService.getTimeSeriesOverview();
+    return dataProfileService.getTimeSeriesOverview();
   }
 
   @PostMapping("/time-series/anomaly-detection")
@@ -60,13 +58,13 @@ public class IoTDBController {
   @GetMapping("/devices/overview")
   public List<IoTDBSeriesOverview> getDeviceOverview(
       @RequestParam(value = "path", required = false) String path) {
-    return iotdbService.getDeviceOverview(path);
+    return dataProfileService.getDeviceOverview(path);
   }
 
   @GetMapping("/databases/overview")
   public List<IoTDBSeriesOverview> getDatabaseOverview(
       @RequestParam(value = "path", required = false) String path) {
-    return iotdbService.getDatabaseOverview(path);
+    return dataProfileService.getDatabaseOverview(path);
   }
 
   @GetMapping("/time-series/data")

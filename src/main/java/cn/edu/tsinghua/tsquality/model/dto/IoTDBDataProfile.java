@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IoTDBAggregationInfoDto {
+public class IoTDBDataProfile {
   private Long numDataPoints;
   private Long numTimeSeries;
   private Long numDevices;
