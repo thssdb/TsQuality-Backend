@@ -64,7 +64,7 @@ public class PreAggregationTest {
   }
 
   private boolean seriesContainsCorrectData(List<String> series) {
-    if (series.size() != IoTDBDataGenerator.getSeries_count()) {
+    if (series.size() != IoTDBDataGenerator.SERIES_COUNT) {
       return false;
     }
     List<String> expectedSeries =

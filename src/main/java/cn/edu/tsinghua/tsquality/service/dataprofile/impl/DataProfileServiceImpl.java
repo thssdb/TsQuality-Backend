@@ -1,65 +1,41 @@
 package cn.edu.tsinghua.tsquality.service.dataprofile.impl;
 
 import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
+import cn.edu.tsinghua.tsquality.ibernate.clients.Client;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBDataProfile;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.apache.iotdb.isession.SessionDataSet;
-import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
-import org.apache.iotdb.rpc.IoTDBConnectionException;
-import org.apache.iotdb.rpc.StatementExecutionException;
-import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Log4j2
 @Service
 public class DataProfileServiceImpl implements DataProfileService {
-  private static final String SQL_QUERY_NUMS_TIME_SERIES = "COUNT TIMESERIES";
-  private static final String SQL_QUERY_NUMS_DEVICES = "COUNT DEVICES";
-  private static final String SQL_QUERY_NUMS_DATABASES = "COUNT DATABASES";
-
   private final MetadataStorageEngine storageEngine;
+  private final Client iotdbClient;
 
-  private final SessionPool sessionPool;
-
-  public DataProfileServiceImpl(MetadataStorageEngine storageEngine, SessionPool sessionPool) {
+  public DataProfileServiceImpl(MetadataStorageEngine storageEngine, Client iotdbClient) {
     this.storageEngine = storageEngine;
-    this.sessionPool = sessionPool;
+    this.iotdbClient = iotdbClient;
   }
 
   @Override
   public Long getNumTimeSeries() {
-    return getCountResult(SQL_QUERY_NUMS_TIME_SERIES);
+    return iotdbClient.countTimeSeries();
   }
 
   @Override
   public Long getNumDevices() {
-    return getCountResult(SQL_QUERY_NUMS_DEVICES);
+    return iotdbClient.countDevices();
   }
 
   @Override
   public Long getNumDatabases() {
-    return getCountResult(SQL_QUERY_NUMS_DATABASES);
-  }
-
-  private long getCountResult(String sql) {
-    SessionDataSetWrapper wrapper = null;
-    try {
-      wrapper = sessionPool.executeQueryStatement(sql);
-      SessionDataSet.DataIterator iterator = wrapper.iterator();
-      if (iterator.next()) {
-        return iterator.getLong(1);
-      }
-    } catch (IoTDBConnectionException | StatementExecutionException e) {
-      log.error(e);
-    } finally {
-      sessionPool.closeResultSet(wrapper);
-    }
-    return 0;
+    return iotdbClient.countDatabases();
   }
 
   @Override
