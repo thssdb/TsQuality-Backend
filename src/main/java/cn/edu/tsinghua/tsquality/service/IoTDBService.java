@@ -2,6 +2,9 @@ package cn.edu.tsinghua.tsquality.service;
 
 import cn.edu.tsinghua.tsquality.common.IoTDBUtil;
 import cn.edu.tsinghua.tsquality.ibernate.clients.Client;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
@@ -59,7 +62,7 @@ public class IoTDBService {
       wrapper = sessionPool.executeQueryStatement(SQL_QUERY_SHOW_TIME_SERIES);
       SessionDataSet.DataIterator iterator = wrapper.iterator();
       while (iterator.next()) {
-        if (IoTDBUtil.isNumericDataType(iterator.getString("DataType"))) {
+        if (isNumericDataType(iterator.getString("DataType"))) {
           return iterator.getString("Timeseries");
         }
       }
@@ -71,6 +74,11 @@ public class IoTDBService {
     return "";
   }
 
+  private boolean isNumericDataType(String dataType) {
+    return List.of("INT32", "INT64", "FLOAT", "DOUBLE").contains(dataType);
+  }
+
+
   public TimeSeriesRecentDataDto getTimeSeriesData(String path, long limit) {
     if (path == null || path.isEmpty()) {
       path = getLatestNumericTimeSeriesPath();
@@ -78,11 +86,9 @@ public class IoTDBService {
     if (path.isEmpty()) {
       return new TimeSeriesRecentDataDto();
     }
-    try {
-      return IoTDBUtil.query(sessionPool, path, limit);
-    } catch (IoTDBConnectionException | StatementExecutionException e) {
-      return new TimeSeriesRecentDataDto();
-    }
+    Repository repository = new RepositoryImpl(sessionPool, path);
+    TVList data = repository.select(null, null);
+    return new TimeSeriesRecentDataDto(path, data);
   }
 
   public List<String> getLatestTimeSeriesPath(String path, int limit) {

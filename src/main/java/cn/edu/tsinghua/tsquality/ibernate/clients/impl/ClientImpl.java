@@ -1,8 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.clients.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.clients.Client;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
@@ -10,6 +8,9 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @Log4j2
@@ -19,7 +20,7 @@ public class ClientImpl implements Client {
   private static final String SQL_COUNT_NUM_DATABASES = "count databases";
 
   private static String showLatestTimeSeriesSql(String path, int limit) {
-    return String.format("SHOW LATEST TIMESERIES %s.** LIMIT %d", path, limit);
+    return String.format("show latest timeseries %s.** limit %d", path, limit);
   }
 
   private final SessionPool sessionPool;
