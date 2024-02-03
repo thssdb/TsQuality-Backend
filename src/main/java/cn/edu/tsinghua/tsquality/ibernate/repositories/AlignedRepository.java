@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface AlignedRepository {
   void createAlignedTimeSeries(List<TSDataType> dataTypes) throws IoTDBConnectionException, StatementExecutionException;
+
+  void deleteAlignedTimeSeries() throws IoTDBConnectionException, StatementExecutionException;
 }

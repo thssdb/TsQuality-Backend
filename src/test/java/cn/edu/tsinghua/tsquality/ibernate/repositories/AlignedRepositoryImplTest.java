@@ -7,6 +7,8 @@ import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,31 @@ public class AlignedRepositoryImplTest {
     underTests = new AlignedRepositoryImpl(sessionPool, paths);
   }
 
+  @AfterEach
+  void clear() throws IoTDBConnectionException, StatementExecutionException {
+    sessionPool.deleteDatabase(IoTDBDataGenerator.getDATABASE_NAME());
+  }
+
   @Test
-  void testCreateAlignedTimeSeriesShouldSucceed() throws IoTDBConnectionException, StatementExecutionException {
+  void testCreateAlignedTimeSeriesShouldSucceed() throws Exception {
     underTests.createAlignedTimeSeries(IoTDBDataGenerator.getDataTypes());
     for (Path path : paths) {
       assertThat(sessionPool.checkTimeseriesExists(path.getFullPath())).isTrue();
+    }
+  }
+
+  @Test
+  void testCreateExistedAlignedTimeSeriesShouldThrow() throws Exception {
+    underTests.createAlignedTimeSeries(IoTDBDataGenerator.getDataTypes());
+    assertThrows(StatementExecutionException.class, () -> underTests.createAlignedTimeSeries(IoTDBDataGenerator.getDataTypes()));
+  }
+
+  @Test
+  void testDeleteAlignedTimeSeriesShouldSucceed() throws Exception {
+    underTests.createAlignedTimeSeries(IoTDBDataGenerator.getDataTypes());
+    underTests.deleteAlignedTimeSeries();
+    for (Path path : paths) {
+      assertThat(sessionPool.checkTimeseriesExists(path.getFullPath())).isFalse();
     }
   }
 }

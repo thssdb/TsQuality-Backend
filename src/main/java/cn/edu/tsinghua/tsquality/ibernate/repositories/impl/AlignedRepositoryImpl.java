@@ -52,4 +52,9 @@ public class AlignedRepositoryImpl implements AlignedRepository {
     List<CompressionType> compressionTypes = Collections.nCopies(paths.size(), CompressionType.UNCOMPRESSED);
     sessionPool.createAlignedTimeseries(device, measurements, dataTypes, encodings, compressionTypes, null);
   }
+
+  @Override
+  public void deleteAlignedTimeSeries() throws IoTDBConnectionException, StatementExecutionException {
+    sessionPool.deleteTimeseries(paths.stream().map(Path::getFullPath).toList());
+  }
 }
