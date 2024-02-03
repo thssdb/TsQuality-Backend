@@ -1,12 +1,11 @@
 package cn.edu.tsinghua.tsquality.model.dto;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

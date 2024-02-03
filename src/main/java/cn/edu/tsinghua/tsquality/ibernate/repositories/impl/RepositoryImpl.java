@@ -5,6 +5,8 @@ import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVListFactory;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
@@ -17,10 +19,7 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.write.record.Tablet;
 import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class RepositoryImpl implements Repository {
+public class RepositoryImpl extends BaseRepository implements Repository {
   private final Path path;
   private final SessionPool sessionPool;
   private TSDataType dataType;
@@ -83,29 +82,19 @@ public class RepositoryImpl implements Repository {
     return selectClause + whereClause;
   }
 
-  private String prepareWhereClause(String timeFilter, String valueFilter) {
-    boolean timeFilterValid = timeFilter != null && !timeFilter.isEmpty();
-    boolean valueFilterValid = valueFilter != null && !valueFilter.isEmpty();
-    if (timeFilterValid && valueFilterValid) {
-      return String.format(" where %s and %s", timeFilter, valueFilter);
-    } else if (timeFilterValid) {
-      return String.format(" where %s", timeFilter);
-    } else if (valueFilterValid) {
-      return String.format(" where %s", valueFilter);
-    } else {
-      return "";
-    }
-  }
-
   @Override
   public TVList select(String timeFilter, String valueFilter) {
     setDataTypeIfNeeded();
-    String sql = prepareSelectSql(timeFilter, valueFilter);
+    SessionDataSetWrapper wrapper = null;
+    String sql =
+        prepareSelectSql(List.of(path.getMeasurement()), path.getDevice(), timeFilter, valueFilter);
     try {
-      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      wrapper = executeSelectSql(sql);
       return datasetToTVList(wrapper);
     } catch (Exception ignored) {
       return new EmptyTVList();
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
   }
 
@@ -121,13 +110,6 @@ public class RepositoryImpl implements Repository {
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private String prepareSelectSql(String timeFilter, String valueFilter) {
-    String selectClause =
-        String.format("select %s from %s", path.getMeasurement(), path.getDevice());
-    String whereClause = prepareWhereClause(timeFilter, valueFilter);
-    return selectClause + whereClause;
   }
 
   private SessionDataSetWrapper executeSelectSql(String sql)

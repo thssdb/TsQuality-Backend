@@ -1,11 +1,10 @@
 package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.*;
-import lombok.Data;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 @Data
 public abstract class TVList {
