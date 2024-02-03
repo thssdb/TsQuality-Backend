@@ -1,7 +1,5 @@
 package cn.edu.tsinghua.tsquality.generators;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -17,6 +15,9 @@ import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class IoTDBDataGenerator {
@@ -44,6 +45,14 @@ public class IoTDBDataGenerator {
   }
 
   private final Session session;
+
+  public static List<TSDataType> getDataTypes() {
+    List<TSDataType> dataTypes = new ArrayList<>();
+    for (int i = 0; i < SERIES_COUNT; i++) {
+      dataTypes.add(TSDataType.DOUBLE);
+    }
+    return dataTypes;
+  }
 
   public IoTDBDataGenerator() {
     this.session = new Session.Builder().build();
