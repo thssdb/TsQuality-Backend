@@ -1,10 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
@@ -14,6 +10,11 @@ import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
   private String device;
@@ -51,12 +52,21 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
   @Override
   public void createAlignedTimeSeries(List<TSDataType> dataTypes)
       throws IoTDBConnectionException, StatementExecutionException {
+    if (!dataTypesValid(dataTypes)) {
+      throw new IllegalArgumentException("Data types must have the same size as measurements");
+    }
     List<TSEncoding> encodings = Collections.nCopies(paths.size(), TSEncoding.PLAIN);
     List<CompressionType> compressionTypes =
         Collections.nCopies(paths.size(), CompressionType.UNCOMPRESSED);
     sessionPool.createAlignedTimeseries(
         device, measurements, dataTypes, encodings, compressionTypes, null);
   }
+
+  private boolean dataTypesValid(List<TSDataType> dataTypes) {
+    return dataTypes.size() == measurements.size();
+  }
+
+  
 
   @Override
   public void deleteAlignedTimeSeries()
