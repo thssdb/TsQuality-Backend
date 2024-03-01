@@ -1,29 +1,25 @@
 package cn.edu.tsinghua.tsquality.service.preaggregation.datastructures;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.iotdb.tsfile.read.common.Path;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.read.common.Path;
 
 public class TsFileStat {
   private final Path seriesPath;
-  @Getter
-  @Setter
-  private IoTDBSeriesStat fileStat = new IoTDBSeriesStat();
-  @Getter
-  @Setter
-  private Map<Long, IoTDBSeriesStat> chunkStats = new HashMap<>();
-  @Getter
-  @Setter
-  private Map<Long, List<IoTDBSeriesStat>> pageStats = new HashMap<>();
+  @Getter private final TSDataType dataType;
+  @Getter @Setter private IoTDBSeriesStat fileStat = new IoTDBSeriesStat();
+  @Getter @Setter private Map<Long, IoTDBSeriesStat> chunkStats = new HashMap<>();
+  @Getter @Setter private Map<Long, List<IoTDBSeriesStat>> pageStats = new HashMap<>();
 
-  public TsFileStat(Path path) {
+  public TsFileStat(Path path, TSDataType dataType) {
     seriesPath = path;
+    this.dataType = dataType;
   }
 
   public void addPageSeriesStat(long chunkOffset, IoTDBSeriesStat stat) {

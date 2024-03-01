@@ -8,6 +8,8 @@ import org.apache.iotdb.tsfile.read.common.BatchData;
 
 @Data
 public class IoTDBSeriesStat {
+  private long minTimestamp = Long.MAX_VALUE;
+  private long maxTimestamp = Long.MIN_VALUE;
   private long cnt;
   private long missCnt = 0;
   private long specialCnt = 0;
@@ -17,8 +19,6 @@ public class IoTDBSeriesStat {
   private long variationCnt = 0;
   private long speedCnt = 0;
   private long accelerationCnt = 0;
-  private long minTimestamp = Long.MAX_VALUE;
-  private long maxTimestamp = Long.MIN_VALUE;
   private double[] valueList;
   private double[] timeList;
   // this field is not used in the code,

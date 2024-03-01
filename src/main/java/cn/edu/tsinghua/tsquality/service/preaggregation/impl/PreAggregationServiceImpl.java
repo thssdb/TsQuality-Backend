@@ -149,11 +149,16 @@ public class PreAggregationServiceImpl implements PreAggregationService {
       TsFileSequenceReader reader,
       Map<Path, TsFileStat> tsFileStats)
       throws IOException {
-    TsFileStat tsFileStat = new TsFileStat(path);
+    TSDataType dataType = getDataTypeForPath(path, reader);
+    TsFileStat tsFileStat = new TsFileStat(path, dataType);
     List<Modification> modifications = getModificationsForPath(allModifications, path);
     Map<Long, IChunkReader> chunkReaders = getChunkReaders(path, reader, modifications);
     preAggregateChunks(tsFileStat, chunkReaders);
     tsFileStats.put(path, tsFileStat);
+  }
+
+  private TSDataType getDataTypeForPath(Path path, TsFileSequenceReader reader) throws IOException {
+    return reader.getFullPathDataTypeMap().get(path.getFullPath());
   }
 
   private Map<Long, IChunkReader> getChunkReaders(

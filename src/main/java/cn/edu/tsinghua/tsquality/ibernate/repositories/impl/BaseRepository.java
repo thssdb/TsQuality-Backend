@@ -4,6 +4,14 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 
 public class BaseRepository {
+  protected String countSql(String device) {
+    return String.format("select count(*) from %s", device);
+  }
+
+  protected String countTimeSeriesLikeSql(String prefix) {
+    return String.format("count timeseries %s.**", prefix);
+  }
+
   protected String prepareSelectSql(
       List<String> measurements, String device, String timeFilter, String valueFilter) {
     String selectClause =

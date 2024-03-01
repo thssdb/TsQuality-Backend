@@ -2,16 +2,17 @@ package cn.edu.tsinghua.tsquality.generators;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
-import org.apache.iotdb.tsfile.read.common.Path;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.read.common.Path;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SeriesStatGenerator {
+  public static final String DATABASE = IoTDBDataGenerator.getDATABASE_NAME();
   public static final int SERIES_PER_FILE = 10;
   public static final int CHUNKS_PER_FILE = 10;
   public static final int PAGES_PER_CHUNK = 10;
@@ -37,14 +38,14 @@ public class SeriesStatGenerator {
   public Map<Path, TsFileStat> tsFileStats() {
     Map<Path, TsFileStat> stats = new HashMap<>();
     for (int i = 0; i < SERIES_PER_FILE; i++) {
-      Path path = new Path("root.database1.device1.sensor" + i, true);
+      Path path = new Path(String.format("%s.sensor%d", DATABASE, i), true);
       stats.put(path, tsFileStat(path));
     }
     return stats;
   }
 
   public TsFileStat tsFileStat(Path path) {
-    TsFileStat stat = new TsFileStat(path);
+    TsFileStat stat = new TsFileStat(path, TSDataType.INT32);
     stat.setFileStat(fileStat());
     stat.setChunkStats(chunkStats());
     stat.setPageStats(pageStats());

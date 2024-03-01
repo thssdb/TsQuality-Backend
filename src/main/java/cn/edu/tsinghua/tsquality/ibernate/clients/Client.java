@@ -1,9 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.clients;
 
+import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
-
-import java.util.List;
 
 public interface Client {
   long countTimeSeries();

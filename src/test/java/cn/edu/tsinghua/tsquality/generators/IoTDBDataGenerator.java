@@ -32,13 +32,14 @@ public class IoTDBDataGenerator {
   @Value("${pre-aggregation.data-dir}")
   private String sequenceDataDir;
 
-  @Getter private static final String DATABASE_NAME = "root.tsquality";
+  @Getter private static final String DATABASE_NAME = "root.tsquality_test";
+  @Getter private static final String DEVICE = DATABASE_NAME + ".d1";
   @Getter private static final List<Path> paths;
 
   static {
     paths = new ArrayList<>();
     for (int i = 1; i <= SERIES_COUNT; i++) {
-      String path = String.format("%s.d1.s%d", DATABASE_NAME, i);
+      String path = String.format("%s.s%d", DEVICE, i);
       paths.add(new Path(path, true));
     }
   }

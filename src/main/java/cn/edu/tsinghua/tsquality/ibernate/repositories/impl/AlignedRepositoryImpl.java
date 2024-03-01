@@ -1,6 +1,12 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
@@ -11,16 +17,20 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+@Log4j2
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
-  private String device;
-  private List<String> measurements;
-  private final List<Path> paths;
+  @Getter private String device;
+  @Getter private List<String> measurements;
+  @Getter private final List<Path> paths;
   private final SessionPool sessionPool;
+
+  public AlignedRepositoryImpl(
+      SessionPool sessionPool, @Nonnull String device, @Nonnull List<String> measurements) {
+    this.sessionPool = sessionPool;
+    this.device = device;
+    this.measurements = measurements;
+    this.paths = measurements.stream().map(x -> new Path(device + "." + x, true)).toList();
+  }
 
   public AlignedRepositoryImpl(SessionPool sessionPool, @Nonnull List<Path> paths) {
     if (!checkPathsNotEmptyAndHaveSameDevice(paths)) {
@@ -55,6 +65,19 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
     if (!dataTypesValid(dataTypes)) {
       throw new IllegalArgumentException("Data types must have the same size as measurements");
     }
+    if (alreadyCreated()) {
+      return;
+    }
+    doCreate(dataTypes);
+  }
+
+  private boolean alreadyCreated() {
+    long size = countTimeSeriesLike(device);
+    return size == paths.size();
+  }
+
+  private void doCreate(List<TSDataType> dataTypes)
+      throws IoTDBConnectionException, StatementExecutionException {
     List<TSEncoding> encodings = Collections.nCopies(paths.size(), TSEncoding.PLAIN);
     List<CompressionType> compressionTypes =
         Collections.nCopies(paths.size(), CompressionType.UNCOMPRESSED);
@@ -66,7 +89,40 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
     return dataTypes.size() == measurements.size();
   }
 
-  
+  @Override
+  public long count() {
+    String sql = countSql(device);
+    return executeCountQuery(sql);
+  }
+
+  @Override
+  public long countTimeSeriesLike(String prefix) {
+    String sql = countTimeSeriesLikeSql(prefix);
+    return executeCountQuery(sql);
+  }
+
+  private long executeCountQuery(String sql) {
+    SessionDataSetWrapper wrapper = null;
+    try {
+      wrapper = sessionPool.executeQueryStatement(sql);
+      return wrapperToSelectCountResult(wrapper);
+    } catch (IoTDBConnectionException | StatementExecutionException e) {
+      log.error(e);
+      return 0;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
+    }
+  }
+
+  private long wrapperToSelectCountResult(SessionDataSetWrapper wrapper)
+      throws IoTDBConnectionException, StatementExecutionException {
+    long result = 0;
+    SessionDataSet.DataIterator iterator = wrapper.iterator();
+    if (iterator.next()) {
+      result = iterator.getInt(1);
+    }
+    return result;
+  }
 
   @Override
   public void deleteAlignedTimeSeries()
@@ -75,18 +131,26 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
   }
 
   @Override
-  public void insert(long timestamp, List<TSDataType> dataTypes, List<Object> values)
+  public void insert(long timestamp, List<Object> values)
       throws IoTDBConnectionException, StatementExecutionException {
-    sessionPool.insertAlignedRecord(device, timestamp, measurements, dataTypes, values);
+    sessionPool.insertAlignedRecord(
+        device, timestamp, measurements, values.stream().map(Object::toString).toList());
   }
 
   @Override
-  public List<List<Object>> select(List<Path> first, String timeFilter, String valueFilter) {
+  public void insert(long timestamp, List<String> measurements, List<Object> values)
+      throws IoTDBConnectionException, StatementExecutionException {
+    sessionPool.insertAlignedRecord(
+        device, timestamp, measurements, values.stream().map(Object::toString).toList());
+  }
+
+  @Override
+  public List<List<Object>> select(String timeFilter, String valueFilter) {
     String sql = prepareSelectSql(measurements, device, timeFilter, valueFilter);
     SessionDataSetWrapper wrapper = null;
     try {
       wrapper = sessionPool.executeQueryStatement(sql);
-      return wrapperToResult(wrapper);
+      return wrapperToSelectResult(wrapper);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       return new ArrayList<>();
     } finally {
@@ -94,7 +158,7 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
     }
   }
 
-  private List<List<Object>> wrapperToResult(SessionDataSetWrapper wrapper)
+  private List<List<Object>> wrapperToSelectResult(SessionDataSetWrapper wrapper)
       throws IoTDBConnectionException, StatementExecutionException {
     List<List<Object>> result = new ArrayList<>();
     SessionDataSet.DataIterator iterator = wrapper.iterator();

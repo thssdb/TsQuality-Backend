@@ -4,17 +4,24 @@ import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface AlignedRepository {
   void createAlignedTimeSeries(List<TSDataType> dataTypes)
       throws IoTDBConnectionException, StatementExecutionException;
 
-  void deleteAlignedTimeSeries() throws IoTDBConnectionException, StatementExecutionException;
+  long count() throws IoTDBConnectionException, StatementExecutionException;
 
-  void insert(long timestamp, List<TSDataType> dataTypes, List<Object> values)
+  long countTimeSeriesLike(String prefix)
       throws IoTDBConnectionException, StatementExecutionException;
 
-  Object select(List<Path> first, String timeFilter, String valueFilter)
+  void deleteAlignedTimeSeries() throws IoTDBConnectionException, StatementExecutionException;
+
+  void insert(long timestamp, List<Object> values)
+      throws IoTDBConnectionException, StatementExecutionException;
+
+  void insert(long timestamp, List<String> measurements, List<Object> values)
+      throws IoTDBConnectionException, StatementExecutionException;
+
+  List<List<Object>> select(String timeFilter, String valueFilter)
       throws IoTDBConnectionException, StatementExecutionException;
 }
