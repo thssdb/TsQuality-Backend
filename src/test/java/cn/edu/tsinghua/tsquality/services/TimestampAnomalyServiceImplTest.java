@@ -1,5 +1,6 @@
 package cn.edu.tsinghua.tsquality.services;
 
+import cn.edu.tsinghua.tsquality.generators.TimestampGenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
@@ -33,24 +34,38 @@ public class TimestampAnomalyServiceImplTest {
 
   @Test
   void testAnomalyDetectionAndRepairWithNoArgs() {
-    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path);
-    thenResultDataSizeShouldBeCorrect(result);
+    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, null);
+    thenOriginalDataSizeShouldBe(result, TEST_DATA_SIZE);
+    thenRepairedDataSizeShouldBeGreaterThanZero(result);
   }
 
   @Test
   void testAnomalyDetectionAndRepairWithStandardInterval() {
-    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, 1000L);
-    thenResultDataSizeShouldBeCorrect(result);
+    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, 1000L, null);
+    thenOriginalDataSizeShouldBe(result, TEST_DATA_SIZE);
+    thenRepairedDataSizeShouldBeGreaterThanZero(result);
   }
 
   @Test
   void testAnomalyDetectionAndRepairWithDetectionMethod() {
-    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, "mode");
-    thenResultDataSizeShouldBeCorrect(result);
+    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, "mode", null);
+    thenOriginalDataSizeShouldBe(result, TEST_DATA_SIZE);
+    thenRepairedDataSizeShouldBeGreaterThanZero(result);
   }
 
-  private void thenResultDataSizeShouldBeCorrect(TimestampAnomalyResultDto result) {
-    assertThat(result.getOriginalData().size()).isEqualTo(TEST_DATA_SIZE);
+  @Test
+  void testAnomalyDetectionAndRepairWithTimeFilter() {
+    long timestamp = TimestampGenerator.START_TIMESTAMP + (TEST_DATA_SIZE / 2) * TimestampGenerator.INTERVAL;
+    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, "time < " + timestamp);
+    thenOriginalDataSizeShouldBe(result, TEST_DATA_SIZE / 2 + 1);
+    thenRepairedDataSizeShouldBeGreaterThanZero(result);
+  }
+
+  private void thenOriginalDataSizeShouldBe(TimestampAnomalyResultDto result, int size) {
+    assertThat(result.getOriginalData().size()).isEqualTo(size);
+  }
+
+  private void thenRepairedDataSizeShouldBeGreaterThanZero(TimestampAnomalyResultDto result) {
     assertThat(result.getRepairedData().size()).isGreaterThan(0);
   }
 }

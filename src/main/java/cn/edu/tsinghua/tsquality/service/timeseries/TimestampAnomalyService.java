@@ -4,21 +4,21 @@ import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyR
 import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface TimestampAnomalyService {
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path);
+  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, String timeFilter);
 
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, Long standardInterval);
+  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, Long standardInterval, String timeFilter);
 
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, String detectionMethod);
+  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, String detectionMethod, String timeFilter);
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path) {
-    return anomalyDetectionAndRepair(path.getFullPath());
+  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, String timeFilter) {
+    return anomalyDetectionAndRepair(path.getFullPath(), timeFilter);
   }
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, Long standardInterval) {
-    return anomalyDetectionAndRepair(path.getFullPath(), standardInterval);
+  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, Long standardInterval, String timeFilter) {
+    return anomalyDetectionAndRepair(path.getFullPath(), standardInterval, timeFilter);
   }
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, String detectionMethod) {
-    return anomalyDetectionAndRepair(path.getFullPath(), detectionMethod);
+  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, String detectionMethod, String timeFilter) {
+    return anomalyDetectionAndRepair(path.getFullPath(), detectionMethod, timeFilter);
   }
 }

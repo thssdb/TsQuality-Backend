@@ -17,7 +17,8 @@ public class TimestampAnomalyController {
   }
 
   @GetMapping
-  public TimestampAnomalyResultDto anomalyDetectionAndRepair(@RequestParam("path") String path) {
-    return service.anomalyDetectionAndRepair(path);
+  public TimestampAnomalyResultDto anomalyDetectionAndRepair(
+      @RequestParam("path") String path, @RequestParam("time") String timeFilter) {
+    return service.anomalyDetectionAndRepair(path, timeFilter);
   }
 }
