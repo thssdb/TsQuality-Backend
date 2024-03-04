@@ -1,3 +1,6 @@
+hdfs:
+  defaultFS: hdfs://localhost:9000
+
 server:
   port: 8888
 spring:

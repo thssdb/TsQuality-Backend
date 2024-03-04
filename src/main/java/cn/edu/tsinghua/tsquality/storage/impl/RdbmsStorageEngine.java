@@ -8,11 +8,12 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.List;
-import java.util.Map;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 @Primary
 @Component("RdbmsStorageEngine")
@@ -101,20 +102,8 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   }
 
   private void updateIoTDBSeries(TsFileInfo tsFileInfo, List<Path> paths) {
-    List<IoTDBSeries> seriesList = getIoTDBSeriesList(paths, tsFileInfo.getDatabase());
+    List<IoTDBSeries> seriesList = IoTDBSeries.fromPaths(paths, tsFileInfo.getDatabase());
     seriesMapper.insertList(seriesList);
-  }
-
-  private List<IoTDBSeries> getIoTDBSeriesList(List<Path> paths, String database) {
-    return paths.stream().map(x -> pathToIoTDBSeries(x, database)).toList();
-  }
-
-  private IoTDBSeries pathToIoTDBSeries(Path path, String database) {
-    return IoTDBSeries.builder()
-        .path(path.getFullPath())
-        .device(path.getDevice())
-        .database(database)
-        .build();
   }
 
   private void saveTsFileStatForPath(int fid, Map.Entry<Path, TsFileStat> entry) {
