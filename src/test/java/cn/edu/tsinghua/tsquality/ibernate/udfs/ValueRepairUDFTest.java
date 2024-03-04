@@ -1,7 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.udfs;
 
-import org.apache.iotdb.tsfile.read.common.Path;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.iotdb.tsfile.read.common.Path;
 import org.junit.jupiter.api.Test;
 
 public class ValueRepairUDFTest {
@@ -13,7 +14,8 @@ public class ValueRepairUDFTest {
   void testSqlGenerationWithoutParamsShouldBeCorrect() {
     underTests = new ValueRepairUDF();
     String actual = underTests.getSql(PATH);
-    String expected = String.format("select valuerepair(%s) from %s", PATH.getMeasurement(), PATH.getDevice());
+    String expected =
+        String.format("select valuerepair(%s) from %s", PATH.getMeasurement(), PATH.getDevice());
     assertThat(actual).isEqualTo(expected);
   }
 }

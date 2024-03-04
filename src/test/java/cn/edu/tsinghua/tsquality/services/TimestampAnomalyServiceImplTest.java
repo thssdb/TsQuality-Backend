@@ -1,9 +1,9 @@
 package cn.edu.tsinghua.tsquality.services;
 
-import cn.edu.tsinghua.tsquality.generators.TimestampGenerator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
+import cn.edu.tsinghua.tsquality.generators.TimestampGenerator;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
 import cn.edu.tsinghua.tsquality.service.timeseries.impl.TimestampAnomalyServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -55,8 +55,10 @@ public class TimestampAnomalyServiceImplTest {
 
   @Test
   void testAnomalyDetectionAndRepairWithTimeFilter() {
-    long timestamp = TimestampGenerator.START_TIMESTAMP + (TEST_DATA_SIZE / 2) * TimestampGenerator.INTERVAL;
-    TimestampAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, "time < " + timestamp);
+    long timestamp =
+        TimestampGenerator.START_TIMESTAMP + (TEST_DATA_SIZE / 2) * TimestampGenerator.INTERVAL;
+    TimestampAnomalyResultDto result =
+        underTests.anomalyDetectionAndRepair(path, "time < " + timestamp);
     thenOriginalDataSizeShouldBe(result, TEST_DATA_SIZE / 2 + 1);
     thenRepairedDataSizeShouldBeGreaterThanZero(result);
   }

@@ -45,24 +45,28 @@ public class ValueRepairUDF extends AbstractUDF {
 
   private boolean isScreenParamsValid() {
     Object method = params.get(METHOD);
-    return (method == null || method.equals("Screen")) &&
-        isValidDoubleParam(MIN_SPEED) && isValidMaxSpeed() &&
-        !params.containsKey(CENTER) && !params.containsKey(SIGMA);
+    return (method == null || method.equals("Screen"))
+        && isValidDoubleParam(MIN_SPEED)
+        && isValidMaxSpeed()
+        && !params.containsKey(CENTER)
+        && !params.containsKey(SIGMA);
   }
 
   private boolean isValidMaxSpeed() {
     if (!isValidDoubleParam(MAX_SPEED)) {
       return false;
     }
-    return params.get(MIN_SPEED) == null ||
-        (Double) params.get(MAX_SPEED) >= (Double) params.get(MIN_SPEED);
+    return params.get(MIN_SPEED) == null
+        || (Double) params.get(MAX_SPEED) >= (Double) params.get(MIN_SPEED);
   }
 
   private boolean isLsGreedyParamsValid() {
     Object method = params.get(METHOD);
-    return method.equals("LsGreedy") &&
-        isValidDoubleParam(CENTER) && isValidDoubleParam(SIGMA) &&
-        !params.containsKey(MIN_SPEED) && !params.containsKey(MAX_SPEED);
+    return method.equals("LsGreedy")
+        && isValidDoubleParam(CENTER)
+        && isValidDoubleParam(SIGMA)
+        && !params.containsKey(MIN_SPEED)
+        && !params.containsKey(MAX_SPEED);
   }
 
   private boolean isValidDoubleParam(String key) {
