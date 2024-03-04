@@ -1,10 +1,13 @@
 package cn.edu.tsinghua.tsquality.generators;
 
-import java.util.Arrays;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 public class ValueGenerator {
+  public static final int anomalyValuesCount = 14;
+
   public Double[] zeroDoubleValues(int size) {
     Double[] values = new Double[size];
     Arrays.fill(values, 0.0);

@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum UDF {
-  TIMESTAMP_REPAIR("timestamprepair");
+  TIMESTAMP_REPAIR("timestamprepair"),
+  VALUE_REPAIR("valuerepair");
 
   private final String name;
 

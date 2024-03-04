@@ -1,7 +1,5 @@
 package cn.edu.tsinghua.tsquality.generators;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -17,6 +15,9 @@ import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class IoTDBDataGenerator {
@@ -72,6 +73,19 @@ public class IoTDBDataGenerator {
     }
   }
 
+  public void generateValueAnomalyData(Double[] values) throws IoTDBConnectionException, StatementExecutionException {
+    try {
+      session.open();
+      for (Path path : paths) {
+        createTimeseriesIfNotExists(path);
+        Tablet tablet = generateTabletWithValueAnomalies(path, values);
+        insertTablet(tablet);
+      }
+    } finally {
+      session.close();
+    }
+  }
+
   private void createTimeseriesIfNotExists(Path path)
       throws IoTDBConnectionException, StatementExecutionException {
     if (!session.checkTimeseriesExists(path.getFullPath())) {
@@ -83,6 +97,11 @@ public class IoTDBDataGenerator {
   private Tablet generateTabletWithTimestampAnomalies(Path path, int size) {
     long[] timestamps = timestampGenerator.timestampsWithHalfAnomalies(size);
     Double[] values = valueGenerator.zeroDoubleValues(size);
+    return populateTablet(path, timestamps, values);
+  }
+
+  private Tablet generateTabletWithValueAnomalies(Path path, Double[] values) {
+    long[] timestamps = timestampGenerator.standardTimestamps(values.length);
     return populateTablet(path, timestamps, values);
   }
 

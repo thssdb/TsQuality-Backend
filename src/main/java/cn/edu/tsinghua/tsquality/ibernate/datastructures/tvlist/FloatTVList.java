@@ -2,18 +2,21 @@ package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.FloatTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public class FloatTVList extends TVList {
   protected List<FloatTVPair> pairs = new ArrayList<>();
 
-  FloatTVList() {}
+  FloatTVList() {
+    dataType = TSDataType.FLOAT;
+  }
 
   @Override
   public TSDataType getDataType() {
-    return TSDataType.FLOAT;
+    return dataType;
   }
 
   @Override

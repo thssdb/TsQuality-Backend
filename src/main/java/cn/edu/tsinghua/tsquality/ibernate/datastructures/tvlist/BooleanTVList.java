@@ -2,18 +2,21 @@ package cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.BooleanTVPair;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPairFactory;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 
 public class BooleanTVList extends TVList {
   protected List<BooleanTVPair> pairs = new ArrayList<>();
 
-  BooleanTVList() {}
+  BooleanTVList() {
+    dataType = TSDataType.BOOLEAN;
+  }
 
   @Override
   public TSDataType getDataType() {
-    return TSDataType.BOOLEAN;
+    return dataType;
   }
 
   @Override
