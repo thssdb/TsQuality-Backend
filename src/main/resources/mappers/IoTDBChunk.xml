@@ -16,4 +16,12 @@
         INSERT IGNORE INTO chunks (`fid`, `sid`, `offset`)
         VALUES (#{chunk.fid}, #{chunk.sid}, #{chunk.offset})
     </insert>
+
+    <select id="select" resultType="IoTDBChunk">
+        select * from chunks;
+    </select>
+
+    <select id="selectByPath" resultType="IoTDBChunk">
+        select `cid`, `fid`, `sid`, `offset` from series natural join chunks where path = #{path}
+    </select>
 </mapper>

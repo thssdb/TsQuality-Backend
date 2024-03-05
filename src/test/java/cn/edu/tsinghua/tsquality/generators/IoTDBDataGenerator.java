@@ -1,7 +1,5 @@
 package cn.edu.tsinghua.tsquality.generators;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -18,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class IoTDBDataGenerator {
   public static final int SERIES_COUNT = 3;
@@ -32,9 +33,9 @@ public class IoTDBDataGenerator {
   @Value("${pre-aggregation.data-dir}")
   private String sequenceDataDir;
 
-  @Getter private static final String DATABASE_NAME = "root.tsquality_test";
-  @Getter private static final String DEVICE = DATABASE_NAME + ".d1";
-  @Getter private static final List<Path> paths;
+  public static final String DATABASE_NAME = "root.tsquality_test";
+  public static final String DEVICE = DATABASE_NAME + ".d1";
+  public static final List<Path> paths;
 
   static {
     paths = new ArrayList<>();

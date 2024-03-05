@@ -45,7 +45,7 @@ public class DataProfileServiceImpl implements DataProfileService {
     double timeliness = DataQualityCalculationUtil.calculateTimeliness(stat);
     double validity = DataQualityCalculationUtil.calculateValidity(stat);
     return IoTDBDataProfile.builder()
-        .numDataPoints(stat.getCnt())
+        .numDataPoints(stat.getCount())
         .numTimeSeries(getNumTimeSeries())
         .numDevices(getNumDevices())
         .numDatabases(getNumDatabases())

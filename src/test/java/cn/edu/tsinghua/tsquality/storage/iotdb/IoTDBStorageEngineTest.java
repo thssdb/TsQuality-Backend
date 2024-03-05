@@ -1,8 +1,5 @@
 package cn.edu.tsinghua.tsquality.storage.iotdb;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.generators.SeriesStatGenerator;
 import cn.edu.tsinghua.tsquality.generators.TsFileInfoGenerator;
@@ -13,17 +10,20 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.IoTDBStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @SpringBootTest
 public class IoTDBStorageEngineTest {
@@ -35,7 +35,7 @@ public class IoTDBStorageEngineTest {
 
   @AfterEach
   void clear() throws IoTDBConnectionException, StatementExecutionException {
-    sessionPool.deleteDatabase(IoTDBDataGenerator.getDATABASE_NAME());
+    sessionPool.deleteDatabase(IoTDBDataGenerator.DATABASE_NAME);
   }
 
   @Test
@@ -93,18 +93,18 @@ public class IoTDBStorageEngineTest {
     thenStatsValuesShouldBe(values, stat);
   }
 
-  private void thenStatsValuesShouldBe(List<Object> values, IoTDBSeriesStat stat) throws Exception {
+  private void thenStatsValuesShouldBe(List<Object> values, IoTDBSeriesStat stat) {
     assertThat(values.get(1)).isEqualTo(stat.getMinTimestamp());
     assertThat(values.get(2)).isEqualTo(stat.getMaxTimestamp());
-    assertThat(values.get(3)).isEqualTo(stat.getCnt());
-    assertThat(values.get(4)).isEqualTo(stat.getMissCnt());
-    assertThat(values.get(5)).isEqualTo(stat.getSpecialCnt());
-    assertThat(values.get(6)).isEqualTo(stat.getLateCnt());
-    assertThat(values.get(7)).isEqualTo(stat.getRedundancyCnt());
-    assertThat(values.get(8)).isEqualTo(stat.getValueCnt());
-    assertThat(values.get(9)).isEqualTo(stat.getVariationCnt());
-    assertThat(values.get(10)).isEqualTo(stat.getSpeedCnt());
-    assertThat(values.get(11)).isEqualTo(stat.getValueCnt());
+    assertThat(values.get(3)).isEqualTo(stat.getCount());
+    assertThat(values.get(4)).isEqualTo(stat.getMissCount());
+    assertThat(values.get(5)).isEqualTo(stat.getSpecialCount());
+    assertThat(values.get(6)).isEqualTo(stat.getLateCount());
+    assertThat(values.get(7)).isEqualTo(stat.getRedundancyCount());
+    assertThat(values.get(8)).isEqualTo(stat.getValueCount());
+    assertThat(values.get(9)).isEqualTo(stat.getVariationCount());
+    assertThat(values.get(10)).isEqualTo(stat.getSpeedCount());
+    assertThat(values.get(11)).isEqualTo(stat.getValueCount());
   }
 
   private void thenChunkStatsShouldHaveBeenPersisted(Map<Path, TsFileStat> stats) throws Exception {

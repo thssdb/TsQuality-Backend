@@ -1,18 +1,18 @@
 package cn.edu.tsinghua.tsquality.ibernate.clients;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.ibernate.clients.impl.ClientImpl;
-import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class ClientImplTest {
@@ -52,7 +52,7 @@ public class ClientImplTest {
   @Test
   void testQueryLatestTimeSeriesShouldReturnCorrectResult()
       throws IoTDBConnectionException, StatementExecutionException {
-    List<String> paths = IoTDBDataGenerator.getPaths().stream().map(Path::toString).toList();
+    List<String> paths = IoTDBDataGenerator.paths.stream().map(Path::toString).toList();
     List<String> result = underTests.queryLatestTimeSeries("root", 10);
     assertThat(result).hasSize(IoTDBDataGenerator.SERIES_COUNT);
     for (String path : result) {

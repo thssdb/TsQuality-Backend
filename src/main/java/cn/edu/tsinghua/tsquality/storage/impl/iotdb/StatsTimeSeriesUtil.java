@@ -40,15 +40,15 @@ public class StatsTimeSeriesUtil {
     return List.of(
         stat.getMinTimestamp(),
         stat.getMaxTimestamp(),
-        stat.getCnt(),
-        stat.getMissCnt(),
-        stat.getSpecialCnt(),
-        stat.getLateCnt(),
-        stat.getRedundancyCnt(),
-        stat.getValueCnt(),
-        stat.getVariationCnt(),
-        stat.getSpecialCnt(),
-        stat.getAccelerationCnt());
+        stat.getCount(),
+        stat.getMissCount(),
+        stat.getSpecialCount(),
+        stat.getLateCount(),
+        stat.getRedundancyCount(),
+        stat.getValueCount(),
+        stat.getVariationCount(),
+        stat.getSpecialCount(),
+        stat.getAccelerationCount());
   }
 
   public String getFileStatsDeviceForPath(Path path) {

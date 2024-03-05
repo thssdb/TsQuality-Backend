@@ -15,7 +15,7 @@ public class IoTDBSeriesOverview {
   private String path;
 
   public IoTDBSeriesOverview(@NotNull IoTDBSeriesStat stat) {
-    this.cnt = stat.getCnt();
+    this.cnt = stat.getCount();
     this.completeness = DataQualityCalculationUtil.calculateCompleteness(stat);
     this.consistency = DataQualityCalculationUtil.calculateConsistency(stat);
     this.timeliness = DataQualityCalculationUtil.calculateTimeliness(stat);

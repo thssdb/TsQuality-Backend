@@ -2,25 +2,26 @@ package cn.edu.tsinghua.tsquality.model.entity;
 
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.tsfile.read.common.BatchData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
   private long minTimestamp = Long.MAX_VALUE;
   private long maxTimestamp = Long.MIN_VALUE;
-  private long cnt;
-  private long missCnt = 0;
-  private long specialCnt = 0;
-  private long lateCnt = 0;
-  private long redundancyCnt = 0;
-  private long valueCnt = 0;
-  private long variationCnt = 0;
-  private long speedCnt = 0;
-  private long accelerationCnt = 0;
+  private long count;
+  private long missCount = 0;
+  private long specialCount = 0;
+  private long lateCount = 0;
+  private long redundancyCount = 0;
+  private long valueCount = 0;
+  private long variationCount = 0;
+  private long speedCount = 0;
+  private long accelerationCount = 0;
   private double[] valueList;
   private double[] timeList;
   // this field is not used in the code,
@@ -36,7 +37,7 @@ public class IoTDBSeriesStat {
       return;
     }
 
-    cnt = size;
+    count = size;
     minTimestamp = tvList.getTimestamp(0);
     maxTimestamp = tvList.getTimestamp(size - 1);
 
@@ -68,7 +69,7 @@ public class IoTDBSeriesStat {
         if (Double.isFinite(value)) {
           values.add(value);
         } else {
-          specialCnt++;
+          specialCount++;
           values.add(Double.NaN);
         }
       }
@@ -85,7 +86,7 @@ public class IoTDBSeriesStat {
     if (batchData.isEmpty()) {
       return;
     }
-    cnt = batchData.length();
+    count = batchData.length();
     minTimestamp = batchData.getMinTimestamp();
     maxTimestamp = batchData.getMaxTimestamp();
 
@@ -117,7 +118,7 @@ public class IoTDBSeriesStat {
         if (Double.isFinite(value)) {
           values.add(value);
         } else {
-          specialCnt++;
+          specialCount++;
           values.add(Double.NaN);
         }
       }
@@ -132,15 +133,15 @@ public class IoTDBSeriesStat {
   }
 
   public IoTDBSeriesStat merge(IoTDBSeriesStat seriesStat) {
-    cnt += seriesStat.cnt;
-    missCnt += seriesStat.missCnt;
-    specialCnt += seriesStat.specialCnt;
-    lateCnt += seriesStat.lateCnt;
-    redundancyCnt += seriesStat.redundancyCnt;
-    valueCnt += seriesStat.valueCnt;
-    variationCnt += seriesStat.variationCnt;
-    speedCnt += seriesStat.speedCnt;
-    accelerationCnt += seriesStat.accelerationCnt;
+    count += seriesStat.count;
+    missCount += seriesStat.missCount;
+    specialCount += seriesStat.specialCount;
+    lateCount += seriesStat.lateCount;
+    redundancyCount += seriesStat.redundancyCount;
+    valueCount += seriesStat.valueCount;
+    variationCount += seriesStat.variationCount;
+    speedCount += seriesStat.speedCount;
+    accelerationCount += seriesStat.accelerationCount;
     minTimestamp = Math.min(minTimestamp, seriesStat.minTimestamp);
     maxTimestamp = Math.max(maxTimestamp, seriesStat.maxTimestamp);
     return this;
@@ -151,16 +152,16 @@ public class IoTDBSeriesStat {
       return;
     }
     double k = 3;
-    valueCnt = Util.findOutliers(valueList, k);
+    valueCount = Util.findOutliers(valueList, k);
     double[] variation = Util.variation(valueList);
-    variationCnt = Util.findOutliers(variation, k);
+    variationCount = Util.findOutliers(variation, k);
     double[] speed = Util.speed(valueList, timeList);
-    speedCnt = Util.findOutliers(speed, k);
+    speedCount = Util.findOutliers(speed, k);
     if (speed.length < 2) {
       return;
     }
     double[] speedChange = Util.variation(speed);
-    accelerationCnt = Util.findOutliers(speedChange, k);
+    accelerationCount = Util.findOutliers(speedChange, k);
   }
 
   public void timeDetect() {
@@ -178,7 +179,7 @@ public class IoTDBSeriesStat {
       double times = (window.get(1) - window.get(0)) / base;
       if (times <= 0.5D) {
         window.remove(1);
-        ++redundancyCnt;
+        ++redundancyCount;
       } else if (times >= 2.0D && times <= 9.0D) {
         int temp = 0;
 
@@ -197,8 +198,8 @@ public class IoTDBSeriesStat {
             }
           }
         }
-        lateCnt += temp;
-        missCnt = (int) ((long) missCnt + (Math.round(times - 1.0D) - (long) temp));
+        lateCount += temp;
+        missCount = (int) ((long) missCount + (Math.round(times - 1.0D) - (long) temp));
       }
       window.remove(0);
       while (window.size() < 10 && i < timeList.length) {

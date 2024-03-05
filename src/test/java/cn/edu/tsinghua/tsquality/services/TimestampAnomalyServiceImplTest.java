@@ -24,7 +24,7 @@ public class TimestampAnomalyServiceImplTest {
   @BeforeEach
   void insertDataWithTimestampAnomalies() throws Exception {
     dataGenerator.generateTimestampAnomalyData(TEST_DATA_SIZE);
-    path = IoTDBDataGenerator.getPaths().getFirst().getFullPath();
+    path = IoTDBDataGenerator.paths.getFirst().getFullPath();
   }
 
   @AfterEach

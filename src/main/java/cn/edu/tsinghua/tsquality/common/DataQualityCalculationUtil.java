@@ -5,24 +5,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class DataQualityCalculationUtil {
   public static double calculateCompleteness(@NotNull IoTDBSeriesStat stat) {
-    return 1 - (double) stat.getMissCnt() / (stat.getCnt() + stat.getMissCnt());
+    return 1 - (double) stat.getMissCount() / (stat.getCount() + stat.getMissCount());
   }
 
   public static double calculateConsistency(@NotNull IoTDBSeriesStat stat) {
-    return 1 - (double) stat.getRedundancyCnt() / stat.getCnt();
+    return 1 - (double) stat.getRedundancyCount() / stat.getCount();
   }
 
   public static double calculateTimeliness(@NotNull IoTDBSeriesStat stat) {
-    return 1 - (double) stat.getLateCnt() / stat.getCnt();
+    return 1 - (double) stat.getLateCount() / stat.getCount();
   }
 
   public static double calculateValidity(@NotNull IoTDBSeriesStat stat) {
     return 1
         - (double)
-                (stat.getValueCnt()
-                    + stat.getVariationCnt()
-                    + stat.getSpecialCnt()
-                    + stat.getAccelerationCnt())
-            / (4 * stat.getCnt());
+                (stat.getValueCount()
+                    + stat.getVariationCount()
+                    + stat.getSpecialCount()
+                    + stat.getAccelerationCount())
+            / (4 * stat.getCount());
   }
 }

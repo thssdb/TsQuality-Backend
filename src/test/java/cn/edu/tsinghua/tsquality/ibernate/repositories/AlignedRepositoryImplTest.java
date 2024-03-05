@@ -1,27 +1,27 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.AlignedRepositoryImpl;
-import java.util.Collections;
-import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Collections;
+import java.util.List;
+
 @SpringBootTest
 public class AlignedRepositoryImplTest {
-  private static final String DEVICE = IoTDBDataGenerator.getDEVICE();
-  private static final List<Path> PATHS = IoTDBDataGenerator.getPaths();
+  private static final String DEVICE = IoTDBDataGenerator.DEVICE;
+  private static final List<Path> PATHS = IoTDBDataGenerator.paths;
   private static final List<TSDataType> DATA_TYPES = IoTDBDataGenerator.getDataTypes();
   private AlignedRepositoryImpl underTests;
 
@@ -34,7 +34,7 @@ public class AlignedRepositoryImplTest {
 
   @AfterEach
   void clear() throws IoTDBConnectionException, StatementExecutionException {
-    sessionPool.deleteDatabase(IoTDBDataGenerator.getDATABASE_NAME());
+    sessionPool.deleteDatabase(IoTDBDataGenerator.DATABASE_NAME);
   }
 
   @Test

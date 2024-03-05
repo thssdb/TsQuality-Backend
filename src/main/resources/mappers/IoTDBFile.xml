@@ -9,8 +9,17 @@
             `file_path` VARCHAR(255) NOT NULL UNIQUE
         )
     </update>
+
     <select id="selectIdByFilePath" resultType="java.lang.Integer">
         SELECT `fid` FROM files
         WHERE `file_path` = #{filePath}
+    </select>
+
+    <select id="select" resultType="IoTDBFile">
+        select * from files
+    </select>
+
+    <select id="selectByPath" resultType="IoTDBFile">
+        select * from series natural join files where path = #{path}
     </select>
 </mapper>

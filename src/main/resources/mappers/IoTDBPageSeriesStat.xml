@@ -25,15 +25,15 @@
             #{pid},
             #{stat.minTimestamp},
             #{stat.maxTimestamp},
-            #{stat.cnt},
-            #{stat.missCnt},
-            #{stat.specialCnt},
-            #{stat.lateCnt},
-            #{stat.redundancyCnt},
-            #{stat.valueCnt},
-            #{stat.variationCnt},
-            #{stat.specialCnt},
-            #{stat.accelerationCnt}
+            #{stat.count},
+            #{stat.missCount},
+            #{stat.specialCount},
+            #{stat.lateCount},
+            #{stat.redundancyCount},
+            #{stat.valueCount},
+            #{stat.variationCount},
+            #{stat.specialCount},
+            #{stat.accelerationCount}
         )
     </insert>
 </mapper>

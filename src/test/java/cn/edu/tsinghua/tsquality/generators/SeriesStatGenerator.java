@@ -2,18 +2,19 @@ package cn.edu.tsinghua.tsquality.generators;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class SeriesStatGenerator {
-  public static final String DATABASE = IoTDBDataGenerator.getDATABASE_NAME();
-  public static final List<Path> PATHS;
+  public static final String DATABASE = IoTDBDataGenerator.DATABASE_NAME;
+  public static final List<Path> PATHS = IoTDBDataGenerator.paths;
   public static final int SERIES_PER_FILE = 10;
   public static final int CHUNKS_PER_FILE = 10;
   public static final int PAGES_PER_CHUNK = 10;
@@ -28,17 +29,9 @@ public class SeriesStatGenerator {
   public static final long MIN_CHUNK_OFFSET = 0;
   public static final long CHUNK_OFFSET_INTERVAL = 1000;
 
-  static {
-    PATHS = new ArrayList<>();
-    for (int i = 0; i < SERIES_PER_FILE; i++) {
-      Path path = new Path(String.format("%s.sensor%d", DATABASE, i), true);
-      PATHS.add(path);
-    }
-  }
-
   public IoTDBSeriesStat seriesStat(long cnt, long minTimestamp, long maxTimestamp) {
     IoTDBSeriesStat stat = new IoTDBSeriesStat();
-    stat.setCnt(cnt);
+    stat.setCount(cnt);
     stat.setMinTimestamp(minTimestamp);
     stat.setMaxTimestamp(maxTimestamp);
     return stat;

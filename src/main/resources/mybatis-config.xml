@@ -1,0 +1,13 @@
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <typeAliases>
+        <typeAlias alias="IoTDBSeries" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries" />
+        <typeAlias alias="IoTDBFile" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBFile" />
+        <typeAlias alias="IoTDBChunk" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk" />
+        <typeAlias alias="IoTDBSeriesStat" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat" />
+        <typeAlias alias="TimeRange" type="cn.edu.tsinghua.tsquality.common.TimeRange" />
+    </typeAliases>
+</configuration>

@@ -1,9 +1,12 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface IoTDBFileMapper {
@@ -11,13 +14,13 @@ public interface IoTDBFileMapper {
 
   @Options(useGeneratedKeys = true, keyProperty = "file.fid")
   @Insert(
-      "INSERT IGNORE INTO files (file_version, file_path) "
-          + "VALUES (#{file.fileVersion}, #{file.filePath})")
+      "insert ignore into files(file_version, file_path) "
+          + "values (#{file.fileVersion}, #{file.filePath})")
   int insert(@Param("file") IoTDBFile file);
 
-  @ResultType(HashMap.class)
-  @Select("SELECT * FROM files LIMIT 1")
-  Map<String, Object> select();
+  List<IoTDBFile> select();
+
+  List<IoTDBFile> selectByPath(@Param("path") String path);
 
   int selectIdByFilePath(@Param("filePath") String filePath);
 }

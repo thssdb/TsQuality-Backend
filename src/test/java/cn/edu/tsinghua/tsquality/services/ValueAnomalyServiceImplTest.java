@@ -1,17 +1,17 @@
 package cn.edu.tsinghua.tsquality.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.ValueAnomalyResultDto;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.ValueRepairedDataPointDto;
 import cn.edu.tsinghua.tsquality.service.timeseries.impl.ValueAnomalyServiceImpl;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class ValueAnomalyServiceImplTest {
@@ -47,7 +47,7 @@ public class ValueAnomalyServiceImplTest {
   @BeforeEach
   void insertDataWithValueAnomalies() throws Exception {
     dataGenerator.generateValueAnomalyData(anomalyData);
-    path = IoTDBDataGenerator.getPaths().getFirst().getFullPath();
+    path = IoTDBDataGenerator.paths.getFirst().getFullPath();
   }
 
   @AfterEach

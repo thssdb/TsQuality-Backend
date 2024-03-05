@@ -44,6 +44,6 @@ public class IoTDBStorageEngineIntegrationTest {
 
   private void thenSelectResultShouldBeCorrect(IoTDBSeriesStat stat) {
     assertThat(stat).isNotNull();
-    assertThat(stat.getCnt()).isEqualTo(SeriesStatGenerator.CNT_PER_FILE);
+    assertThat(stat.getCount()).isEqualTo(SeriesStatGenerator.CNT_PER_FILE);
   }
 }

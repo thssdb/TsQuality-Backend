@@ -29,34 +29,47 @@
             #{sid},
             #{stat.minTimestamp},
             #{stat.maxTimestamp},
-            #{stat.cnt},
-            #{stat.missCnt},
-            #{stat.specialCnt},
-            #{stat.lateCnt},
-            #{stat.redundancyCnt},
-            #{stat.valueCnt},
-            #{stat.variationCnt},
-            #{stat.specialCnt},
-            #{stat.accelerationCnt}
+            #{stat.count},
+            #{stat.missCount},
+            #{stat.specialCount},
+            #{stat.lateCount},
+            #{stat.redundancyCount},
+            #{stat.valueCount},
+            #{stat.variationCount},
+            #{stat.specialCount},
+            #{stat.accelerationCount}
         )
     </insert>
 
-    <select id="selectStats" resultType="cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat">
+    <select id="selectByPath" resultType="IoTDBSeriesStat">
+        select *
+        from series natural join file_series_stats
+        where path = #{path}
+    </select>
+
+    <select id="selectAsStatByPath" resultType="IoTDBSeriesStat">
+        select
+        <include refid="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper.statColumns" />
+        from series natural join file_series_stats
+        where path = #{path}
+    </select>
+
+    <select id="selectStats" resultType="IoTDBSeriesStat">
         select
         <include refid="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper.statColumns" />
         from series natural join files natural join file_series_stats
         where
         <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")">
-            min_timestamp >= #{item.min} and max_timestamp <= #{item.max}
+            min_timestamp >= #{item.min} and max_timestamp &lt;= #{item.max}
         </foreach>
     </select>
 
-    <select id="selectTimeRanges" resultType="org.apache.iotdb.tsfile.read.common.TimeRange">
+    <select id="selectTimeRanges" resultType="TimeRange">
         select min_timestamp as min, max_timestamp as max
         from series natural join files natural join file_series_stats
         where
         <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")">
-            min_timestamp >= #{item.min} and max_timestamp <= #{item.max}
+            min_timestamp >= #{item.min} and max_timestamp &lt;= #{item.max}
         </foreach>
     </select>
 </mapper>

@@ -32,7 +32,7 @@ public class IoTDBDataGeneratorTest {
   @Test
   void testDataGenerationShouldSucceed() throws Exception {
     underTests.generateData(TEST_DATA_SIZE);
-    for (Path path : IoTDBDataGenerator.getPaths()) {
+    for (Path path : IoTDBDataGenerator.paths) {
       DataIterator result = whenQueryData(path);
       thenCountResultShouldBeOfCorrectSize(result);
     }
@@ -41,7 +41,7 @@ public class IoTDBDataGeneratorTest {
   @Test
   void testTimestampAnomaliesGenerationShouldSucceed() throws Exception {
     underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
-    for (Path path : IoTDBDataGenerator.getPaths()) {
+    for (Path path : IoTDBDataGenerator.paths) {
       DataIterator result = whenQueryData(path);
       thenCountResultShouldBeOfCorrectSize(result);
     }
@@ -51,7 +51,7 @@ public class IoTDBDataGeneratorTest {
   void testDeleteAllAfterGenerationShouldSucceed() throws Exception {
     underTests.generateTimestampAnomalyData(TEST_DATA_SIZE);
     underTests.deleteAll();
-    for (Path path : IoTDBDataGenerator.getPaths()) {
+    for (Path path : IoTDBDataGenerator.paths) {
       DataIterator result = whenQueryData(path);
       thenCountResultShouldBeEmpty(result);
     }

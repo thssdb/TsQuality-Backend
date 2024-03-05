@@ -17,4 +17,12 @@
             (#{item.path}, #{item.device}, #{item.database})
         </foreach>
     </insert>
+
+    <select id="select" resultType="IoTDBSeries">
+        select * from series
+    </select>
+
+    <select id="selectByPath" resultType="IoTDBSeries">
+        select * from series where path = #{path}
+    </select>
 </mapper>
