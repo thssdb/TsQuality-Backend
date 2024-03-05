@@ -1,10 +1,12 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs;
 
 
+import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
+import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -61,6 +63,11 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
 
   @Override
   public IoTDBSeriesStat selectAllStats() {
+    return null;
+  }
+
+  @Override
+  public List<Double> getDataQuality(List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
     return null;
   }
 }

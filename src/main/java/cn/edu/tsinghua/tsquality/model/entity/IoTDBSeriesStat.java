@@ -1,10 +1,13 @@
 package cn.edu.tsinghua.tsquality.model.entity;
 
 import cn.edu.tsinghua.tsquality.common.Util;
-import java.util.ArrayList;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.tsfile.read.common.BatchData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
@@ -28,6 +31,57 @@ public class IoTDBSeriesStat {
 
   public IoTDBSeriesStat() {}
 
+  public IoTDBSeriesStat(TVList tvList) {
+    int size = tvList.size();
+    if (size == 0) {
+      return;
+    }
+
+    cnt = size;
+    minTimestamp = tvList.getTimestamp(0);
+    maxTimestamp = tvList.getTimestamp(size - 1);
+
+    boolean isNumericType = true;
+    List<Double> times = new ArrayList<>();
+    List<Double> values = new ArrayList<>();
+    for (int i = 0; i < size; i++) {
+      Double value = null;
+      double currentTime = (double) tvList.getTimestamp(i);
+      switch (tvList.getDataType()) {
+        case INT32:
+          value = (double) tvList.getIntPair(i).getInt();
+          break;
+        case INT64:
+          value = (double) tvList.getLongPair(i).getLong();
+          break;
+        case FLOAT:
+          value = (double) tvList.getFloatPair(i).getFloat();
+          break;
+        case DOUBLE:
+          value = (double) tvList.getDoublePair(i).getDouble();
+          break;
+        default:
+          isNumericType = false;
+          break;
+      }
+      times.add(currentTime);
+      if (isNumericType) {
+        if (Double.isFinite(value)) {
+          values.add(value);
+        } else {
+          specialCnt++;
+          values.add(Double.NaN);
+        }
+      }
+    }
+    timeList = Util.toDoubleArray(times);
+    timeDetect();
+    if (isNumericType) {
+      valueList = Util.toDoubleArray(values);
+      valueDetect();
+    }
+  }
+
   public IoTDBSeriesStat(BatchData batchData) {
     if (batchData.isEmpty()) {
       return;
@@ -37,8 +91,8 @@ public class IoTDBSeriesStat {
     maxTimestamp = batchData.getMaxTimestamp();
 
     boolean isNumericType = true;
-    ArrayList<Double> times = new ArrayList<>();
-    ArrayList<Double> values = new ArrayList<>();
+    List<Double> times = new ArrayList<>();
+    List<Double> values = new ArrayList<>();
     while (batchData.hasCurrent()) {
       Double value = null;
       double currentTime = (double) batchData.currentTime();
@@ -78,7 +132,7 @@ public class IoTDBSeriesStat {
     }
   }
 
-  public void merge(IoTDBSeriesStat seriesStat) {
+  public IoTDBSeriesStat merge(IoTDBSeriesStat seriesStat) {
     cnt += seriesStat.cnt;
     missCnt += seriesStat.missCnt;
     specialCnt += seriesStat.specialCnt;
@@ -90,6 +144,7 @@ public class IoTDBSeriesStat {
     accelerationCnt += seriesStat.accelerationCnt;
     minTimestamp = Math.min(minTimestamp, seriesStat.minTimestamp);
     maxTimestamp = Math.max(maxTimestamp, seriesStat.maxTimestamp);
+    return this;
   }
 
   private void valueDetect() {

@@ -1,14 +1,13 @@
 package cn.edu.tsinghua.tsquality.storage.impl.iotdb;
 
+import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.AlignedRepositoryImpl;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
+import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -16,6 +15,10 @@ import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @Component("IoTDBStorageEngine")
@@ -137,6 +140,11 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
 
   @Override
   public IoTDBSeriesStat selectAllStats() {
+    return null;
+  }
+
+  @Override
+  public List<Double> getDataQuality(List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
     return null;
   }
 }

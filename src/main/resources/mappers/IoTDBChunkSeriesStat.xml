@@ -36,4 +36,23 @@
             #{stat.accelerationCnt}
         )
     </insert>
+
+    <select id="selectStats" resultType="cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat">
+        select
+        <include refid="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper.statColumns" />
+        from series natural join chunks natural join chunk_series_stats
+        where
+        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
+            min_timestamp >= #{item.min} and max_timestamp <= #{item.max}
+        </foreach>
+    </select>
+
+    <select id="selectTimeRanges" resultType="org.apache.iotdb.tsfile.read.common.TimeRange">
+        select min_timestamp as min, max_timestamp as max
+        from series natural join chunks natural join chunk_series_stats
+        where
+        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
+            min_timestamp >= #{item.min} and max_timestamp <= #{item.max}
+        </foreach>
+    </select>
 </mapper>
