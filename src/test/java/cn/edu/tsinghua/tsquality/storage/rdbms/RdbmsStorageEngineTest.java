@@ -105,7 +105,8 @@ public class RdbmsStorageEngineTest {
 
   private void thenChunkStatsShouldHaveBeenPersistedForPath(Map.Entry<Path, TsFileStat> entry) {
     Map<Long, IoTDBSeriesStat> expectedChunkStats = entry.getValue().getChunkStats();
-    List<IoTDBSeriesStat> actualChunkStats = chunkSeriesStatMapper.selectByPath(entry.getKey().getFullPath());
+    List<IoTDBSeriesStat> actualChunkStats =
+        chunkSeriesStatMapper.selectByPath(entry.getKey().getFullPath());
     assertThat(actualChunkStats).hasSameSizeAs(expectedChunkStats.keySet());
 
     List<IoTDBChunk> chunks = chunkMapper.selectByPath(entry.getKey().getFullPath());

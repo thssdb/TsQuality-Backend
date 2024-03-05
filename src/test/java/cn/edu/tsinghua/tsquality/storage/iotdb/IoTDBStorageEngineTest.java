@@ -1,5 +1,8 @@
 package cn.edu.tsinghua.tsquality.storage.iotdb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.generators.SeriesStatGenerator;
 import cn.edu.tsinghua.tsquality.generators.TsFileInfoGenerator;
@@ -10,20 +13,17 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.IoTDBStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @SpringBootTest
 public class IoTDBStorageEngineTest {

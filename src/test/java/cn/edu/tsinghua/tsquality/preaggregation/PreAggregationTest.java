@@ -1,21 +1,21 @@
 package cn.edu.tsinghua.tsquality.preaggregation;
 
+import static org.awaitility.Awaitility.await;
+
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
 import cn.edu.tsinghua.tsquality.mappers.database.ChunkTestMapper;
 import cn.edu.tsinghua.tsquality.mappers.database.FileTestMapper;
 import cn.edu.tsinghua.tsquality.mappers.database.SeriesTestMapper;
 import cn.edu.tsinghua.tsquality.mappers.database.TableMapper;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.Callable;
 import org.apache.iotdb.tsfile.read.common.Path;
-import static org.awaitility.Awaitility.await;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 @SpringBootTest
 public class PreAggregationTest {
@@ -67,8 +67,7 @@ public class PreAggregationTest {
     if (series.size() != IoTDBDataGenerator.SERIES_COUNT) {
       return false;
     }
-    List<String> expectedSeries =
-        IoTDBDataGenerator.paths.stream().map(Path::toString).toList();
+    List<String> expectedSeries = IoTDBDataGenerator.paths.stream().map(Path::toString).toList();
     return series.containsAll(expectedSeries) && expectedSeries.containsAll(series);
   }
 
