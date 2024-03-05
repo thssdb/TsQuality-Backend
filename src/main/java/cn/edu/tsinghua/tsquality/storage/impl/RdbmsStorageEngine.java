@@ -14,14 +14,13 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Primary
 @Component("RdbmsStorageEngine")
@@ -37,7 +36,8 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   private final IoTDBPageSeriesStatMapper pageSeriesStatMapper;
 
   public RdbmsStorageEngine(
-      SessionPool sessionPool, DataQualityMapper dataQualityMapper,
+      SessionPool sessionPool,
+      DataQualityMapper dataQualityMapper,
       IoTDBSeriesMapper seriesMapper,
       IoTDBFileMapper fileMapper,
       IoTDBChunkMapper chunkMapper,
@@ -145,7 +145,8 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
-  public List<Double> getDataQuality(List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
+  public List<Double> getDataQuality(
+      List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
     IoTDBSeriesStat fileStat = fileSeriesStatMapper.selectStats(path, timeRanges);
     List<TimeRange> fileStatsTimeRanges = fileSeriesStatMapper.selectTimeRanges(path, timeRanges);
     timeRanges = getRemains(timeRanges, fileStatsTimeRanges);

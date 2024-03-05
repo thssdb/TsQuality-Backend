@@ -2,12 +2,11 @@ package cn.edu.tsinghua.tsquality.model.entity;
 
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.tsfile.read.common.BatchData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {

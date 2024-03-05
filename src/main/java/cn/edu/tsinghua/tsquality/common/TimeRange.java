@@ -1,19 +1,16 @@
 package cn.edu.tsinghua.tsquality.common;
 
+import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
 
 @Getter
 public class TimeRange implements Comparable<TimeRange> {
   private long min = 0L;
   private long max = 0L;
-  @Setter
-  private boolean leftClose = true;
-  @Setter
-  private boolean rightClose = true;
+  @Setter private boolean leftClose = true;
+  @Setter private boolean rightClose = true;
 
   public static String getTimeFilter(List<TimeRange> ranges) {
     return String.join(" and ", ranges.stream().map(TimeRange::getTimeFilter).toList());

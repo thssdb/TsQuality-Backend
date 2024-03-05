@@ -35,8 +35,7 @@ public class TimeSeriesDataQualityController {
       @RequestParam("types") List<DQType> dqTypes,
       @RequestParam("path") String path,
       @RequestParam("startTime") Long startTime,
-      @RequestParam("endTime") Long endTime
-  ) {
+      @RequestParam("endTime") Long endTime) {
     List<TimeRange> timeRanges = List.of(new TimeRange(startTime, endTime));
     return service.getTimeSeriesDQMetrics(dqTypes, path, timeRanges);
   }

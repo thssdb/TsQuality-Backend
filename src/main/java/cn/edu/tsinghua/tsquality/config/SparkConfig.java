@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class SparkConfig {
   @Value("${spark.app.name:TsQuality Spark Application}")
   private String appName;
+
   @Value("${spark.master:local[2]}")
   private String masterUrl;
 
@@ -28,8 +29,6 @@ public class SparkConfig {
 
   @Bean
   public SparkSession sparkSession() {
-    return SparkSession.builder()
-        .sparkContext(javaSparkContext().sc())
-        .getOrCreate();
+    return SparkSession.builder().sparkContext(javaSparkContext().sc()).getOrCreate();
   }
 }

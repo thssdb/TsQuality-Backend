@@ -1,6 +1,5 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs;
 
-
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
@@ -8,6 +7,10 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.iotdb.tsfile.read.common.Path;
@@ -15,11 +18,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.SparkSession;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Component("hdfsStorageEngine")
 public class HdfsStorageEngine implements MetadataStorageEngine {
@@ -33,7 +31,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   private void createMetadataDirIfNotExists() throws IOException {
-    FileSystem.get(conf).mkdirs(new org.apache.hadoop.fs.Path(HdfsStorageConstants.metadataDirname));
+    FileSystem.get(conf)
+        .mkdirs(new org.apache.hadoop.fs.Path(HdfsStorageConstants.metadataDirname));
   }
 
   @Override
@@ -67,7 +66,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
-  public List<Double> getDataQuality(List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
+  public List<Double> getDataQuality(
+      List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
     return null;
   }
 }

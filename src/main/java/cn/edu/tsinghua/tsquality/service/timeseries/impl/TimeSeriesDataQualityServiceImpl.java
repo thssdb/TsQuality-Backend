@@ -3,23 +3,19 @@ package cn.edu.tsinghua.tsquality.service.timeseries.impl;
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
 import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
-import cn.edu.tsinghua.tsquality.service.impl.IoTDBDataQualityServiceImpl;
-import cn.edu.tsinghua.tsquality.service.impl.RDBMSDataQualityServiceImpl;
 import cn.edu.tsinghua.tsquality.service.timeseries.TimeSeriesDataQualityService;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Random;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualityService {
   private final MetadataStorageEngine storageEngine;
 
-  public TimeSeriesDataQualityServiceImpl(
-      MetadataStorageEngine storageEngine,
-      RDBMSDataQualityServiceImpl rdbmsDQService,
-      IoTDBDataQualityServiceImpl iotdbDQService) {
+  public TimeSeriesDataQualityServiceImpl(MetadataStorageEngine storageEngine) {
     this.storageEngine = storageEngine;
   }
 
