@@ -1,9 +1,10 @@
 package cn.edu.tsinghua.tsquality.common;
 
-import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 @Getter
 public class TimeRange implements Comparable<TimeRange> {
@@ -16,9 +17,29 @@ public class TimeRange implements Comparable<TimeRange> {
     return String.join(" and ", ranges.stream().map(TimeRange::getTimeFilter).toList());
   }
 
+  public static String getStatsTimeFilter(
+      List<TimeRange> ranges, String minTimestampName, String maxTimestampName) {
+    return String.join(" and ",
+        ranges.stream().map(x -> x.getStatsTimeFilter(minTimestampName, maxTimestampName)).toList());
+  }
+
+  public static List<TimeRange> getRemains(List<TimeRange> lhs, List<TimeRange> rhs) {
+    List<TimeRange> result = new ArrayList<>();
+    for (TimeRange timeRange : lhs) {
+      result.addAll(timeRange.getRemains(rhs));
+    }
+    return TimeRange.sortAndMerge(result);
+  }
+
   public String getTimeFilter() {
-    String left = (leftClose ? "time >= " : "time > ") + min;
-    String right = (rightClose ? "time <= " : "time < ") + max;
+    String left = "time " + (leftClose ? ">= " : "> ") + min;
+    String right = "time " + (rightClose ? "<= " : "< ") + max;
+    return String.format("(%s and %s)", left, right);
+  }
+
+  public String getStatsTimeFilter(String minTimestampName, String maxTimestampName) {
+    String left = minTimestampName + (leftClose ? ">= " : "> ") + min;
+    String right = maxTimestampName + (rightClose ? "<= " : "< ") + max;
     return String.format("(%s and %s)", left, right);
   }
 

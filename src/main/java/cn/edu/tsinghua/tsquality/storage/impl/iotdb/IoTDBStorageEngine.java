@@ -2,32 +2,31 @@ package cn.edu.tsinghua.tsquality.storage.impl.iotdb;
 
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
-import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.AlignedRepositoryImpl;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.StatsAlignedRepository;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.StatsAlignedRepositoryImpl;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @Component("IoTDBStorageEngine")
 public class IoTDBStorageEngine implements MetadataStorageEngine {
   private final SessionPool sessionPool;
-  private final StatsTimeSeriesUtil statsTimeSeriesUtil;
 
-  public IoTDBStorageEngine(SessionPool sessionPool, StatsTimeSeriesUtil statsTimeSeriesUtil) {
+  public IoTDBStorageEngine(SessionPool sessionPool) {
     this.sessionPool = sessionPool;
-    this.statsTimeSeriesUtil = statsTimeSeriesUtil;
   }
 
   @Override
@@ -43,43 +42,13 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
     }
   }
 
-  private AlignedRepository[] createStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
+  private StatsAlignedRepository[] createStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
       throws IoTDBConnectionException, StatementExecutionException {
-    return new AlignedRepository[] {
-      createFileStatsAlignedRepositoryAndTimeSeriesForPath(path),
-      createChunkStatsAlignedRepositoryAndTimeSeriesForPath(path),
-      createPageStatsAlignedRepositoryAndTimeSeriesForPath(path),
+    return new StatsAlignedRepository[] {
+        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE),
+        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK),
+        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.PAGE),
     };
-  }
-
-  private AlignedRepository createFileStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
-      throws IoTDBConnectionException, StatementExecutionException {
-    String device = statsTimeSeriesUtil.getFileStatsDeviceForPath(path);
-    List<String> measurements = statsTimeSeriesUtil.getFileStatsMeasurementsForPath(path);
-    List<TSDataType> dataTypes = statsTimeSeriesUtil.getFileStatsDataTypesForPath(path);
-    AlignedRepositoryImpl repository = new AlignedRepositoryImpl(sessionPool, device, measurements);
-    repository.createAlignedTimeSeries(dataTypes);
-    return repository;
-  }
-
-  private AlignedRepository createChunkStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
-      throws IoTDBConnectionException, StatementExecutionException {
-    String device = statsTimeSeriesUtil.getChunkStatsDeviceForPath(path);
-    List<String> measurements = statsTimeSeriesUtil.getChunkStatsMeasurementsForPath(path);
-    List<TSDataType> dataTypes = statsTimeSeriesUtil.getChunkStatsDataTypesForPath(path);
-    AlignedRepository repository = new AlignedRepositoryImpl(sessionPool, device, measurements);
-    repository.createAlignedTimeSeries(dataTypes);
-    return repository;
-  }
-
-  private AlignedRepository createPageStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
-      throws IoTDBConnectionException, StatementExecutionException {
-    String device = statsTimeSeriesUtil.getPageStatsDeviceForPath(path);
-    List<String> measurements = statsTimeSeriesUtil.getPageStatsMeasurementsForPath(path);
-    List<TSDataType> dataTypes = statsTimeSeriesUtil.getPageStatsDataTypesForPath(path);
-    AlignedRepository repository = new AlignedRepositoryImpl(sessionPool, device, measurements);
-    repository.createAlignedTimeSeries(dataTypes);
-    return repository;
   }
 
   private void saveFileStatsFor(
@@ -103,7 +72,7 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   private List<Object> fileLevelSeriesStatsValues(String path, IoTDBSeriesStat stat) {
     List<Object> values = new ArrayList<>();
     values.add(path);
-    values.addAll(statsTimeSeriesUtil.getValuesForStat(stat));
+    values.addAll(StatsTimeSeriesUtil.getValuesForStat(stat));
     return values;
   }
 
@@ -118,7 +87,7 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   private List<Object> chunkLevelSeriesStatsValues(long offset, IoTDBSeriesStat stat) {
     List<Object> values = new ArrayList<>();
     values.add(offset);
-    values.addAll(statsTimeSeriesUtil.getValuesForStat(stat));
+    values.addAll(StatsTimeSeriesUtil.getValuesForStat(stat));
     return values;
   }
 
@@ -144,7 +113,22 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
 
   @Override
   public List<Double> getDataQuality(
-      List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
-    return null;
+      List<DQType> dqTypes, String pathStr, List<TimeRange> timeRanges) {
+    Path path = new Path(pathStr, true);
+
+    StatsAlignedRepository fileStatsRepository = new StatsAlignedRepositoryImpl(
+        sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE);
+    IoTDBSeriesStat fileStat = fileStatsRepository.selectStats(timeRanges);
+    List<TimeRange> fileStatTimeRanges = fileStatsRepository.selectTimeRanges(timeRanges);
+    timeRanges = TimeRange.getRemains(timeRanges, fileStatTimeRanges);
+
+    StatsAlignedRepository chunkStatsRepository = new StatsAlignedRepositoryImpl(
+        sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK);
+    IoTDBSeriesStat chunkStat = chunkStatsRepository.selectStats(timeRanges);
+    List<TimeRange> chunkStatTimeRanges = chunkStatsRepository.selectTimeRanges(timeRanges);
+    timeRanges = TimeRange.getRemains(timeRanges, chunkStatTimeRanges);
+
+    IoTDBSeriesStat originalDataStat = getStatFromOriginalData(sessionPool, pathStr, timeRanges);
+    return mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, originalDataStat);
   }
 }

@@ -75,7 +75,7 @@ public class IoTDBStorageEngineTest {
 
   private AlignedRepository fileStatsAlignedRepositoryForPath(Path path) {
     String device = statsTimeSeriesUtil.getFileStatsDeviceForPath(path);
-    List<String> measurements = statsTimeSeriesUtil.getFileStatsMeasurementsForPath(path);
+    List<String> measurements = statsTimeSeriesUtil.getFileStatsMeasurementsForPath();
     return new AlignedRepositoryImpl(sessionPool, device, measurements);
   }
 
@@ -122,7 +122,7 @@ public class IoTDBStorageEngineTest {
 
   private AlignedRepository chunkStatsAlignedRepositoryForPath(Path path) {
     String device = statsTimeSeriesUtil.getChunkStatsDeviceForPath(path);
-    List<String> measurements = statsTimeSeriesUtil.getChunkStatsMeasurementsForPath(path);
+    List<String> measurements = statsTimeSeriesUtil.getChunkStatsMeasurementsForPath();
     return new AlignedRepositoryImpl(sessionPool, device, measurements);
   }
 

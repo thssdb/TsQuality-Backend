@@ -2,17 +2,23 @@ package cn.edu.tsinghua.tsquality.model.entity;
 
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
-import java.util.ArrayList;
-import java.util.List;
+import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
+import org.apache.iotdb.isession.SessionDataSet;
+import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
+import org.apache.iotdb.rpc.IoTDBConnectionException;
+import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
   private long minTimestamp = Long.MAX_VALUE;
   private long maxTimestamp = Long.MIN_VALUE;
-  private long count;
+  private long count = 0;
   private long missCount = 0;
   private long specialCount = 0;
   private long lateCount = 0;
@@ -21,14 +27,32 @@ public class IoTDBSeriesStat {
   private long variationCount = 0;
   private long speedCount = 0;
   private long accelerationCount = 0;
-  private double[] valueList;
-  private double[] timeList;
+  private double[] valueList = new double[]{};
+  private double[] timeList = new double[]{};
   // this field is not used in the code,
   // only used to store results returned by SQL queries,
   // it could represent the path of a time series or a device or a database
   private String path;
 
   public IoTDBSeriesStat() {}
+
+  public IoTDBSeriesStat(SessionDataSetWrapper wrapper) throws IoTDBConnectionException, StatementExecutionException {
+    SessionDataSet.DataIterator iterator = wrapper.iterator();
+    if (!iterator.next()) {
+      return;
+    }
+    minTimestamp = iterator.getLong(StatsTimeSeriesUtil.MIN_TIMESTAMP);
+    maxTimestamp = iterator.getLong(StatsTimeSeriesUtil.MAX_TIMESTAMP);
+    count = iterator.getLong(StatsTimeSeriesUtil.COUNT);
+    missCount = iterator.getLong(StatsTimeSeriesUtil.MISS_COUNT);
+    specialCount = iterator.getLong(StatsTimeSeriesUtil.SPECIAL_COUNT);
+    lateCount = iterator.getLong(StatsTimeSeriesUtil.LATE_COUNT);
+    redundancyCount = iterator.getLong(StatsTimeSeriesUtil.REDUNDANCY_COUNT);
+    valueCount = iterator.getLong(StatsTimeSeriesUtil.VALUE_COUNT);
+    variationCount = iterator.getLong(StatsTimeSeriesUtil.VARIATION_COUNT);
+    speedCount = iterator.getLong(StatsTimeSeriesUtil.SPEED_COUNT);
+    accelerationCount = iterator.getLong(StatsTimeSeriesUtil.ACCELERATION_COUNT);
+  }
 
   public IoTDBSeriesStat(TVList tvList) {
     int size = tvList.size();

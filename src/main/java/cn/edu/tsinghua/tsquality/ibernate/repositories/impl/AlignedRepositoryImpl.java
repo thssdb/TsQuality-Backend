@@ -1,10 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -17,12 +13,21 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Log4j2
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
-  @Getter private String device;
-  @Getter private List<String> measurements;
-  @Getter private final List<Path> paths;
-  private final SessionPool sessionPool;
+  @Getter protected String device;
+  @Getter protected List<String> measurements;
+  @Getter protected List<Path> paths;
+  protected final SessionPool sessionPool;
+
+  public AlignedRepositoryImpl(SessionPool sessionPool) {
+    this.sessionPool = sessionPool;
+  }
 
   public AlignedRepositoryImpl(
       SessionPool sessionPool, @Nonnull String device, @Nonnull List<String> measurements) {
@@ -152,6 +157,7 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
       wrapper = sessionPool.executeQueryStatement(sql);
       return wrapperToSelectResult(wrapper);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
+      log.error(e);
       return new ArrayList<>();
     } finally {
       sessionPool.closeResultSet(wrapper);

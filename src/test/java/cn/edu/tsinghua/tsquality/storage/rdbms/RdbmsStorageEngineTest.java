@@ -11,7 +11,6 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.impl.RdbmsStorageEngine;
 import lombok.val;
-import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import java.util.Map;
 @SpringBootTest
 @Transactional
 public class RdbmsStorageEngineTest {
-  @Autowired private SessionPool sessionPool;
   @Autowired private RdbmsStorageEngine underTests;
   @Autowired private TsFileInfoGenerator tsFileInfoGenerator;
   @Autowired private SeriesStatGenerator seriesStatGenerator;

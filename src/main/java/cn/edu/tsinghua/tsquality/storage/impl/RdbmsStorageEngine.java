@@ -1,10 +1,6 @@
 package cn.edu.tsinghua.tsquality.storage.impl;
 
-import cn.edu.tsinghua.tsquality.common.DataQualityCalculationUtil;
 import cn.edu.tsinghua.tsquality.common.TimeRange;
-import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
-import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
-import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.mappers.database.*;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
@@ -14,13 +10,13 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
 
 @Primary
 @Component("RdbmsStorageEngine")
@@ -148,47 +144,14 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
     IoTDBSeriesStat fileStat = fileSeriesStatMapper.selectStats(path, timeRanges);
-    List<TimeRange> fileStatsTimeRanges = fileSeriesStatMapper.selectTimeRanges(path, timeRanges);
-    timeRanges = getRemains(timeRanges, fileStatsTimeRanges);
+    List<TimeRange> fileStatTimeRanges = fileSeriesStatMapper.selectTimeRanges(path, timeRanges);
+    timeRanges = TimeRange.getRemains(timeRanges, fileStatTimeRanges);
 
     IoTDBSeriesStat chunkStat = chunkSeriesStatMapper.selectStats(path, timeRanges);
-    List<TimeRange> chunkStatsTimeRanges = chunkSeriesStatMapper.selectTimeRanges(path, timeRanges);
-    timeRanges = getRemains(timeRanges, chunkStatsTimeRanges);
+    List<TimeRange> chunkStatTimeRanges = chunkSeriesStatMapper.selectTimeRanges(path, timeRanges);
+    timeRanges = TimeRange.getRemains(timeRanges, chunkStatTimeRanges);
 
-    Repository repository = new RepositoryImpl(sessionPool, path);
-    TVList data = repository.select(TimeRange.getTimeFilter(timeRanges), null);
-    IoTDBSeriesStat originalDataStat = new IoTDBSeriesStat(data);
-
-    IoTDBSeriesStat stat = fileStat.merge(chunkStat).merge(originalDataStat);
-    return statToDQMetrics(stat, dqTypes);
-  }
-
-  List<TimeRange> getRemains(List<TimeRange> lhs, List<TimeRange> rhs) {
-    List<TimeRange> result = new ArrayList<>();
-    for (TimeRange timeRange : lhs) {
-      result.addAll(timeRange.getRemains(rhs));
-    }
-    return TimeRange.sortAndMerge(result);
-  }
-
-  public List<Double> statToDQMetrics(IoTDBSeriesStat stat, List<DQType> dqTypes) {
-    List<Double> result = new ArrayList<>();
-    for (DQType type : dqTypes) {
-      switch (type) {
-        case COMPLETENESS:
-          result.add(DataQualityCalculationUtil.calculateCompleteness(stat));
-          break;
-        case CONSISTENCY:
-          result.add(DataQualityCalculationUtil.calculateConsistency(stat));
-          break;
-        case TIMELINESS:
-          result.add(DataQualityCalculationUtil.calculateTimeliness(stat));
-          break;
-        case VALIDITY:
-          result.add(DataQualityCalculationUtil.calculateValidity(stat));
-          break;
-      }
-    }
-    return result;
+    IoTDBSeriesStat originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
+    return mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, originalDataStat);
   }
 }
