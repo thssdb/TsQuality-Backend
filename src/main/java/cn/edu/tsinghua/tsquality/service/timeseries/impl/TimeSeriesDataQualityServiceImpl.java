@@ -6,9 +6,10 @@ import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
 import cn.edu.tsinghua.tsquality.service.timeseries.TimeSeriesDataQualityService;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Random;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualityService {
@@ -60,7 +61,7 @@ public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualitySe
 
   @Override
   public List<Double> getTimeSeriesDQMetrics(
-      List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
-    return storageEngine.getDataQuality(dqTypes, path, timeRanges);
+      List<String> dqTypes, String path, List<TimeRange> timeRanges) {
+    return storageEngine.getDataQuality(dqTypes.stream().map(DQType::fromValue).toList(), path, timeRanges);
   }
 }

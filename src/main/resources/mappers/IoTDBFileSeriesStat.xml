@@ -6,6 +6,7 @@
         CREATE TABLE IF NOT EXISTS file_series_stats(
             `fid` BIGINT,
             `sid` BIGINT,
+            `version` BIGINT,
             `min_time` BIGINT NOT NULL,
             `max_time` BIGINT NOT NULL,
             `min_value` DOUBLE NOT NULL,
@@ -29,6 +30,7 @@
         INSERT IGNORE INTO file_series_stats VALUES (
             #{fid},
             #{sid},
+            #{stat.version},
             #{stat.minTime},
             #{stat.maxTime},
             #{stat.minValue},
@@ -61,18 +63,18 @@
     <select id="selectStats" resultType="IoTDBSeriesStat">
         select
         <include refid="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper.statColumns" />
-        from series natural join files natural join file_series_stats
-        where
-        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")">
+        from series natural join file_series_stats
+        where path = #{path}
+        <foreach item="item" collection="timeRanges" open=" and ((" separator=") or (" close="))">
             min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>
 
     <select id="selectTimeRanges" resultType="TimeRange">
         select min_time as min, max_time as max
-        from series natural join files natural join file_series_stats
-        where
-        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")">
+        from series natural join file_series_stats
+        where path = #{path}
+        <foreach item="item" collection="timeRanges" open=" and ((" separator=") or (" close="))">
             min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>

@@ -2,10 +2,7 @@ package cn.edu.tsinghua.tsquality.storage.impl.rdbms;
 
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.mappers.database.*;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
-import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
+import cn.edu.tsinghua.tsquality.model.entity.*;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
@@ -15,6 +12,7 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +62,11 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
+  public List<TsFileInfo> selectAllFiles() {
+    return fileMapper.select().stream().map(TsFileInfo::new).toList();
+  }
+
+  @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
     updateIoTDBSeries(tsFileInfo, stats.keySet().stream().toList());
     int fid = updateIoTDBFiles(tsFileInfo);
@@ -83,11 +86,21 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   }
 
   private void saveTsFileStatForPath(int fid, Map.Entry<Path, TsFileStat> entry) {
+    Map<Long, Integer> chunkOffsetToCid = new HashMap<>();
+
     int sid = seriesMapper.selectIdByPath(entry.getKey().getFullPath());
     updateFileSeriesStats(fid, sid, entry.getValue().getFileStat());
     Map<Long, IoTDBSeriesStat> chunkStats = entry.getValue().getChunkStats();
     for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry : chunkStats.entrySet()) {
-      saveTsFileStatForChunk(fid, sid, chunkEntry);
+      saveTsFileStatForChunk(fid, sid, chunkEntry, chunkOffsetToCid);
+    }
+    Map<Long, List<IoTDBSeriesStat>> pageStats = entry.getValue().getPageStats();
+    for (Map.Entry<Long, List<IoTDBSeriesStat>> pageEntry : pageStats.entrySet()) {
+      for (IoTDBSeriesStat stat : pageEntry.getValue()) {
+        int cid = chunkOffsetToCid.get(pageEntry.getKey());
+        int pid = updateIoTDBPages(cid, sid, pageEntry.getKey() + 1);
+        updatePageSeriesStats(pid, sid, stat);
+      }
     }
   }
 
@@ -105,9 +118,10 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
     fileSeriesStatMapper.insert(fid, sid, stat);
   }
 
-  private void saveTsFileStatForChunk(int fid, int sid, Map.Entry<Long, IoTDBSeriesStat> entry) {
+  private void saveTsFileStatForChunk(int fid, int sid, Map.Entry<Long, IoTDBSeriesStat> entry, Map<Long, Integer> chunkOffsetToCid) {
     int cid = updateIoTDBChunks(fid, sid, entry.getKey());
-    updateChunkSeriesStats(cid, entry.getValue());
+    chunkOffsetToCid.put(entry.getKey(), cid);
+    updateChunkSeriesStats(cid, sid, entry.getValue());
   }
 
   private int updateIoTDBChunks(int fid, int sid, long offset) {
@@ -116,8 +130,18 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
     return chunk.getCid();
   }
 
-  private void updateChunkSeriesStats(int cid, IoTDBSeriesStat stat) {
-    chunkSeriesStatMapper.insert(cid, stat);
+  private void updateChunkSeriesStats(int cid, int sid, IoTDBSeriesStat stat) {
+    chunkSeriesStatMapper.insert(cid, sid, stat);
+  }
+
+  private int updateIoTDBPages(int cid, int sid, long index) {
+    IoTDBPage page = new IoTDBPage(cid, sid, index);
+    pageMapper.insert(page);
+    return page.getPid();
+  }
+
+  private void updatePageSeriesStats(int pid, int sid, IoTDBSeriesStat stat) {
+    pageSeriesStatMapper.insert(pid, sid, stat);
   }
 
   @Override
@@ -143,15 +167,21 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
-    IoTDBSeriesStat fileStat = fileSeriesStatMapper.selectStats(path, timeRanges);
+    IoTDBSeriesStat fileStat, chunkStat = null, originalDataStat = null;
+
+    fileStat = fileSeriesStatMapper.selectStats(path, timeRanges);
     List<TimeRange> fileStatTimeRanges = fileSeriesStatMapper.selectTimeRanges(path, timeRanges);
     timeRanges = TimeRange.getRemains(timeRanges, fileStatTimeRanges);
 
-    IoTDBSeriesStat chunkStat = chunkSeriesStatMapper.selectStats(path, timeRanges);
-    List<TimeRange> chunkStatTimeRanges = chunkSeriesStatMapper.selectTimeRanges(path, timeRanges);
-    timeRanges = TimeRange.getRemains(timeRanges, chunkStatTimeRanges);
+    if (!timeRanges.isEmpty()) {
+      chunkStat = chunkSeriesStatMapper.selectStats(path, timeRanges);
+      List<TimeRange> chunkStatTimeRanges = chunkSeriesStatMapper.selectTimeRanges(path, timeRanges);
+      timeRanges = TimeRange.getRemains(timeRanges, chunkStatTimeRanges);
+    }
 
-    IoTDBSeriesStat originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
+    if (!timeRanges.isEmpty()) {
+      originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
+    }
     return mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, originalDataStat);
   }
 }

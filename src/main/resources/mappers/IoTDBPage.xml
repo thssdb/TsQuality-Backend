@@ -11,4 +11,9 @@
             FOREIGN KEY (`cid`) REFERENCES chunks(`cid`) ON DELETE CASCADE
         )
     </update>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="page.pid">
+        insert ignore into pages(`cid`, `sid`, `page_index`)
+        values (#{page.cid}, #{page.sid}, #{page.pageIndex})
+    </insert>
 </mapper>

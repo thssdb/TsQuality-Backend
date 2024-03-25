@@ -3,100 +3,100 @@
 
 <mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper">
     <sql id="statColumns">
-        MIN(`min_time`) minTime,
-        MAX(`max_time`) maxTime,
-        SUM(`count`) cnt,
-        SUM(`miss_count`) missCnt,
-        SUM(`special_count`) specialCnt,
-        SUM(`late_count`) lateCnt,
-        SUM(`redundancy_count`) redundancyCnt,
-        SUM(`value_count`) valueCnt,
-        SUM(`variation_count`) variatiCnt,
-        SUM(`speed_count`) speedCnt,
-        SUM(`acceleration_count`) accelerationCnt
+        min(`min_time`) `minTime`,
+        max(`max_time`) `maxTime`,
+        sum(`count`) `count`,
+        sum(`miss_count`) `missCount`,
+        sum(`special_count`) `specialCount`,
+        sum(`late_count`) `lateCnt`,
+        sum(`redundancy_count`) `redundancyCount`,
+        sum(`value_count`) `valueCount`,
+        sum(`variation_count`) `variatiCount`,
+        sum(`speed_count`) `speedCount`,
+        sum(`acceleration_count`) `accelerationCount`
     </sql>
     <sql id="equalPathWhereClause">
-        WHERE `path` = #{path}
+        where `path` = #{path}
     </sql>
     <sql id="likePathWhereClause">
-        WHERE `path` LIKE CONCAT(#{path}, '.%')
+        where `path` like concat(#{path}, '.%')
     </sql>
 
     <select id="selectSeriesStat" resultType="IoTDBSeriesStat">
-        SELECT
+        select
         <if test="path == null || path.isEmpty()">
             `path`,
         </if>
         <include refid="statColumns"/>
-        FROM series NATURAL JOIN file_series_stats
+        from series natural join file_series_stats
         <if test="path != null">
             <include refid="equalPathWhereClause">
                 <property name="path" value="#{path}"/>
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY `path`
+            group by `path`
         </if>
     </select>
 
     <select id="selectDeviceStat" resultType="IoTDBSeriesStat">
-        SELECT
+        select
         <if test="path == null || path.isEmpty()">
             `device` `path`,
         </if>
         <include refid="statColumns"/>
-        FROM series NATURAL JOIN file_series_stats
+        from series natural join file_series_stats
         <if test="path != null">
             <include refid="likePathWhereClause">
                 <property name="path" value="#{path}"/>
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY `device`
+            group by `device`
         </if>
     </select>
 
     <select id="selectDatabaseStat" resultType="IoTDBSeriesStat">
-        SELECT
+        select
         <if test="path == null || path.isEmpty()">
             `database` `path`,
         </if>
         <include refid="statColumns"/>
-        FROM series NATURAL JOIN file_series_stats
+        from series natural join file_series_stats
         <if test="path != null">
             <include refid="likePathWhereClause">
                 <property name="path" value="#{path}"/>
             </include>
         </if>
         <if test="path == null || path.isEmpty()">
-            GROUP BY `database`
+            group by `database`
         </if>
     </select>
 
     <select id="selectAllStat" resultType="IoTDBSeriesStat">
-        SELECT
+        select
         <include refid="statColumns" />
-        FROM file_series_stats
+        from file_series_stats
     </select>
 
     <select
             id="getDataQualityAggregationDetailFromFileStats"
             resultType="cn.edu.tsinghua.tsquality.model.entity.SeriesStatWithTime"
     >
-        SELECT
+        select
         <choose>
             <when test='aggregationType.equals("day")'>
-                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y-%m-%d') `time`,
+                date_format(from_unixtime(`min_time`/1000), '%Y-%m-%d') `time`,
             </when>
             <when test='aggregationType.equals("month")'>
-                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y-%m') `time`,
+                date_format(from_unixtime(`min_time`/1000), '%Y-%m') `time`,
             </when>
             <otherwise>
-                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y') `time`,
+                date_format(from_unixtime(`min_time`/1000), '%Y') `time`,
             </otherwise>
         </choose>
         <include refid="statColumns" />
-        FROM series NATURAL JOIN file_series_stats
+        from series natural join file_series_stats
         <include refid="equalPathWhereClause" />
     </select>
 </mapper>

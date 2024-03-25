@@ -53,6 +53,11 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
+  public List<TsFileInfo> selectAllFiles() {
+    return null;
+  }
+
+  @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
     for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
       saveTsFileStatsForPath(tsFileInfo, entry);

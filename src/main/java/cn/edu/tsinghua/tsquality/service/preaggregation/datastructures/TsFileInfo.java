@@ -1,5 +1,6 @@
 package cn.edu.tsinghua.tsquality.service.preaggregation.datastructures;
 
+import cn.edu.tsinghua.tsquality.model.entity.IoTDBFile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,9 @@ public class TsFileInfo {
   private String database;
   private String filePath;
   private long fileVersion;
+
+  public TsFileInfo(IoTDBFile file) {
+    filePath = file.getFilePath();
+    fileVersion = file.getFileVersion();
+  }
 }

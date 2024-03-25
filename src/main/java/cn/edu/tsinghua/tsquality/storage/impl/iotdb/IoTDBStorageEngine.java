@@ -32,6 +32,11 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
+  public List<TsFileInfo> selectAllFiles() {
+    return null;
+  }
+
+  @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
     try {
       for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {

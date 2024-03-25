@@ -4,7 +4,9 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.IoTDBChunkSeriesStatMapper">
     <update id="createChunkSeriesStatTable" parameterType="String">
        CREATE TABLE IF NOT EXISTS chunk_series_stats(
-            `cid` BIGINT PRIMARY KEY,
+            `cid` BIGINT,
+            `sid` BIGINT,
+            `version` BIGINT,
             `min_time` BIGINT NOT NULL,
             `max_time` BIGINT NOT NULL,
             `min_value` DOUBLE NOT NULL,
@@ -18,13 +20,17 @@
             `variation_count` BIGINT,
             `speed_count` BIGINT,
             `acceleration_count` BIGINT,
-            FOREIGN KEY(`cid`) REFERENCES chunks(`cid`) ON DELETE CASCADE
+            PRIMARY KEY(`cid`, `sid`),
+            FOREIGN KEY(`cid`) REFERENCES chunks(`cid`) ON DELETE CASCADE,
+            FOREIGN KEY(`sid`) REFERENCES series(`sid`) ON DELETE CASCADE
         )
     </update>
 
     <insert id="insert">
         INSERT IGNORE INTO chunk_series_stats VALUES (
             #{cid},
+            #{sid},
+            #{stat.version},
             #{stat.minTime},
             #{stat.maxTime},
             #{stat.minValue},
@@ -58,8 +64,8 @@
         select
         <include refid="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper.statColumns" />
         from series natural join chunks natural join chunk_series_stats
-        where
-        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
+        where path = #{path}
+        <foreach item="item" collection="timeRanges" open=" and ((" separator=") or (" close="))" >
             min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>
@@ -67,8 +73,8 @@
     <select id="selectTimeRanges" resultType="TimeRange">
         select min_time as min, max_time as max
         from series natural join chunks natural join chunk_series_stats
-        where
-        <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
+        where path = #{path} and
+        <foreach item="item" collection="timeRanges" open=" and ((" separator=") or (" close="))" >
             min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>

@@ -3,9 +3,6 @@ package cn.edu.tsinghua.tsquality.model.entity;
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -15,8 +12,13 @@ import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.spark.sql.Row;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Data
 public class IoTDBSeriesStat {
+  private long version = 0;
   private long minTime = Long.MAX_VALUE;
   private long maxTime = Long.MIN_VALUE;
   private double minValue = Long.MAX_VALUE;
@@ -40,6 +42,7 @@ public class IoTDBSeriesStat {
   public IoTDBSeriesStat() {}
 
   public IoTDBSeriesStat(Row row) {
+    version = row.getAs("version");
     minTime = row.getAs("minTime");
     maxTime = row.getAs("maxTime");
     minValue = row.getAs("minValue");
@@ -61,6 +64,7 @@ public class IoTDBSeriesStat {
     if (!iterator.next()) {
       return;
     }
+    version = iterator.getLong(StatsTimeSeriesUtil.VERSION);
     minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIME);
     maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIME);
     minValue = iterator.getDouble(StatsTimeSeriesUtil.MIN_VALUE);
@@ -178,6 +182,9 @@ public class IoTDBSeriesStat {
   }
 
   public IoTDBSeriesStat merge(IoTDBSeriesStat seriesStat) {
+    if (seriesStat == null) {
+      return this;
+    }
     minTime = Math.min(minTime, seriesStat.minTime);
     maxTime = Math.max(maxTime, seriesStat.maxTime);
     minValue = Math.min(minValue, seriesStat.minValue);

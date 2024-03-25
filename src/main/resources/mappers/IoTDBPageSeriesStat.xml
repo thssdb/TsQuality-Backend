@@ -4,7 +4,9 @@
 <mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.IoTDBPageSeriesStatMapper">
     <update id="createPageSeriesStatTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS page_series_stats(
-            `pid` BIGINT PRIMARY KEY,
+            `pid` BIGINT,
+            `sid` BIGINT,
+            `version` BIGINT,
             `min_time` BIGINT NOT NULL,
             `max_time` BIGINT NOT NULL,
             `min_value` DOUBLE NOT NULL,
@@ -18,13 +20,17 @@
             `variation_count` BIGINT,
             `speed_count` BIGINT,
             `acceleration_count` BIGINT,
-            FOREIGN KEY(`pid`) REFERENCES pages(`pid`) ON DELETE CASCADE
+            PRIMARY KEY(`pid`, `sid`),
+            FOREIGN KEY(`pid`) REFERENCES pages(`pid`) ON DELETE CASCADE,
+            FOREIGN KEY(`sid`) REFERENCES series(`sid`) ON DELETE CASCADE
         )
     </update>
 
     <insert id="insert">
         INSERT IGNORE INTO page_series_stats VALUES (
             #{pid},
+            #{sid},
+            #{stat.version},
             #{stat.minTime},
             #{stat.maxTime},
             #{stat.minValue},

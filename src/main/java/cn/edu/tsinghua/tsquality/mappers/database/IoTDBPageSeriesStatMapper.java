@@ -8,5 +8,5 @@ import org.apache.ibatis.annotations.Param;
 public interface IoTDBPageSeriesStatMapper {
   void createPageSeriesStatTable();
 
-  void insert(@Param("pid") int pid, @Param("stat") IoTDBSeriesStat stat);
+  void insert(@Param("pid") int pid, @Param("sid") int sid, @Param("stat") IoTDBSeriesStat stat);
 }

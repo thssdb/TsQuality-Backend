@@ -5,12 +5,8 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.PreAggregationService;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
 import org.apache.iotdb.db.storageengine.dataregion.tsfile.TsFileResource;
 import org.apache.iotdb.db.utils.ModificationUtils;
@@ -25,6 +21,12 @@ import org.apache.iotdb.tsfile.read.reader.chunk.ChunkReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @Service
@@ -43,11 +45,22 @@ public class PreAggregationServiceImpl implements PreAggregationService {
   @Override
   @Scheduled(cron = "${pre-aggregation.scan-cron:0 */10 * * * ?}")
   public void preAggregate() {
-    List<TsFileInfo> tsFiles = getAllTsFiles();
-    if (tsFiles.isEmpty()) {
+    List<TsFileInfo> allTsFiles = getAllTsFiles();
+    if (allTsFiles.isEmpty()) {
       return;
     }
-    for (TsFileInfo tsfile : tsFiles) {
+    List<TsFileInfo> preAggregatedTsFiles = storageEngine.selectAllFiles();
+    List<TsFileInfo> targetTsFiles = new ArrayList<>();
+
+    for (TsFileInfo tsfile : allTsFiles) {
+      if (preAggregatedTsFiles.stream().noneMatch(f ->
+        f.getFilePath().equals(tsfile.getFilePath()) && f.getFileVersion() == tsfile.getFileVersion()
+      )) {
+        targetTsFiles.add(tsfile);
+      }
+    }
+
+    for (TsFileInfo tsfile : targetTsFiles) {
       preAggregateTsFile(tsfile);
     }
   }
@@ -57,6 +70,7 @@ public class PreAggregationServiceImpl implements PreAggregationService {
   }
 
   private void preAggregateTsFile(TsFileInfo tsfile) {
+    log.info("Pre-aggregating tsfile: {}", tsfile.getFilePath());
     String filePath = tsfile.getFilePath();
     Map<Path, TsFileStat> tsFileStats = new HashMap<>();
     Collection<Modification> allModifications = getTsFileModifications(filePath);
@@ -66,9 +80,24 @@ public class PreAggregationServiceImpl implements PreAggregationService {
       for (Path path : paths) {
         preAggregatePath(path, allModifications, reader, tsFileStats);
       }
+      setStatsVersion(tsfile.getFileVersion(), tsFileStats);
       storageEngine.saveTsFileStats(tsfile, tsFileStats);
     } catch (IOException e) {
       log.error(e);
+    }
+  }
+
+  private void setStatsVersion(long version, Map<Path, TsFileStat> tsFileStats) {
+    for (val entry : tsFileStats.entrySet()) {
+      entry.getValue().getFileStat().setVersion(version);
+      for (val chunkEntry : entry.getValue().getChunkStats().entrySet()) {
+        chunkEntry.getValue().setVersion(version);
+      }
+      for (val pageEntry : entry.getValue().getPageStats().entrySet()) {
+        for (IoTDBSeriesStat stat : pageEntry.getValue()) {
+          stat.setVersion(version);
+        }
+      }
     }
   }
 
