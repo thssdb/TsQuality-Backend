@@ -48,6 +48,7 @@ public class StatsTimeSeriesUtil {
   }
 
   public static List<Object> getValuesForStat(IoTDBSeriesStat stat) {
+    int a = 1, A = 2;
     return List.of(
         stat.getMinTimestamp(),
         stat.getMaxTimestamp(),

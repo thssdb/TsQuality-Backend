@@ -222,7 +222,7 @@ public class IoTDBSeriesStat {
           }
         }
         lateCount += temp;
-        missCount = (int) ((long) missCount + (Math.round(times - 1.0D) - (long) temp));
+        missCount = (int) (missCount + (Math.round(times - 1.0D) - (long) temp));
       }
       window.remove(0);
       while (window.size() < 10 && i < timeList.length) {
