@@ -25,7 +25,8 @@ iotdb:
   max-size: 100
 
 pre-aggregation:
-  scan-cron: "0 */10 * * * ?"
+#  scan-cron: "0 */10 * * * ?"
+  scan-cron: "* * * * * ?"
   executor:
     core-pool-size: 9
     max-pool-size: 15

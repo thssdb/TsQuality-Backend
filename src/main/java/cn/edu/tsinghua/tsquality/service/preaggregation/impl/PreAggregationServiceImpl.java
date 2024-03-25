@@ -5,6 +5,7 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.PreAggregationService;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
@@ -78,13 +79,25 @@ public class PreAggregationServiceImpl implements PreAggregationService {
     try (TsFileSequenceReader reader = new TsFileSequenceReader(filePath)) {
       List<Path> paths = getSeriesPathsForAggregation(reader);
       for (Path path : paths) {
+        if (isMetadataTimeSeries(path)) {
+          continue;
+        }
         preAggregatePath(path, allModifications, reader, tsFileStats);
       }
-      setStatsVersion(tsfile.getFileVersion(), tsFileStats);
-      storageEngine.saveTsFileStats(tsfile, tsFileStats);
+      if (!tsFileStats.isEmpty()) {
+        setStatsVersion(tsfile.getFileVersion(), tsFileStats);
+        storageEngine.saveTsFileStats(tsfile, tsFileStats);
+      }
     } catch (IOException e) {
       log.error(e);
     }
+  }
+
+  private boolean isMetadataTimeSeries(Path path) {
+    String fullPath = path.getFullPath();
+    return fullPath.startsWith(StatsTimeSeriesUtil.FILE_STATS_PATH_PREFIX)
+        || fullPath.startsWith(StatsTimeSeriesUtil.CHUNK_STATS_PATH_PREFIX)
+        || fullPath.startsWith(StatsTimeSeriesUtil.PAGE_STATS_PATH_PREFIX);
   }
 
   private void setStatsVersion(long version, Map<Path, TsFileStat> tsFileStats) {

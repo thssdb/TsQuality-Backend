@@ -1,10 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -16,6 +12,11 @@ import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Log4j2
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
@@ -66,7 +67,7 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
   @Override
   public void createAlignedTimeSeries(List<TSDataType> dataTypes)
       throws IoTDBConnectionException, StatementExecutionException {
-    if (!dataTypesValid(dataTypes)) {
+    if (dataTypesInvalid(dataTypes)) {
       throw new IllegalArgumentException("Data types must have the same size as measurements");
     }
     if (alreadyCreated()) {
@@ -75,22 +76,38 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
     doCreate(dataTypes);
   }
 
+  @Override
+  public void createAlignedTimeSeries(List<TSDataType> dataTypes, List<TSEncoding> encodings)
+      throws IoTDBConnectionException, StatementExecutionException {
+    if (dataTypesInvalid(dataTypes)) {
+      throw new IllegalArgumentException("Data types must have the same size as measurements");
+    }
+    if (alreadyCreated()) {
+      return;
+    }
+    doCreate(dataTypes, encodings);
+  }
+
   private boolean alreadyCreated() {
     long size = countTimeSeriesLike(device);
     return size == paths.size();
   }
 
-  private void doCreate(List<TSDataType> dataTypes)
-      throws IoTDBConnectionException, StatementExecutionException {
+  private void doCreate(List<TSDataType> dataTypes) throws IoTDBConnectionException, StatementExecutionException {
     List<TSEncoding> encodings = Collections.nCopies(paths.size(), TSEncoding.PLAIN);
+    doCreate(dataTypes, encodings);
+  }
+
+  private void doCreate(List<TSDataType> dataTypes, List<TSEncoding> encodings)
+      throws IoTDBConnectionException, StatementExecutionException {
     List<CompressionType> compressionTypes =
-        Collections.nCopies(paths.size(), CompressionType.UNCOMPRESSED);
+        Collections.nCopies(paths.size(), CompressionType.SNAPPY);
     sessionPool.createAlignedTimeseries(
         device, measurements, dataTypes, encodings, compressionTypes, null);
   }
 
-  private boolean dataTypesValid(List<TSDataType> dataTypes) {
-    return dataTypes.size() == measurements.size();
+  private boolean dataTypesInvalid(List<TSDataType> dataTypes) {
+    return dataTypes.size() != measurements.size();
   }
 
   @Override

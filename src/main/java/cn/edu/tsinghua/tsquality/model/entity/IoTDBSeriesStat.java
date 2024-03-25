@@ -64,20 +64,17 @@ public class IoTDBSeriesStat {
     if (!iterator.next()) {
       return;
     }
-    version = iterator.getLong(StatsTimeSeriesUtil.VERSION);
     minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIME);
     maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIME);
-    minValue = iterator.getDouble(StatsTimeSeriesUtil.MIN_VALUE);
-    maxValue = iterator.getDouble(StatsTimeSeriesUtil.MAX_VALUE);
-    count = iterator.getLong(StatsTimeSeriesUtil.COUNT);
-    missCount = iterator.getLong(StatsTimeSeriesUtil.MISS_COUNT);
-    specialCount = iterator.getLong(StatsTimeSeriesUtil.SPECIAL_COUNT);
-    lateCount = iterator.getLong(StatsTimeSeriesUtil.LATE_COUNT);
-    redundancyCount = iterator.getLong(StatsTimeSeriesUtil.REDUNDANCY_COUNT);
-    valueCount = iterator.getLong(StatsTimeSeriesUtil.VALUE_COUNT);
-    variationCount = iterator.getLong(StatsTimeSeriesUtil.VARIATION_COUNT);
-    speedCount = iterator.getLong(StatsTimeSeriesUtil.SPEED_COUNT);
-    accelerationCount = iterator.getLong(StatsTimeSeriesUtil.ACCELERATION_COUNT);
+    count = (long) iterator.getDouble(StatsTimeSeriesUtil.COUNT);
+    missCount = (long) iterator.getDouble(StatsTimeSeriesUtil.MISS_COUNT);
+    specialCount = (long) iterator.getDouble(StatsTimeSeriesUtil.SPECIAL_COUNT);
+    lateCount = (long) iterator.getDouble(StatsTimeSeriesUtil.LATE_COUNT);
+    redundancyCount = (long) iterator.getDouble(StatsTimeSeriesUtil.REDUNDANT_COUNT);
+    valueCount = (long) iterator.getDouble(StatsTimeSeriesUtil.VALUE_COUNT);
+    variationCount = (long) iterator.getDouble(StatsTimeSeriesUtil.VARIATION_COUNT);
+    speedCount = (long) iterator.getDouble(StatsTimeSeriesUtil.SPEED_COUNT);
+    accelerationCount = (long) iterator.getDouble(StatsTimeSeriesUtil.ACCELERATION_COUNT);
   }
 
   public IoTDBSeriesStat(TVList tvList) {
