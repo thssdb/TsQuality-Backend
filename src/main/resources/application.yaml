@@ -1,6 +1,7 @@
 hdfs:
-  partition: 1
   defaultFS: hdfs://localhost:9000
+  partition: 1
+  replicas: 1
 
 server:
   port: 8888

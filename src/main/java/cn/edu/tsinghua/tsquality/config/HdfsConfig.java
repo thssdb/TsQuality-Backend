@@ -9,10 +9,14 @@ public class HdfsConfig {
   @Value("${hdfs.defaultFS:hdfs://localhost:9000/}")
   private String defaultFS;
 
+  @Value("${hdfs.replicas:1}")
+  private String replicas;
+
   @Bean
   public Configuration configuration() {
     Configuration conf = new Configuration();
     conf.set("fs.defaultFS", defaultFS);
+    conf.set("dfs.replication", replicas);
     return conf;
   }
 }

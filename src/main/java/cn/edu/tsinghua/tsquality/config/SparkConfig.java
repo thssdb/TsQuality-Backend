@@ -16,15 +16,19 @@ public class SparkConfig {
   @Value("${spark.master:local[2]}")
   private String masterUrl;
 
-  @Value("${hdfs.defaultFS:hdfs://localhost:9000/}")
-  private String defaultFS;
+  private final org.apache.hadoop.conf.Configuration hadoopConf;
+
+  public SparkConfig(org.apache.hadoop.conf.Configuration hadoopConf) {
+    this.hadoopConf = hadoopConf;
+  }
 
   @Bean
   public SparkConf sparkConf() {
-    return new SparkConf()
+    SparkConf sparkConf = new SparkConf()
         .setAppName(appName)
-        .setMaster(masterUrl)
-        .set("fs.defaultFS", defaultFS);
+        .setMaster(masterUrl);
+    hadoopConf.forEach(entry -> sparkConf.set(entry.getKey(), entry.getValue()));
+    return sparkConf;
   }
 
   @Bean
