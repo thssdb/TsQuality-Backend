@@ -1,11 +1,10 @@
 package cn.edu.tsinghua.tsquality.storage.impl.iotdb;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-import org.apache.iotdb.tsfile.read.common.Path;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.read.common.Path;
 
 public class StatsTimeSeriesUtil {
   public static final List<String> STATS_PATHS;
@@ -47,21 +46,21 @@ public class StatsTimeSeriesUtil {
             VARIATION_COUNT,
             SPEED_COUNT,
             ACCELERATION_COUNT);
-    STATS_DATA_TYPES = List.of(
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.DOUBLE,
-        TSDataType.DOUBLE,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64,
-        TSDataType.INT64
-    );
+    STATS_DATA_TYPES =
+        List.of(
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.DOUBLE,
+            TSDataType.DOUBLE,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64,
+            TSDataType.INT64);
   }
 
   public static List<Object> getValuesForStat(IoTDBSeriesStat stat) {

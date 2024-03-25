@@ -24,9 +24,7 @@ public class SparkConfig {
 
   @Bean
   public SparkConf sparkConf() {
-    SparkConf sparkConf = new SparkConf()
-        .setAppName(appName)
-        .setMaster(masterUrl);
+    SparkConf sparkConf = new SparkConf().setAppName(appName).setMaster(masterUrl);
     hadoopConf.forEach(entry -> sparkConf.set(entry.getKey(), entry.getValue()));
     return sparkConf;
   }

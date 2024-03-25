@@ -2,10 +2,9 @@ package cn.edu.tsinghua.tsquality.common;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class DataQualityCalculationUtil {
   public static double calculateCompleteness(@NotNull IoTDBSeriesStat stat) {

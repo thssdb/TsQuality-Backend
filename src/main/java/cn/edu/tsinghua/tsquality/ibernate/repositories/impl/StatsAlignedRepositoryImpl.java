@@ -1,10 +1,11 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
-
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.StatsAlignedRepository;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
@@ -13,27 +14,26 @@ import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Log4j2
-public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements StatsAlignedRepository {
+public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl
+    implements StatsAlignedRepository {
   public StatsAlignedRepositoryImpl(SessionPool sessionPool, Path originalPath, StatLevel level) {
     super(sessionPool);
-    measurements = switch (level) {
-      case FILE -> {
-        device = StatsTimeSeriesUtil.getFileStatsDeviceForPath(originalPath);
-        yield StatsTimeSeriesUtil.getFileStatsMeasurementsForPath();
-      }
-      case CHUNK -> {
-        device = StatsTimeSeriesUtil.getChunkStatsDeviceForPath(originalPath);
-        yield StatsTimeSeriesUtil.getChunkStatsMeasurementsForPath();
-      }
-      case PAGE -> {
-        device = StatsTimeSeriesUtil.getPageStatsDeviceForPath(originalPath);
-        yield StatsTimeSeriesUtil.getPageStatsMeasurementsForPath();
-      }
-    };
+    measurements =
+        switch (level) {
+          case FILE -> {
+            device = StatsTimeSeriesUtil.getFileStatsDeviceForPath(originalPath);
+            yield StatsTimeSeriesUtil.getFileStatsMeasurementsForPath();
+          }
+          case CHUNK -> {
+            device = StatsTimeSeriesUtil.getChunkStatsDeviceForPath(originalPath);
+            yield StatsTimeSeriesUtil.getChunkStatsMeasurementsForPath();
+          }
+          case PAGE -> {
+            device = StatsTimeSeriesUtil.getPageStatsDeviceForPath(originalPath);
+            yield StatsTimeSeriesUtil.getPageStatsMeasurementsForPath();
+          }
+        };
     paths = measurements.stream().map(x -> new Path(device + "." + x, true)).toList();
   }
 
@@ -53,23 +53,25 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
   }
 
   private String prepareSelectStatsSql(List<TimeRange> timeRanges) {
-    String timeFilter = TimeRange.getStatsTimeFilter(
-        timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
-    String selectClause = String.format(
-        "select min_value(%s), max_value(%s), sum(%s), sum(%s), sum(%s), " +
-            "sum(%s), sum(%s), sum(%s), sum(%s), sum(%s), sum(%s) from %s",
-        StatsTimeSeriesUtil.MIN_TIME,
-        StatsTimeSeriesUtil.MAX_TIME,
-        StatsTimeSeriesUtil.COUNT,
-        StatsTimeSeriesUtil.MISS_COUNT,
-        StatsTimeSeriesUtil.SPECIAL_COUNT,
-        StatsTimeSeriesUtil.LATE_COUNT,
-        StatsTimeSeriesUtil.REDUNDANCY_COUNT,
-        StatsTimeSeriesUtil.VALUE_COUNT,
-        StatsTimeSeriesUtil.VARIATION_COUNT,
-        StatsTimeSeriesUtil.SPEED_COUNT,
-        StatsTimeSeriesUtil.ACCELERATION_COUNT,
-        device);
+    String timeFilter =
+        TimeRange.getStatsTimeFilter(
+            timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
+    String selectClause =
+        String.format(
+            "select min_value(%s), max_value(%s), sum(%s), sum(%s), sum(%s), "
+                + "sum(%s), sum(%s), sum(%s), sum(%s), sum(%s), sum(%s) from %s",
+            StatsTimeSeriesUtil.MIN_TIME,
+            StatsTimeSeriesUtil.MAX_TIME,
+            StatsTimeSeriesUtil.COUNT,
+            StatsTimeSeriesUtil.MISS_COUNT,
+            StatsTimeSeriesUtil.SPECIAL_COUNT,
+            StatsTimeSeriesUtil.LATE_COUNT,
+            StatsTimeSeriesUtil.REDUNDANCY_COUNT,
+            StatsTimeSeriesUtil.VALUE_COUNT,
+            StatsTimeSeriesUtil.VARIATION_COUNT,
+            StatsTimeSeriesUtil.SPEED_COUNT,
+            StatsTimeSeriesUtil.ACCELERATION_COUNT,
+            device);
     String whereClause = prepareWhereClause(timeFilter, null);
     return selectClause + whereClause;
   }
@@ -90,12 +92,13 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
   }
 
   private String prepareSelectTimeRangesSql(List<TimeRange> timeRanges) {
-    String timeFilter = TimeRange.getStatsTimeFilter(
-        timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
-    String selectClause = String.format("select %s, %s from %s",
-        StatsTimeSeriesUtil.MIN_TIME,
-        StatsTimeSeriesUtil.MAX_TIME,
-        device);
+    String timeFilter =
+        TimeRange.getStatsTimeFilter(
+            timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
+    String selectClause =
+        String.format(
+            "select %s, %s from %s",
+            StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME, device);
     String whereClause = prepareWhereClause(timeFilter, null);
     return selectClause + whereClause;
   }
@@ -113,6 +116,8 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
   }
 
   public enum StatLevel {
-    FILE, CHUNK, PAGE
+    FILE,
+    CHUNK,
+    PAGE
   }
 }

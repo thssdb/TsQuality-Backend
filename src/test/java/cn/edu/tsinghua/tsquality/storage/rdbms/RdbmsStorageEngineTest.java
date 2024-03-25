@@ -1,5 +1,7 @@
 package cn.edu.tsinghua.tsquality.storage.rdbms;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.generators.SeriesStatGenerator;
 import cn.edu.tsinghua.tsquality.generators.TsFileInfoGenerator;
 import cn.edu.tsinghua.tsquality.mappers.database.*;
@@ -10,16 +12,14 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.impl.RdbmsStorageEngine;
+import java.util.List;
+import java.util.Map;
 import lombok.val;
 import org.apache.iotdb.tsfile.read.common.Path;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 @Transactional

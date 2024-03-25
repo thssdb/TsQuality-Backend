@@ -1,22 +1,22 @@
 package cn.edu.tsinghua.tsquality.storage.hdfs;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import cn.edu.tsinghua.tsquality.generators.SeriesStatGenerator;
 import cn.edu.tsinghua.tsquality.generators.TsFileInfoGenerator;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.HdfsStorageConstants;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.HdfsStorageEngine;
+import java.io.IOException;
+import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.spark.sql.SparkSession;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.io.IOException;
-import java.util.Map;
 
 @SpringBootTest
 public class HdfsStorageEngineTest {
@@ -48,19 +48,16 @@ public class HdfsStorageEngineTest {
 
   private void thenFileSeriesStatsShouldHaveBeenPersisted(
       TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws Exception {
-    assertThat(checkDirExists(HdfsStorageConstants.fileSeriesStatsDirName, conf))
-        .isTrue();
+    assertThat(checkDirExists(HdfsStorageConstants.fileSeriesStatsDirName, conf)).isTrue();
   }
 
   private void thenChunkSeriesStatsShouldHaveBeenPersisted(
       TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws Exception {
-    assertThat(checkDirExists(HdfsStorageConstants.chunkSeriesStatsDirName, conf))
-        .isTrue();
+    assertThat(checkDirExists(HdfsStorageConstants.chunkSeriesStatsDirName, conf)).isTrue();
   }
 
-
-  private void thenPageSeriesStatsShouldHaveBeenPersisted(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws IOException {
-    assertThat(checkDirExists(HdfsStorageConstants.pageSeriesStatsDirName, conf))
-        .isTrue();
+  private void thenPageSeriesStatsShouldHaveBeenPersisted(
+      TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws IOException {
+    assertThat(checkDirExists(HdfsStorageConstants.pageSeriesStatsDirName, conf)).isTrue();
   }
 }

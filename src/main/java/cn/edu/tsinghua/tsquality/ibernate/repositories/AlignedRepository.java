@@ -1,10 +1,9 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories;
 
+import java.util.List;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
-
-import java.util.List;
 
 public interface AlignedRepository {
   void createAlignedTimeSeries(List<TSDataType> dataTypes)

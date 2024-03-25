@@ -3,6 +3,9 @@ package cn.edu.tsinghua.tsquality.model.entity;
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -11,10 +14,6 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.spark.sql.Row;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
@@ -31,8 +30,8 @@ public class IoTDBSeriesStat {
   private long variationCount = 0;
   private long speedCount = 0;
   private long accelerationCount = 0;
-  private double[] valueList = new double[]{};
-  private double[] timeList = new double[]{};
+  private double[] valueList = new double[] {};
+  private double[] timeList = new double[] {};
   // this field is not used in the code,
   // only used to store results returned by SQL queries,
   // it could represent the path of a time series or a device or a database
@@ -56,7 +55,8 @@ public class IoTDBSeriesStat {
     accelerationCount = row.getAs("accelerationCount");
   }
 
-  public IoTDBSeriesStat(SessionDataSetWrapper wrapper) throws IoTDBConnectionException, StatementExecutionException {
+  public IoTDBSeriesStat(SessionDataSetWrapper wrapper)
+      throws IoTDBConnectionException, StatementExecutionException {
     SessionDataSet.DataIterator iterator = wrapper.iterator();
     if (!iterator.next()) {
       return;

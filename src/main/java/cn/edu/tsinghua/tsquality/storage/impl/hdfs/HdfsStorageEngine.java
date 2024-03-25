@@ -34,7 +34,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   private final SparkSession spark;
   private final SessionPool sessionPool;
 
-  public HdfsStorageEngine(Configuration config, SparkSession spark, SessionPool sessionPool) throws IOException {
+  public HdfsStorageEngine(Configuration config, SparkSession spark, SessionPool sessionPool)
+      throws IOException {
     this.conf = config;
     this.spark = spark;
     this.sessionPool = sessionPool;
@@ -63,9 +64,12 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   private void saveFileLevelStats(TsFileInfo info, Map.Entry<Path, TsFileStat> entry) {
-    FileLevelStat fileLevelStat = new FileLevelStat(entry.getKey().getFullPath(), info, entry.getValue().getFileStat());
-    Dataset<FileLevelStat> statDataset = spark.createDataset(List.of(fileLevelStat), Encoders.bean(FileLevelStat.class));
-    statDataset.repartition(partition)
+    FileLevelStat fileLevelStat =
+        new FileLevelStat(entry.getKey().getFullPath(), info, entry.getValue().getFileStat());
+    Dataset<FileLevelStat> statDataset =
+        spark.createDataset(List.of(fileLevelStat), Encoders.bean(FileLevelStat.class));
+    statDataset
+        .repartition(partition)
         .write()
         .option("header", true)
         .option("compression", "gzip")
@@ -82,8 +86,10 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
       ChunkLevelStat stat = new ChunkLevelStat(path, info, chunkStats.get(offset), offset);
       chunkLevelStats.add(stat);
     }
-    Dataset<ChunkLevelStat> statDataset = spark.createDataset(chunkLevelStats, Encoders.bean(ChunkLevelStat.class));
-    statDataset.repartition(partition)
+    Dataset<ChunkLevelStat> statDataset =
+        spark.createDataset(chunkLevelStats, Encoders.bean(ChunkLevelStat.class));
+    statDataset
+        .repartition(partition)
         .write()
         .option("header", true)
         .option("compression", "gzip")
@@ -100,12 +106,15 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
       Long offset = offsets.get(i);
       List<IoTDBSeriesStat> stats = pageStats.get(offset);
       for (int j = 0; j < stats.size(); j++) {
-        PageLevelStat stat = new PageLevelStat(path, tsFileInfo, stats.get(j), String.format("%d-%d", i+1, j+1));
+        PageLevelStat stat =
+            new PageLevelStat(path, tsFileInfo, stats.get(j), String.format("%d-%d", i + 1, j + 1));
         pageLevelStats.add(stat);
       }
     }
-    Dataset<PageLevelStat> statDataset = spark.createDataset(pageLevelStats, Encoders.bean(PageLevelStat.class));
-    statDataset.repartition(partition)
+    Dataset<PageLevelStat> statDataset =
+        spark.createDataset(pageLevelStats, Encoders.bean(PageLevelStat.class));
+    statDataset
+        .repartition(partition)
         .write()
         .option("header", true)
         .option("compression", "gzip")
@@ -136,26 +145,31 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
-    Dataset<Row> fileDataset = readDatasetFromCsv(HdfsStorageConstants.fileSeriesStatsDirName, path, timeRanges);
+    Dataset<Row> fileDataset =
+        readDatasetFromCsv(HdfsStorageConstants.fileSeriesStatsDirName, path, timeRanges);
     IoTDBSeriesStat fileLevelStat = getStatFromDataset(fileDataset);
     List<TimeRange> fileLevelTimeRanges = getTimeRangesFromDataset(fileDataset);
     timeRanges = TimeRange.getRemains(timeRanges, fileLevelTimeRanges);
 
-    Dataset<Row> chunkDataset = readDatasetFromCsv(HdfsStorageConstants.chunkSeriesStatsDirName, path, timeRanges);
+    Dataset<Row> chunkDataset =
+        readDatasetFromCsv(HdfsStorageConstants.chunkSeriesStatsDirName, path, timeRanges);
     IoTDBSeriesStat chunkLevelStat = getStatFromDataset(chunkDataset);
     List<TimeRange> chunkLevelTimeRanges = getTimeRangesFromDataset(chunkDataset);
     timeRanges = TimeRange.getRemains(timeRanges, chunkLevelTimeRanges);
 
-    Dataset<Row> pageDataset = readDatasetFromCsv(HdfsStorageConstants.pageSeriesStatsDirName, path, timeRanges);
+    Dataset<Row> pageDataset =
+        readDatasetFromCsv(HdfsStorageConstants.pageSeriesStatsDirName, path, timeRanges);
     IoTDBSeriesStat pageLevelStat = getStatFromDataset(pageDataset);
     List<TimeRange> pageLevelTimeRanges = getTimeRangesFromDataset(pageDataset);
     timeRanges = TimeRange.getRemains(timeRanges, pageLevelTimeRanges);
 
     IoTDBSeriesStat originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
-    return mergeStatsAsDQMetrics(dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
+    return mergeStatsAsDQMetrics(
+        dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
   }
 
-  private Dataset<Row> readDatasetFromCsv(String filePath, String seriesPath, List<TimeRange> timeRanges) {
+  private Dataset<Row> readDatasetFromCsv(
+      String filePath, String seriesPath, List<TimeRange> timeRanges) {
     Dataset<Row> dataset = spark.read().csv(filePath);
     return dataset
         .filter(col("path").equalTo(seriesPath))
@@ -169,12 +183,17 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   private List<TimeRange> getTimeRangesFromDataset(Dataset<Row> dataset) {
-    return dataset.selectExpr(MetadataStat.timeColumns())
-        .map((MapFunction<Row, TimeRange>) row -> {
-          long minTime = row.getAs("minTime");
-          long maxTime = row.getAs("maxTime");
-          return new TimeRange(minTime, maxTime);
-        }, Encoders.bean(TimeRange.class)).collectAsList();
+    return dataset
+        .selectExpr(MetadataStat.timeColumns())
+        .map(
+            (MapFunction<Row, TimeRange>)
+                row -> {
+                  long minTime = row.getAs("minTime");
+                  long maxTime = row.getAs("maxTime");
+                  return new TimeRange(minTime, maxTime);
+                },
+            Encoders.bean(TimeRange.class))
+        .collectAsList();
   }
 
   private Column getTimeFilter(List<TimeRange> timeRanges) {
@@ -184,10 +203,14 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
     }
 
     for (TimeRange timeRange : timeRanges) {
-      Column minTimeCondition = timeRange.isLeftClose() ? col("minTime").geq(timeRange.getMin())
-          : col("minTime").gt(timeRange.getMin());
-      Column maxTimeCondition = timeRange.isRightClose() ? col("maxTime").leq(timeRange.getMax())
-          : col("maxTime").lt(timeRange.getMax());
+      Column minTimeCondition =
+          timeRange.isLeftClose()
+              ? col("minTime").geq(timeRange.getMin())
+              : col("minTime").gt(timeRange.getMin());
+      Column maxTimeCondition =
+          timeRange.isRightClose()
+              ? col("maxTime").leq(timeRange.getMax())
+              : col("maxTime").lt(timeRange.getMax());
       Column timeRangeCondition = minTimeCondition.and(maxTimeCondition);
       filter = filter == null ? timeRangeCondition : filter.or(timeRangeCondition);
     }

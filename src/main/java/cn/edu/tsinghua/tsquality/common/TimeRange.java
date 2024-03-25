@@ -1,10 +1,9 @@
 package cn.edu.tsinghua.tsquality.common;
 
+import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
 
 @Getter
 public class TimeRange implements Comparable<TimeRange> {
@@ -19,8 +18,11 @@ public class TimeRange implements Comparable<TimeRange> {
 
   public static String getStatsTimeFilter(
       List<TimeRange> ranges, String minTimestampName, String maxTimestampName) {
-    return String.join(" and ",
-        ranges.stream().map(x -> x.getStatsTimeFilter(minTimestampName, maxTimestampName)).toList());
+    return String.join(
+        " and ",
+        ranges.stream()
+            .map(x -> x.getStatsTimeFilter(minTimestampName, maxTimestampName))
+            .toList());
   }
 
   public static List<TimeRange> getRemains(List<TimeRange> lhs, List<TimeRange> rhs) {

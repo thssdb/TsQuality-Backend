@@ -9,16 +9,15 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @Component("IoTDBStorageEngine")
@@ -45,9 +44,9 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   private StatsAlignedRepository[] createStatsAlignedRepositoryAndTimeSeriesForPath(Path path)
       throws IoTDBConnectionException, StatementExecutionException {
     return new StatsAlignedRepository[] {
-        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE),
-        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK),
-        new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.PAGE),
+      new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE),
+      new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK),
+      new StatsAlignedRepositoryImpl(sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.PAGE),
     };
   }
 
@@ -116,14 +115,16 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
       List<DQType> dqTypes, String pathStr, List<TimeRange> timeRanges) {
     Path path = new Path(pathStr, true);
 
-    StatsAlignedRepository fileStatsRepository = new StatsAlignedRepositoryImpl(
-        sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE);
+    StatsAlignedRepository fileStatsRepository =
+        new StatsAlignedRepositoryImpl(
+            sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.FILE);
     IoTDBSeriesStat fileStat = fileStatsRepository.selectStats(timeRanges);
     List<TimeRange> fileStatTimeRanges = fileStatsRepository.selectTimeRanges(timeRanges);
     timeRanges = TimeRange.getRemains(timeRanges, fileStatTimeRanges);
 
-    StatsAlignedRepository chunkStatsRepository = new StatsAlignedRepositoryImpl(
-        sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK);
+    StatsAlignedRepository chunkStatsRepository =
+        new StatsAlignedRepositoryImpl(
+            sessionPool, path, StatsAlignedRepositoryImpl.StatLevel.CHUNK);
     IoTDBSeriesStat chunkStat = chunkStatsRepository.selectStats(timeRanges);
     List<TimeRange> chunkStatTimeRanges = chunkStatsRepository.selectTimeRanges(timeRanges);
     timeRanges = TimeRange.getRemains(timeRanges, chunkStatTimeRanges);
