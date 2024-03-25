@@ -1,6 +1,10 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -12,11 +16,6 @@ import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Log4j2
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
@@ -93,7 +92,8 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
     return size == paths.size();
   }
 
-  private void doCreate(List<TSDataType> dataTypes) throws IoTDBConnectionException, StatementExecutionException {
+  private void doCreate(List<TSDataType> dataTypes)
+      throws IoTDBConnectionException, StatementExecutionException {
     List<TSEncoding> encodings = Collections.nCopies(paths.size(), TSEncoding.PLAIN);
     doCreate(dataTypes, encodings);
   }

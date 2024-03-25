@@ -1,12 +1,11 @@
 package cn.edu.tsinghua.tsquality.storage.impl.iotdb;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class StatsTimeSeriesUtil {
   public static final List<String> STATS_PATHS;
@@ -19,7 +18,8 @@ public class StatsTimeSeriesUtil {
   public static final String FILE_INFO_DEVICE = FILE_INFO_PATH_PREFIX;
   public static final List<String> FILE_INFO_MEASUREMENTS =
       List.of(FILE_INFO_PATH_MEASUREMENT, FILE_INFO_VERSION_MEASUREMENT);
-  public static final List<TSDataType> FILE_INFO_DATA_TYPES = List.of(TSDataType.TEXT, TSDataType.INT64);
+  public static final List<TSDataType> FILE_INFO_DATA_TYPES =
+      List.of(TSDataType.TEXT, TSDataType.INT64);
 
   public static final String FILE_STATS_PATH_PREFIX = "root.file_stats";
   public static final String FILE_PATH_MEASUREMENT = "path";
@@ -91,8 +91,7 @@ public class StatsTimeSeriesUtil {
             TSEncoding.GORILLA,
             TSEncoding.GORILLA,
             TSEncoding.GORILLA,
-            TSEncoding.GORILLA
-        );
+            TSEncoding.GORILLA);
   }
 
   public static List<Object> getValuesForStat(IoTDBSeriesStat stat) {

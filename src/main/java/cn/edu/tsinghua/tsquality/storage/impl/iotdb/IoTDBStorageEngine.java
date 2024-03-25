@@ -10,6 +10,9 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -17,10 +20,6 @@ import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @Component("IoTDBStorageEngine")
@@ -34,8 +33,11 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
 
   @Override
   public List<TsFileInfo> selectAllFiles() {
-    AlignedRepository repository = new AlignedRepositoryImpl(
-        sessionPool, StatsTimeSeriesUtil.FILE_INFO_DEVICE, StatsTimeSeriesUtil.FILE_INFO_MEASUREMENTS);
+    AlignedRepository repository =
+        new AlignedRepositoryImpl(
+            sessionPool,
+            StatsTimeSeriesUtil.FILE_INFO_DEVICE,
+            StatsTimeSeriesUtil.FILE_INFO_MEASUREMENTS);
     try {
       List<List<Object>> result = repository.select(null, null);
       List<TsFileInfo> tsFileInfos = new ArrayList<>();
@@ -62,13 +64,19 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
         saveFileStatsFor(tsFileInfo, entry, repositories);
       }
     } catch (IoTDBConnectionException | StatementExecutionException e) {
-      log.error(String.format("error saving stats for tsfile %s: %s", tsFileInfo.getFilePath(), e.getMessage()));
+      log.error(
+          String.format(
+              "error saving stats for tsfile %s: %s", tsFileInfo.getFilePath(), e.getMessage()));
     }
   }
 
-  private void saveTsFileInfo(TsFileInfo tsFileInfo) throws IoTDBConnectionException, StatementExecutionException {
-    AlignedRepository repository = new AlignedRepositoryImpl(
-        sessionPool, StatsTimeSeriesUtil.FILE_INFO_DEVICE, StatsTimeSeriesUtil.FILE_INFO_MEASUREMENTS);
+  private void saveTsFileInfo(TsFileInfo tsFileInfo)
+      throws IoTDBConnectionException, StatementExecutionException {
+    AlignedRepository repository =
+        new AlignedRepositoryImpl(
+            sessionPool,
+            StatsTimeSeriesUtil.FILE_INFO_DEVICE,
+            StatsTimeSeriesUtil.FILE_INFO_MEASUREMENTS);
     repository.createAlignedTimeSeries(StatsTimeSeriesUtil.FILE_INFO_DATA_TYPES);
     long timestamp = repository.count();
     repository.insert(timestamp, List.of(tsFileInfo.getFilePath(), tsFileInfo.getFileVersion()));
@@ -87,9 +95,11 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
       TsFileInfo tsFileInfo, Map.Entry<Path, TsFileStat> entry, AlignedRepository[] repositories)
       throws IoTDBConnectionException, StatementExecutionException {
     saveFileLevelSeriesStats(tsFileInfo, entry.getValue().getFileStat(), repositories[0]);
-    for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry : entry.getValue().getChunkStats().entrySet()) {
+    for (Map.Entry<Long, IoTDBSeriesStat> chunkEntry :
+        entry.getValue().getChunkStats().entrySet()) {
       saveChunkLevelSeriesStats(chunkEntry, repositories[1]);
-      for (Map.Entry<Long, List<IoTDBSeriesStat>> pageEntry : entry.getValue().getPageStats().entrySet()) {
+      for (Map.Entry<Long, List<IoTDBSeriesStat>> pageEntry :
+          entry.getValue().getPageStats().entrySet()) {
         for (int i = 0; i < pageEntry.getValue().size(); i++) {
           savePageLevelSeriesStats(i, pageEntry.getValue().get(i), repositories[2]);
         }
@@ -127,7 +137,8 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
     return values;
   }
 
-  private void savePageLevelSeriesStats(int index, IoTDBSeriesStat stat, AlignedRepository pageStatsRepository)
+  private void savePageLevelSeriesStats(
+      int index, IoTDBSeriesStat stat, AlignedRepository pageStatsRepository)
       throws IoTDBConnectionException, StatementExecutionException {
     long timestamp = pageStatsRepository.count();
     List<Object> values = pageLevelSeriesStatsValues(index, stat);
