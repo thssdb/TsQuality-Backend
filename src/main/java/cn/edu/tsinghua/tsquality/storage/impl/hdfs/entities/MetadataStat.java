@@ -1,7 +1,6 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +10,8 @@ public class MetadataStat {
   protected String path;
   protected long minTime;
   protected long maxTime;
+  protected double minValue;
+  protected double maxValue;
   protected long count;
   protected long missCount;
   protected long specialCount;
@@ -42,7 +43,7 @@ public class MetadataStat {
     };
   }
 
-  public MetadataStat(String path, TsFileInfo info, IoTDBSeriesStat stat) {
+  public MetadataStat(String path, IoTDBSeriesStat stat) {
     this.path = path;
     this.minTime = stat.getMinTime();
     this.maxTime = stat.getMaxTime();

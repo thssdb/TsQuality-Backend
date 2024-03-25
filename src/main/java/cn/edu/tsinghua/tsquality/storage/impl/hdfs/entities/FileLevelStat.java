@@ -11,14 +11,8 @@ public class FileLevelStat extends MetadataStat {
   private String filePath;
   private long version;
 
-  public static String[] columnsOrder() {
-    return new String[]{
-      "path", "filePath", "version", "minTime", "maxTime", "count", "missCount", "specialCount", "lateCount", "redundancyCount", "valueCount", "variationCount", "speedCount", "accelerationCount"
-    };
-  }
-
   public FileLevelStat(String path, TsFileInfo info, IoTDBSeriesStat stat) {
-    super(path, info, stat);
+    super(path, stat);
     filePath = info.getFilePath();
     version = info.getFileVersion();
   }

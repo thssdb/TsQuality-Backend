@@ -13,12 +13,15 @@ import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.spark.sql.Row;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
   private long minTime = Long.MAX_VALUE;
   private long maxTime = Long.MIN_VALUE;
+  private double minValue = Long.MAX_VALUE;
+  private double maxValue = Long.MIN_VALUE;
   private long count = 0;
   private long missCount = 0;
   private long specialCount = 0;
@@ -40,6 +43,8 @@ public class IoTDBSeriesStat {
   public IoTDBSeriesStat(Row row) {
     minTime = row.getAs("minTime");
     maxTime = row.getAs("maxTime");
+    minValue = row.getAs("minValue");
+    maxValue = row.getAs("maxValue");
     count = row.getAs("count");
     missCount = row.getAs("missCount");
     specialCount = row.getAs("specialCount");
@@ -58,6 +63,8 @@ public class IoTDBSeriesStat {
     }
     minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIME);
     maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIME);
+    minValue = iterator.getDouble(StatsTimeSeriesUtil.MIN_VALUE);
+    maxValue = iterator.getDouble(StatsTimeSeriesUtil.MAX_VALUE);
     count = iterator.getLong(StatsTimeSeriesUtil.COUNT);
     missCount = iterator.getLong(StatsTimeSeriesUtil.MISS_COUNT);
     specialCount = iterator.getLong(StatsTimeSeriesUtil.SPECIAL_COUNT);
@@ -171,6 +178,10 @@ public class IoTDBSeriesStat {
   }
 
   public IoTDBSeriesStat merge(IoTDBSeriesStat seriesStat) {
+    minTime = Math.min(minTime, seriesStat.minTime);
+    maxTime = Math.max(maxTime, seriesStat.maxTime);
+    minValue = Math.min(minValue, seriesStat.minValue);
+    maxValue = Math.max(maxValue, seriesStat.maxValue);
     count += seriesStat.count;
     missCount += seriesStat.missCount;
     specialCount += seriesStat.specialCount;
@@ -180,8 +191,6 @@ public class IoTDBSeriesStat {
     variationCount += seriesStat.variationCount;
     speedCount += seriesStat.speedCount;
     accelerationCount += seriesStat.accelerationCount;
-    minTime = Math.min(minTime, seriesStat.minTime);
-    maxTime = Math.max(maxTime, seriesStat.maxTime);
     return this;
   }
 
@@ -189,6 +198,8 @@ public class IoTDBSeriesStat {
     if (valueList.length < 2) {
       return;
     }
+    minValue = Arrays.stream(valueList).min().getAsDouble();
+    maxValue = Arrays.stream(valueList).max().getAsDouble();
     double k = 3;
     valueCount = Util.findOutliers(valueList, k);
     double[] variation = Util.variation(valueList);

@@ -5,7 +5,6 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.read.common.Path;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class StatsTimeSeriesUtil {
@@ -20,6 +19,8 @@ public class StatsTimeSeriesUtil {
 
   public static final String MIN_TIME = "min_time";
   public static final String MAX_TIME = "max_time";
+  public static final String MIN_VALUE = "min_value";
+  public static final String MAX_VALUE = "max_value";
   public static final String COUNT = "count";
   public static final String MISS_COUNT = "miss_count";
   public static final String SPECIAL_COUNT = "special_count";
@@ -35,6 +36,8 @@ public class StatsTimeSeriesUtil {
         List.of(
             MIN_TIME,
             MAX_TIME,
+            MIN_VALUE,
+            MAX_VALUE,
             COUNT,
             MISS_COUNT,
             SPECIAL_COUNT,
@@ -44,14 +47,29 @@ public class StatsTimeSeriesUtil {
             VARIATION_COUNT,
             SPEED_COUNT,
             ACCELERATION_COUNT);
-    STATS_DATA_TYPES = Collections.nCopies(STATS_PATHS.size(), TSDataType.INT64);
+    STATS_DATA_TYPES = List.of(
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.DOUBLE,
+        TSDataType.DOUBLE,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64,
+        TSDataType.INT64
+    );
   }
 
   public static List<Object> getValuesForStat(IoTDBSeriesStat stat) {
-    int a = 1, A = 2;
     return List.of(
         stat.getMinTime(),
         stat.getMaxTime(),
+        stat.getMinValue(),
+        stat.getMaxValue(),
         stat.getCount(),
         stat.getMissCount(),
         stat.getSpecialCount(),

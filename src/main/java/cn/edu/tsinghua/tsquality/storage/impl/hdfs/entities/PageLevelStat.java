@@ -11,14 +11,8 @@ public class PageLevelStat extends MetadataStat {
   private String filePath;
   private String index;
 
-  public static String[] columnsOrder() {
-    return new String[]{
-      "path", "filePath", "index", "minTime", "maxTime", "count", "missCount", "specialCount", "lateCount", "redundancyCount", "valueCount", "variationCount", "speedCount", "accelerationCount"
-    };
-  }
-
   public PageLevelStat(String path, TsFileInfo info, IoTDBSeriesStat stat, String index) {
-    super(path, info, stat);
+    super(path, stat);
     this.index = index;
     this.filePath = info.getFilePath();
   }

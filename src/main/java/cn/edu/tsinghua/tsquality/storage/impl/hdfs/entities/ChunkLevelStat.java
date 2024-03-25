@@ -11,14 +11,8 @@ public class ChunkLevelStat extends MetadataStat {
   private String filePath;
   private long offset;
 
-  public static String[] columnsOrder() {
-    return new String[]{
-      "path", "filePath", "offset", "minTime", "maxTime", "count", "missCount", "specialCount", "lateCount", "redundancyCount", "valueCount", "variationCount", "speedCount", "accelerationCount"
-    };
-  }
-
   public ChunkLevelStat(String path, TsFileInfo info, IoTDBSeriesStat stat, long offset) {
-    super(path, info, stat);
+    super(path, stat);
     this.offset = offset;
     this.filePath = info.getFilePath();
   }
