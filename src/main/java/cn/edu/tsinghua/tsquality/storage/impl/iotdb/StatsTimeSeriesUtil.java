@@ -18,8 +18,8 @@ public class StatsTimeSeriesUtil {
   public static final String PAGE_STATS_PATH_PREFIX = "page_stats";
   public static final String PAGE_INDEX_MEASUREMENT = "index";
 
-  public static final String MIN_TIMESTAMP = "min_timestamp";
-  public static final String MAX_TIMESTAMP = "max_timestamp";
+  public static final String MIN_TIME = "min_time";
+  public static final String MAX_TIME = "max_time";
   public static final String COUNT = "count";
   public static final String MISS_COUNT = "miss_count";
   public static final String SPECIAL_COUNT = "special_count";
@@ -33,8 +33,8 @@ public class StatsTimeSeriesUtil {
   static {
     STATS_PATHS =
         List.of(
-            MIN_TIMESTAMP,
-            MAX_TIMESTAMP,
+            MIN_TIME,
+            MAX_TIME,
             COUNT,
             MISS_COUNT,
             SPECIAL_COUNT,

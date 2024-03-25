@@ -54,12 +54,12 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
 
   private String prepareSelectStatsSql(List<TimeRange> timeRanges) {
     String timeFilter = TimeRange.getStatsTimeFilter(
-        timeRanges, StatsTimeSeriesUtil.MIN_TIMESTAMP, StatsTimeSeriesUtil.MAX_TIMESTAMP);
+        timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
     String selectClause = String.format(
         "select min_value(%s), max_value(%s), sum(%s), sum(%s), sum(%s), " +
             "sum(%s), sum(%s), sum(%s), sum(%s), sum(%s), sum(%s) from %s",
-        StatsTimeSeriesUtil.MIN_TIMESTAMP,
-        StatsTimeSeriesUtil.MAX_TIMESTAMP,
+        StatsTimeSeriesUtil.MIN_TIME,
+        StatsTimeSeriesUtil.MAX_TIME,
         StatsTimeSeriesUtil.COUNT,
         StatsTimeSeriesUtil.MISS_COUNT,
         StatsTimeSeriesUtil.SPECIAL_COUNT,
@@ -91,10 +91,10 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
 
   private String prepareSelectTimeRangesSql(List<TimeRange> timeRanges) {
     String timeFilter = TimeRange.getStatsTimeFilter(
-        timeRanges, StatsTimeSeriesUtil.MIN_TIMESTAMP, StatsTimeSeriesUtil.MAX_TIMESTAMP);
+        timeRanges, StatsTimeSeriesUtil.MIN_TIME, StatsTimeSeriesUtil.MAX_TIME);
     String selectClause = String.format("select %s, %s from %s",
-        StatsTimeSeriesUtil.MIN_TIMESTAMP,
-        StatsTimeSeriesUtil.MAX_TIMESTAMP,
+        StatsTimeSeriesUtil.MIN_TIME,
+        StatsTimeSeriesUtil.MAX_TIME,
         device);
     String whereClause = prepareWhereClause(timeFilter, null);
     return selectClause + whereClause;
@@ -105,8 +105,8 @@ public class StatsAlignedRepositoryImpl extends AlignedRepositoryImpl implements
     List<TimeRange> result = new ArrayList<>();
     SessionDataSet.DataIterator iterator = wrapper.iterator();
     while (iterator.next()) {
-      long min = iterator.getLong(StatsTimeSeriesUtil.MIN_TIMESTAMP);
-      long max = iterator.getLong(StatsTimeSeriesUtil.MAX_TIMESTAMP);
+      long min = iterator.getLong(StatsTimeSeriesUtil.MIN_TIME);
+      long max = iterator.getLong(StatsTimeSeriesUtil.MAX_TIME);
       result.add(new TimeRange(min, max));
     }
     return result;

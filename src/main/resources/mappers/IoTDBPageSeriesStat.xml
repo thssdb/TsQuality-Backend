@@ -5,8 +5,8 @@
     <update id="createPageSeriesStatTable" parameterType="String">
         CREATE TABLE IF NOT EXISTS page_series_stats(
             `pid` BIGINT PRIMARY KEY,
-            `min_timestamp` BIGINT NOT NULL,
-            `max_timestamp` BIGINT NOT NULL,
+            `min_time` BIGINT NOT NULL,
+            `max_time` BIGINT NOT NULL,
             `count` BIGINT NOT NULL,
             `miss_count` BIGINT NOT NULL,
             `special_count` BIGINT NOT NULL,
@@ -23,8 +23,8 @@
     <insert id="insert">
         INSERT IGNORE INTO page_series_stats VALUES (
             #{pid},
-            #{stat.minTimestamp},
-            #{stat.maxTimestamp},
+            #{stat.minTime},
+            #{stat.maxTime},
             #{stat.count},
             #{stat.missCount},
             #{stat.specialCount},

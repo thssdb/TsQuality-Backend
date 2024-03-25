@@ -56,8 +56,8 @@ public class IoTDBSeriesStat {
     if (!iterator.next()) {
       return;
     }
-    minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIMESTAMP);
-    maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIMESTAMP);
+    minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIME);
+    maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIME);
     count = iterator.getLong(StatsTimeSeriesUtil.COUNT);
     missCount = iterator.getLong(StatsTimeSeriesUtil.MISS_COUNT);
     specialCount = iterator.getLong(StatsTimeSeriesUtil.SPECIAL_COUNT);

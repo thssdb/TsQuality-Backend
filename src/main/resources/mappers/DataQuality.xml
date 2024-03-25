@@ -3,8 +3,8 @@
 
 <mapper namespace="cn.edu.tsinghua.tsquality.mappers.database.DataQualityMapper">
     <sql id="statColumns">
-        MIN(`min_timestamp`) minTimestamp,
-        MAX(`max_timestamp`) maxTimestamp,
+        MIN(`min_time`) minTime,
+        MAX(`max_time`) maxTime,
         SUM(`count`) cnt,
         SUM(`miss_count`) missCnt,
         SUM(`special_count`) specialCnt,
@@ -86,13 +86,13 @@
         SELECT
         <choose>
             <when test='aggregationType.equals("day")'>
-                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m-%d') `time`,
+                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y-%m-%d') `time`,
             </when>
             <when test='aggregationType.equals("month")'>
-                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y-%m') `time`,
+                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y-%m') `time`,
             </when>
             <otherwise>
-                DATE_FORMAT(FROM_UNIXTIME(`min_timestamp`/1000), '%Y') `time`,
+                DATE_FORMAT(FROM_UNIXTIME(`min_time`/1000), '%Y') `time`,
             </otherwise>
         </choose>
         <include refid="statColumns" />

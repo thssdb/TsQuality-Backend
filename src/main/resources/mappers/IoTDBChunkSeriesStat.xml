@@ -5,8 +5,8 @@
     <update id="createChunkSeriesStatTable" parameterType="String">
        CREATE TABLE IF NOT EXISTS chunk_series_stats(
             `cid` BIGINT PRIMARY KEY,
-            `min_timestamp` BIGINT NOT NULL,
-            `max_timestamp` BIGINT NOT NULL,
+            `min_time` BIGINT NOT NULL,
+            `max_time` BIGINT NOT NULL,
             `count` BIGINT NOT NULL,
             `miss_count` BIGINT NOT NULL,
             `special_count` BIGINT NOT NULL,
@@ -23,8 +23,8 @@
     <insert id="insert">
         INSERT IGNORE INTO chunk_series_stats VALUES (
             #{cid},
-            #{stat.minTimestamp},
-            #{stat.maxTimestamp},
+            #{stat.minTime},
+            #{stat.maxTime},
             #{stat.count},
             #{stat.missCount},
             #{stat.specialCount},
@@ -56,16 +56,16 @@
         from series natural join chunks natural join chunk_series_stats
         where
         <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
-            min_timestamp >= #{item.min} and max_timestamp &lt;= #{item.max}
+            min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>
 
     <select id="selectTimeRanges" resultType="TimeRange">
-        select min_timestamp as min, max_timestamp as max
+        select min_time as min, max_time as max
         from series natural join chunks natural join chunk_series_stats
         where
         <foreach item="item" collection="timeRanges" open="(" separator=") or (" close=")" >
-            min_timestamp >= #{item.min} and max_timestamp &lt;= #{item.max}
+            min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>
     </select>
 </mapper>
