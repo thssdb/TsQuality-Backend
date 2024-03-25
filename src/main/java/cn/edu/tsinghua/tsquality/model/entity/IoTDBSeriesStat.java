@@ -10,14 +10,15 @@ import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
+import org.apache.spark.sql.Row;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
-  private long minTimestamp = Long.MAX_VALUE;
-  private long maxTimestamp = Long.MIN_VALUE;
+  private long minTime = Long.MAX_VALUE;
+  private long maxTime = Long.MIN_VALUE;
   private long count = 0;
   private long missCount = 0;
   private long specialCount = 0;
@@ -36,13 +37,27 @@ public class IoTDBSeriesStat {
 
   public IoTDBSeriesStat() {}
 
+  public IoTDBSeriesStat(Row row) {
+    minTime = row.getAs("minTime");
+    maxTime = row.getAs("maxTime");
+    count = row.getAs("count");
+    missCount = row.getAs("missCount");
+    specialCount = row.getAs("specialCount");
+    lateCount = row.getAs("lateCount");
+    redundancyCount = row.getAs("redundancyCount");
+    valueCount = row.getAs("valueCount");
+    variationCount = row.getAs("variationCount");
+    speedCount = row.getAs("speedCount");
+    accelerationCount = row.getAs("accelerationCount");
+  }
+
   public IoTDBSeriesStat(SessionDataSetWrapper wrapper) throws IoTDBConnectionException, StatementExecutionException {
     SessionDataSet.DataIterator iterator = wrapper.iterator();
     if (!iterator.next()) {
       return;
     }
-    minTimestamp = iterator.getLong(StatsTimeSeriesUtil.MIN_TIMESTAMP);
-    maxTimestamp = iterator.getLong(StatsTimeSeriesUtil.MAX_TIMESTAMP);
+    minTime = iterator.getLong(StatsTimeSeriesUtil.MIN_TIMESTAMP);
+    maxTime = iterator.getLong(StatsTimeSeriesUtil.MAX_TIMESTAMP);
     count = iterator.getLong(StatsTimeSeriesUtil.COUNT);
     missCount = iterator.getLong(StatsTimeSeriesUtil.MISS_COUNT);
     specialCount = iterator.getLong(StatsTimeSeriesUtil.SPECIAL_COUNT);
@@ -61,8 +76,8 @@ public class IoTDBSeriesStat {
     }
 
     count = size;
-    minTimestamp = tvList.getTimestamp(0);
-    maxTimestamp = tvList.getTimestamp(size - 1);
+    minTime = tvList.getTimestamp(0);
+    maxTime = tvList.getTimestamp(size - 1);
 
     boolean isNumericType = true;
     List<Double> times = new ArrayList<>();
@@ -110,8 +125,8 @@ public class IoTDBSeriesStat {
       return;
     }
     count = batchData.length();
-    minTimestamp = batchData.getMinTimestamp();
-    maxTimestamp = batchData.getMaxTimestamp();
+    minTime = batchData.getMinTimestamp();
+    maxTime = batchData.getMaxTimestamp();
 
     boolean isNumericType = true;
     List<Double> times = new ArrayList<>();
@@ -165,8 +180,8 @@ public class IoTDBSeriesStat {
     variationCount += seriesStat.variationCount;
     speedCount += seriesStat.speedCount;
     accelerationCount += seriesStat.accelerationCount;
-    minTimestamp = Math.min(minTimestamp, seriesStat.minTimestamp);
-    maxTimestamp = Math.max(maxTimestamp, seriesStat.maxTimestamp);
+    minTime = Math.min(minTime, seriesStat.minTime);
+    maxTime = Math.max(maxTime, seriesStat.maxTime);
     return this;
   }
 

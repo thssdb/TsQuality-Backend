@@ -94,8 +94,8 @@ public class IoTDBStorageEngineTest {
   }
 
   private void thenStatsValuesShouldBe(List<Object> values, IoTDBSeriesStat stat) {
-    assertThat(values.get(1)).isEqualTo(stat.getMinTimestamp());
-    assertThat(values.get(2)).isEqualTo(stat.getMaxTimestamp());
+    assertThat(values.get(1)).isEqualTo(stat.getMinTime());
+    assertThat(values.get(2)).isEqualTo(stat.getMaxTime());
     assertThat(values.get(3)).isEqualTo(stat.getCount());
     assertThat(values.get(4)).isEqualTo(stat.getMissCount());
     assertThat(values.get(5)).isEqualTo(stat.getSpecialCount());

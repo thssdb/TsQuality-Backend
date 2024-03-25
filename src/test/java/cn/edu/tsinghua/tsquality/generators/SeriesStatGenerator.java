@@ -31,8 +31,8 @@ public class SeriesStatGenerator {
   public IoTDBSeriesStat seriesStat(long cnt, long minTimestamp, long maxTimestamp) {
     IoTDBSeriesStat stat = new IoTDBSeriesStat();
     stat.setCount(cnt);
-    stat.setMinTimestamp(minTimestamp);
-    stat.setMaxTimestamp(maxTimestamp);
+    stat.setMinTime(minTimestamp);
+    stat.setMaxTime(maxTimestamp);
     return stat;
   }
 

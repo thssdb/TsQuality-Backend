@@ -8,11 +8,15 @@ import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.ChunkLevelStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.FileLevelStat;
+import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.MetadataStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.PageLevelStat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
+import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
+import static org.apache.spark.sql.functions.col;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +32,12 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
 
   private final Configuration conf;
   private final SparkSession spark;
+  private final SessionPool sessionPool;
 
-  public HdfsStorageEngine(Configuration config, SparkSession spark) throws IOException {
+  public HdfsStorageEngine(Configuration config, SparkSession spark, SessionPool sessionPool) throws IOException {
     this.conf = config;
     this.spark = spark;
+    this.sessionPool = sessionPool;
     createMetadataDirsIfNotExists();
   }
 
@@ -130,6 +136,61 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
-    return null;
+    Dataset<Row> fileDataset = readDatasetFromCsv(HdfsStorageConstants.fileSeriesStatsDirName, path, timeRanges);
+    IoTDBSeriesStat fileLevelStat = getStatFromDataset(fileDataset);
+    List<TimeRange> fileLevelTimeRanges = getTimeRangesFromDataset(fileDataset);
+    timeRanges = TimeRange.getRemains(timeRanges, fileLevelTimeRanges);
+
+    Dataset<Row> chunkDataset = readDatasetFromCsv(HdfsStorageConstants.chunkSeriesStatsDirName, path, timeRanges);
+    IoTDBSeriesStat chunkLevelStat = getStatFromDataset(chunkDataset);
+    List<TimeRange> chunkLevelTimeRanges = getTimeRangesFromDataset(chunkDataset);
+    timeRanges = TimeRange.getRemains(timeRanges, chunkLevelTimeRanges);
+
+    Dataset<Row> pageDataset = readDatasetFromCsv(HdfsStorageConstants.pageSeriesStatsDirName, path, timeRanges);
+    IoTDBSeriesStat pageLevelStat = getStatFromDataset(pageDataset);
+    List<TimeRange> pageLevelTimeRanges = getTimeRangesFromDataset(pageDataset);
+    timeRanges = TimeRange.getRemains(timeRanges, pageLevelTimeRanges);
+
+    IoTDBSeriesStat originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
+    return mergeStatsAsDQMetrics(dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
+  }
+
+  private Dataset<Row> readDatasetFromCsv(String filePath, String seriesPath, List<TimeRange> timeRanges) {
+    Dataset<Row> dataset = spark.read().csv(filePath);
+    return dataset
+        .filter(col("path").equalTo(seriesPath))
+        .filter(col("filePath").equalTo(filePath))
+        .filter(getTimeFilter(timeRanges));
+  }
+
+  private IoTDBSeriesStat getStatFromDataset(Dataset<Row> dataset) {
+    Row row = dataset.selectExpr(MetadataStat.statSumColumns()).first();
+    return new IoTDBSeriesStat(row);
+  }
+
+  private List<TimeRange> getTimeRangesFromDataset(Dataset<Row> dataset) {
+    return dataset.selectExpr(MetadataStat.timeColumns())
+        .map((MapFunction<Row, TimeRange>) row -> {
+          long minTime = row.getAs("minTime");
+          long maxTime = row.getAs("maxTime");
+          return new TimeRange(minTime, maxTime);
+        }, Encoders.bean(TimeRange.class)).collectAsList();
+  }
+
+  private Column getTimeFilter(List<TimeRange> timeRanges) {
+    Column filter = null;
+    if (timeRanges == null) {
+      return null;
+    }
+
+    for (TimeRange timeRange : timeRanges) {
+      Column minTimeCondition = timeRange.isLeftClose() ? col("minTime").geq(timeRange.getMin())
+          : col("minTime").gt(timeRange.getMin());
+      Column maxTimeCondition = timeRange.isRightClose() ? col("maxTime").leq(timeRange.getMax())
+          : col("maxTime").lt(timeRange.getMax());
+      Column timeRangeCondition = minTimeCondition.and(maxTimeCondition);
+      filter = filter == null ? timeRangeCondition : filter.or(timeRangeCondition);
+    }
+    return filter;
   }
 }
