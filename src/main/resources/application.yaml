@@ -5,13 +5,15 @@ hdfs:
 
 server:
   port: 8888
+
 spring:
   datasource:
     url: jdbc:mariadb://localhost:3306/tsquality
     username: qiu
     password: 0924
+
 mybatis:
-  config-location: classpath*:mybatis-config.xml
+  config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mappers/*.xml
   type-aliases-package: cn.edu.tsinghua.tsquality.model.entity
 
@@ -30,3 +32,4 @@ pre-aggregation:
     queue-capacity: 1000
     name-prefix: pre-aggregation
   data-dir: /Users/tyty/Projects/apache-iotdb-1.1.1-all-bin/data/datanode/data/sequence
+  storage-engine: iotdb

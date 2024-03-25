@@ -18,6 +18,7 @@ import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
 import static org.apache.spark.sql.functions.col;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component("hdfsStorageEngine")
+@ConditionalOnProperty(name = "pre-aggregation.storage-engine", havingValue = "hdfs")
 public class HdfsStorageEngine implements MetadataStorageEngine {
   @Value("${hdfs.partition:1}")
   int partition;

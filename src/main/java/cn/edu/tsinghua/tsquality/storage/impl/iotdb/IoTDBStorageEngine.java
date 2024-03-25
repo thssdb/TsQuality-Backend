@@ -9,18 +9,21 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @Component("IoTDBStorageEngine")
+@ConditionalOnProperty(name = "pre-aggregation.storage-engine", havingValue = "iotdb")
 public class IoTDBStorageEngine implements MetadataStorageEngine {
   private final SessionPool sessionPool;
 

@@ -11,7 +11,7 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeries;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
-import cn.edu.tsinghua.tsquality.storage.impl.RdbmsStorageEngine;
+import cn.edu.tsinghua.tsquality.storage.impl.rdbms.RdbmsStorageEngine;
 import java.util.List;
 import java.util.Map;
 import lombok.val;
