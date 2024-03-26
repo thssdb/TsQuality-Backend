@@ -33,6 +33,7 @@ import java.util.Map;
 public class HdfsStorageEngine implements MetadataStorageEngine {
   @Value("${hdfs.partition:1}")
   int partition;
+
   @Value("${pre-aggregation.storage.hdfs.compression:none}")
   String compression;
 
@@ -59,19 +60,21 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
 
   @Override
   public List<TsFileInfo> selectAllFiles() {
-    StructType schema = new StructType()
-        .add("filePath", "string")
-        .add("fileVersion", "long");
-    Dataset<TsFileInfo> dataset = spark.read()
-        .schema(schema)
-        .option("header", true)
-        .csv(HdfsStorageConstants.FILES_DIRNAME)
-        .map(
-        (MapFunction<Row, TsFileInfo>) row -> {
-          String filePath = row.getAs("filePath");
-          long fileVersion = row.getAs("fileVersion");
-          return new TsFileInfo(filePath, fileVersion);
-        }, Encoders.bean(TsFileInfo.class));
+    StructType schema = new StructType().add("filePath", "string").add("fileVersion", "long");
+    Dataset<TsFileInfo> dataset =
+        spark
+            .read()
+            .schema(schema)
+            .option("header", true)
+            .csv(HdfsStorageConstants.FILES_DIRNAME)
+            .map(
+                (MapFunction<Row, TsFileInfo>)
+                    row -> {
+                      String filePath = row.getAs("filePath");
+                      long fileVersion = row.getAs("fileVersion");
+                      return new TsFileInfo(filePath, fileVersion);
+                    },
+                Encoders.bean(TsFileInfo.class));
     return dataset.collectAsList();
   }
 
@@ -84,9 +87,10 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   private void saveTsFileInfo(TsFileInfo tsFileInfo) {
-    Dataset<Row> dataset = spark
-        .createDataset(List.of(tsFileInfo), Encoders.bean(TsFileInfo.class))
-        .select("filePath", "fileVersion");
+    Dataset<Row> dataset =
+        spark
+            .createDataset(List.of(tsFileInfo), Encoders.bean(TsFileInfo.class))
+            .select("filePath", "fileVersion");
     saveDatasetToCsv(HdfsStorageConstants.FILES_DIRNAME, dataset);
   }
 
@@ -109,7 +113,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   private void saveFileLevelStats(TsFileInfo info, Map.Entry<Path, TsFileStat> entry) {
     IoTDBSeriesStat fileStat = entry.getValue().getFileStat();
     FileLevelStat fileLevelStat =
-        new FileLevelStat(fileStat.getVersion(), entry.getKey().getFullPath(), info.getFilePath(), fileStat);
+        new FileLevelStat(
+            fileStat.getVersion(), entry.getKey().getFullPath(), info.getFilePath(), fileStat);
     Dataset<FileLevelStat> dataset =
         spark.createDataset(List.of(fileLevelStat), Encoders.bean(FileLevelStat.class));
     saveDatasetToCsv(HdfsStorageConstants.FILE_SERIES_STATS_DIRNAME, dataset);
@@ -140,7 +145,11 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
       List<IoTDBSeriesStat> stats = pageStats.get(offset);
       for (int j = 0; j < stats.size(); j++) {
         PageLevelStat stat =
-            new PageLevelStat(stats.get(i).getVersion(), path, stats.get(j), String.format("%d-%d", i + 1, j + 1));
+            new PageLevelStat(
+                stats.get(i).getVersion(),
+                path,
+                stats.get(j),
+                String.format("%d-%d", i + 1, j + 1));
         pageLevelStats.add(stat);
       }
     }
@@ -207,9 +216,7 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   private Dataset<Row> readDatasetFromCsv(
       String filePath, String seriesPath, List<TimeRange> timeRanges) {
     Dataset<Row> dataset = spark.read().option("header", true).csv(filePath);
-    return dataset
-        .filter(col("path").equalTo(seriesPath))
-        .filter(getTimeFilter(timeRanges));
+    return dataset.filter(col("path").equalTo(seriesPath)).filter(getTimeFilter(timeRanges));
   }
 
   private IoTDBSeriesStat getStatFromDataset(Dataset<Row> dataset) {
@@ -218,13 +225,11 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   }
 
   private List<TimeRange> getTimeRangesFromDataset(Dataset<Row> dataset) {
-    return dataset
-        .select("minTime", "maxTime")
-        .collectAsList()
-        .stream()
-        .map(x -> new TimeRange(
-            Long.parseLong(x.getAs("minTime")),
-            Long.parseLong(x.getAs("maxTime"))))
+    return dataset.select("minTime", "maxTime").collectAsList().stream()
+        .map(
+            x ->
+                new TimeRange(
+                    Long.parseLong(x.getAs("minTime")), Long.parseLong(x.getAs("maxTime"))))
         .toList();
   }
 

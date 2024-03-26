@@ -25,17 +25,17 @@ public class MetadataStat {
 
   public static String[] statSumColumns() {
     return new String[] {
-        "min(minTime) as minTime",
-        "max(maxTime) as maxTime",
-        "sum(count) as count",
-        "sum(missCount) as missCount",
-        "sum(specialCount) as specialCount",
-        "sum(lateCount) as lateCount",
-        "sum(redundancyCount) as redundancyCount",
-        "sum(valueCount) as valueCount",
-        "sum(variationCount) as variationCount",
-        "sum(speedCount) as speedCount",
-        "sum(accelerationCount) as accelerationCount"
+      "min(minTime) as minTime",
+      "max(maxTime) as maxTime",
+      "sum(count) as count",
+      "sum(missCount) as missCount",
+      "sum(specialCount) as specialCount",
+      "sum(lateCount) as lateCount",
+      "sum(redundancyCount) as redundancyCount",
+      "sum(valueCount) as valueCount",
+      "sum(variationCount) as variationCount",
+      "sum(speedCount) as speedCount",
+      "sum(accelerationCount) as accelerationCount"
     };
   }
 
