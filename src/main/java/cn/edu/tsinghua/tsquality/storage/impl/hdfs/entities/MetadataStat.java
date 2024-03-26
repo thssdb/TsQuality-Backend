@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class MetadataStat {
+  protected long version;
   protected String path;
   protected long minTime;
   protected long maxTime;
@@ -22,27 +23,24 @@ public class MetadataStat {
   protected long speedCount;
   protected long accelerationCount;
 
-  public static String[] timeColumns() {
-    return new String[] {
-      "min(minTime) as minTime", "max(maxTime) as maxTime",
-    };
-  }
-
   public static String[] statSumColumns() {
     return new String[] {
-      "sum(count) as count",
-      "sum(missCount) as missCount",
-      "sum(specialCount) as specialCount",
-      "sum(lateCount) as lateCount",
-      "sum(redundancyCount) as redundancyCount",
-      "sum(valueCount) as valueCount",
-      "sum(variationCount) as variationCount",
-      "sum(speedCount) as speedCount",
-      "sum(accelerationCount) as accelerationCount"
+        "min(minTime) as minTime",
+        "max(maxTime) as maxTime",
+        "sum(count) as count",
+        "sum(missCount) as missCount",
+        "sum(specialCount) as specialCount",
+        "sum(lateCount) as lateCount",
+        "sum(redundancyCount) as redundancyCount",
+        "sum(valueCount) as valueCount",
+        "sum(variationCount) as variationCount",
+        "sum(speedCount) as speedCount",
+        "sum(accelerationCount) as accelerationCount"
     };
   }
 
-  public MetadataStat(String path, IoTDBSeriesStat stat) {
+  public MetadataStat(long version, String path, IoTDBSeriesStat stat) {
+    this.version = version;
     this.path = path;
     this.minTime = stat.getMinTime();
     this.maxTime = stat.getMaxTime();

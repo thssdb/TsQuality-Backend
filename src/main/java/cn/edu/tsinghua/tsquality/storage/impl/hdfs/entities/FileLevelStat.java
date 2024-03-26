@@ -1,7 +1,6 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities;
 
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
-import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,11 +8,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class FileLevelStat extends MetadataStat {
   private String filePath;
-  private long version;
 
-  public FileLevelStat(String path, TsFileInfo info, IoTDBSeriesStat stat) {
-    super(path, stat);
-    filePath = info.getFilePath();
-    version = info.getFileVersion();
+  public FileLevelStat(long version, String seriesPath, String filePath, IoTDBSeriesStat stat) {
+    super(version, seriesPath, stat);
+    this.filePath = filePath;
   }
 }

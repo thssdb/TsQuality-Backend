@@ -6,11 +6,6 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
@@ -27,6 +22,12 @@ import org.apache.iotdb.tsfile.read.reader.chunk.ChunkReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @Service
@@ -98,7 +99,8 @@ public class PreAggregationServiceImpl implements PreAggregationService {
     String fullPath = path.getFullPath();
     return fullPath.startsWith(StatsTimeSeriesUtil.FILE_STATS_PATH_PREFIX)
         || fullPath.startsWith(StatsTimeSeriesUtil.CHUNK_STATS_PATH_PREFIX)
-        || fullPath.startsWith(StatsTimeSeriesUtil.PAGE_STATS_PATH_PREFIX);
+        || fullPath.startsWith(StatsTimeSeriesUtil.PAGE_STATS_PATH_PREFIX)
+        || fullPath.startsWith(StatsTimeSeriesUtil.FILE_INFO_PATH_PREFIX);
   }
 
   private void setStatsVersion(long version, Map<Path, TsFileStat> tsFileStats) {

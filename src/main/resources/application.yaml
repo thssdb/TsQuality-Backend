@@ -25,12 +25,15 @@ iotdb:
   max-size: 100
 
 pre-aggregation:
-#  scan-cron: "0 */10 * * * ?"
-  scan-cron: "* * * * * ?"
+  scan-cron: "0 */10 * * * ?"
+#  scan-cron: "* * * * * ?"
   executor:
     core-pool-size: 9
     max-pool-size: 15
     queue-capacity: 1000
     name-prefix: pre-aggregation
   data-dir: /Users/tyty/Projects/apache-iotdb-1.1.1-all-bin/data/datanode/data/sequence
-  storage-engine: rdbms
+  storage:
+    type: hdfs
+    hdfs:
+      compression: none

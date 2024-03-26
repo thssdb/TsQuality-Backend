@@ -3,9 +3,6 @@ package cn.edu.tsinghua.tsquality.model.entity;
 import cn.edu.tsinghua.tsquality.common.Util;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -14,6 +11,10 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.spark.sql.Row;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
@@ -41,20 +42,17 @@ public class IoTDBSeriesStat {
   public IoTDBSeriesStat() {}
 
   public IoTDBSeriesStat(Row row) {
-    version = row.getAs("version");
-    minTime = row.getAs("minTime");
-    maxTime = row.getAs("maxTime");
-    minValue = row.getAs("minValue");
-    maxValue = row.getAs("maxValue");
-    count = row.getAs("count");
-    missCount = row.getAs("missCount");
-    specialCount = row.getAs("specialCount");
-    lateCount = row.getAs("lateCount");
-    redundancyCount = row.getAs("redundancyCount");
-    valueCount = row.getAs("valueCount");
-    variationCount = row.getAs("variationCount");
-    speedCount = row.getAs("speedCount");
-    accelerationCount = row.getAs("accelerationCount");
+    minTime = Long.parseLong(row.getAs("minTime"));
+    maxTime = Long.parseLong(row.getAs("maxTime"));
+    count = ((Double) row.getAs("count")).longValue();
+    missCount = ((Double) row.getAs("missCount")).longValue();
+    specialCount = ((Double) row.getAs("specialCount")).longValue();
+    lateCount = ((Double) row.getAs("lateCount")).longValue();
+    redundancyCount = ((Double) row.getAs("redundancyCount")).longValue();
+    valueCount = ((Double) row.getAs("valueCount")).longValue();
+    variationCount = ((Double) row.getAs("variationCount")).longValue();
+    speedCount = ((Double) row.getAs("speedCount")).longValue();
+    accelerationCount = ((Double) row.getAs("accelerationCount")).longValue();
   }
 
   public IoTDBSeriesStat(SessionDataSetWrapper wrapper)

@@ -48,16 +48,16 @@ public class HdfsStorageEngineTest {
 
   private void thenFileSeriesStatsShouldHaveBeenPersisted(
       TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws Exception {
-    assertThat(checkDirExists(HdfsStorageConstants.fileSeriesStatsDirName, conf)).isTrue();
+    assertThat(checkDirExists(HdfsStorageConstants.FILE_SERIES_STATS_DIRNAME, conf)).isTrue();
   }
 
   private void thenChunkSeriesStatsShouldHaveBeenPersisted(
       TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws Exception {
-    assertThat(checkDirExists(HdfsStorageConstants.chunkSeriesStatsDirName, conf)).isTrue();
+    assertThat(checkDirExists(HdfsStorageConstants.CHUNK_SERIES_STATS_DIRNAME, conf)).isTrue();
   }
 
   private void thenPageSeriesStatsShouldHaveBeenPersisted(
       TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) throws IOException {
-    assertThat(checkDirExists(HdfsStorageConstants.pageSeriesStatsDirName, conf)).isTrue();
+    assertThat(checkDirExists(HdfsStorageConstants.PAGE_SERIES_STATS_DIRNAME, conf)).isTrue();
   }
 }

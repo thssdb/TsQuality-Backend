@@ -20,4 +20,10 @@ public class TsFileInfo {
     filePath = file.getFilePath();
     fileVersion = file.getFileVersion();
   }
+
+  public TsFileInfo(String filePath, long fileVersion) {
+    this.database = "";
+    this.filePath = filePath;
+    this.fileVersion = fileVersion;
+  }
 }
