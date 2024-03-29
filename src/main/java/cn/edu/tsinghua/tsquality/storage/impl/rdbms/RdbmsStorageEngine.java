@@ -7,13 +7,14 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("RdbmsStorageEngine")
 @ConditionalOnProperty(
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
     havingValue = "rdbms",
     matchIfMissing = true)
 public class RdbmsStorageEngine implements MetadataStorageEngine {
+  private long storeTime = 0;
   private final SessionPool sessionPool;
   private final DataQualityMapper dataQualityMapper;
   private final IoTDBSeriesMapper seriesMapper;
@@ -70,11 +72,14 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
 
   @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
+    long start = System.currentTimeMillis();
     updateIoTDBSeries(tsFileInfo, stats.keySet().stream().toList());
     int fid = updateIoTDBFiles(tsFileInfo);
     for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
       saveTsFileStatForPath(fid, entry);
     }
+    storeTime += System.currentTimeMillis() - start;
+    System.out.println("Store time: " + storeTime + "ms");
   }
 
   private void updateIoTDBSeries(TsFileInfo tsFileInfo, List<Path> paths) {
@@ -173,6 +178,7 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
+    long start = System.currentTimeMillis();
     IoTDBSeriesStat fileStat, chunkStat = null, originalDataStat = null;
 
     fileStat = fileSeriesStatMapper.selectStats(path, timeRanges);
@@ -189,6 +195,8 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
     if (!timeRanges.isEmpty()) {
       originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
     }
-    return mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, originalDataStat);
+    List<Double> result = mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, originalDataStat);
+    System.out.println("Rdbms get data quality time: " + (System.currentTimeMillis() - start) + "ms");
+    return result;
   }
 }

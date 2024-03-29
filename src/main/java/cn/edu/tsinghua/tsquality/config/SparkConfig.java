@@ -32,7 +32,9 @@ public class SparkConfig {
   @Bean
   @ConditionalOnMissingBean(JavaSparkContext.class)
   public JavaSparkContext javaSparkContext() {
-    return new JavaSparkContext(sparkConf());
+    JavaSparkContext context = new JavaSparkContext(sparkConf());
+//    context.setLogLevel("WARN");
+    return context;
   }
 
   @Bean

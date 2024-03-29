@@ -10,9 +10,6 @@ import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInf
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -21,10 +18,15 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Log4j2
 @Component("IoTDBStorageEngine")
 @ConditionalOnProperty(name = "pre-aggregation.storage.type", havingValue = "iotdb")
 public class IoTDBStorageEngine implements MetadataStorageEngine {
+  private long storeTime = 0;
   private final SessionPool sessionPool;
 
   public IoTDBStorageEngine(SessionPool sessionPool) {
@@ -56,6 +58,7 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
 
   @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
+    long start = System.currentTimeMillis();
     try {
       saveTsFileInfo(tsFileInfo);
       for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
@@ -63,6 +66,8 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
             createStatsAlignedRepositoryAndTimeSeriesForPath(entry.getKey());
         saveFileStatsFor(tsFileInfo, entry, repositories);
       }
+      storeTime += System.currentTimeMillis() - start;
+      System.out.println("IoTDB store time: " + storeTime);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       log.error(
           String.format(
@@ -175,6 +180,7 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String pathStr, List<TimeRange> timeRanges) {
+    long start = System.currentTimeMillis();
     Path path = new Path(pathStr, true);
 
     IoTDBSeriesStat fileStat, chunkStat = null, pageStat = null, originalDataStat = null;
@@ -208,7 +214,9 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
       if (!timeRanges.isEmpty()) {
         originalDataStat = getStatFromOriginalData(sessionPool, pathStr, timeRanges);
       }
-      return mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, pageStat, originalDataStat);
+      List<Double> result = mergeStatsAsDQMetrics(dqTypes, fileStat, chunkStat, pageStat, originalDataStat);
+      System.out.println("IoTDB get data quality time: " + (System.currentTimeMillis() - start) + "ms");
+      return result;
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       log.error(String.format("error get data quality for path %s: %s", pathStr, e.getMessage()));
       throw new RuntimeException(e);

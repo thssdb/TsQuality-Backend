@@ -8,6 +8,7 @@
             `cid` BIGINT,
             `sid` BIGINT,
             `page_index` INT,
+            FOREIGN KEY (`sid`) REFERENCES series(`sid`) ON DELETE CASCADE,
             FOREIGN KEY (`cid`) REFERENCES chunks(`cid`) ON DELETE CASCADE
         )
     </update>

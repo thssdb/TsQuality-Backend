@@ -37,6 +37,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   @Value("${pre-aggregation.storage.hdfs.compression:none}")
   String compression;
 
+  private long storeTime = 0;
+
   private final Configuration conf;
   private final SparkSession spark;
   private final SessionPool sessionPool;
@@ -80,10 +82,13 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
 
   @Override
   public void saveTsFileStats(TsFileInfo tsFileInfo, Map<Path, TsFileStat> stats) {
+    long start = System.currentTimeMillis();
     saveTsFileInfo(tsFileInfo);
     for (Map.Entry<Path, TsFileStat> entry : stats.entrySet()) {
       saveTsFileStatsForPath(tsFileInfo, entry);
     }
+    storeTime += System.currentTimeMillis() - start;
+    System.out.println("HDFS store time: " + storeTime);
   }
 
   private void saveTsFileInfo(TsFileInfo tsFileInfo) {
@@ -146,7 +151,7 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
       for (int j = 0; j < stats.size(); j++) {
         PageLevelStat stat =
             new PageLevelStat(
-                stats.get(i).getVersion(),
+                stats.get(j).getVersion(),
                 path,
                 stats.get(j),
                 String.format("%d-%d", i + 1, j + 1));
@@ -181,6 +186,8 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
   @Override
   public List<Double> getDataQuality(
       List<DQType> dqTypes, String path, List<TimeRange> timeRanges) {
+    long start = System.currentTimeMillis();
+
     IoTDBSeriesStat fileLevelStat, chunkLevelStat = null;
     IoTDBSeriesStat pageLevelStat = null, originalDataStat = null;
 
@@ -209,8 +216,12 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
     if (!timeRanges.isEmpty()) {
       originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
     }
-    return mergeStatsAsDQMetrics(
+
+    List<Double> result = mergeStatsAsDQMetrics(
         dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
+
+    System.out.println("HDFS get data quality time: " + (System.currentTimeMillis() - start));
+    return result;
   }
 
   private Dataset<Row> readDatasetFromCsv(

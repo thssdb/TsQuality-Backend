@@ -12,6 +12,12 @@ spring:
     username: qiu
     password: 0924
 
+logging:
+  level:
+    org.apache.spark: WARN
+    org.sparkproject.jetty: WARN
+    org.apache.hadoop: WARN
+
 mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mappers/*.xml
@@ -25,8 +31,8 @@ iotdb:
   max-size: 100
 
 pre-aggregation:
-  scan-cron: "0 */10 * * * ?"
-#  scan-cron: "* * * * * ?"
+#  scan-cron: "0 */10 * * * ?"
+  scan-cron: "* * * * * ?"
   executor:
     core-pool-size: 9
     max-pool-size: 15

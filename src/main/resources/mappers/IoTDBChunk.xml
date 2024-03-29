@@ -8,6 +8,7 @@
             `fid` BIGINT,
             `sid` BIGINT,
             `offset` BIGINT,
+            FOREIGN KEY (`sid`) REFERENCES series(`sid`) ON DELETE CASCADE,
             FOREIGN KEY (`fid`) REFERENCES files(`fid`) ON DELETE CASCADE
         )
     </update>
