@@ -1,7 +1,8 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
-import java.util.List;
 import org.apache.logging.log4j.util.Strings;
+
+import java.util.List;
 
 public class BaseRepository {
   protected String countSql(String device) {
@@ -20,6 +21,12 @@ public class BaseRepository {
     return selectClause + whereClause;
   }
 
+  protected String prepareSelectSqlWithLimit(String measurement, String device, long limit) {
+    String selectClause = String.format("select %s from %s", measurement, device);
+    String limitClause = prepareLimitClause(limit);
+    return selectClause + limitClause;
+  }
+
   protected String prepareWhereClause(String timeFilter, String valueFilter) {
     boolean timeFilterValid = timeFilter != null && !timeFilter.isEmpty();
     boolean valueFilterValid = valueFilter != null && !valueFilter.isEmpty();
@@ -32,5 +39,9 @@ public class BaseRepository {
     } else {
       return "";
     }
+  }
+
+  protected String prepareLimitClause(long limit) {
+    return limit > 0 ? " limit " + limit : "";
   }
 }

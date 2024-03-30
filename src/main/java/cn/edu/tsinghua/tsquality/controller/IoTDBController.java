@@ -3,8 +3,9 @@ package cn.edu.tsinghua.tsquality.controller;
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
-import java.util.List;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
@@ -70,7 +71,7 @@ public class IoTDBController {
   @GetMapping("/time-series/data")
   public TimeSeriesRecentDataDto getTimeSeriesData(
       @RequestParam(required = false, defaultValue = "") String path,
-      @RequestParam(required = false, defaultValue = "10") Long limit) {
+      @RequestParam(required = false, defaultValue = "100") Long limit) {
     return iotdbService.getTimeSeriesData(path, limit);
   }
 }

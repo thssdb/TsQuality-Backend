@@ -40,6 +40,6 @@ pre-aggregation:
     name-prefix: pre-aggregation
   data-dir: /Users/tyty/Projects/apache-iotdb-1.1.1-all-bin/data/datanode/data/sequence
   storage:
-    type: hdfs
+    type: rdbms
     hdfs:
       compression: none

@@ -13,6 +13,8 @@ public interface Repository {
 
   TVList select(AbstractUDF udf, String timeFilter, String valueFilter);
 
+  TVList select(long limit);
+
   TVList select(String timeFilter, String valueFilter);
 
   void insert(TVList tvList);
