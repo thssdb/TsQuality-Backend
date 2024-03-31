@@ -22,55 +22,43 @@
         where `path` like concat(#{path}, '.%')
     </sql>
 
+    <select id="selectSeriesCount" resultType="long">
+        select count(`path`) from series
+    </select>
+
+    <select id="selectDevicesCount" resultType="java.lang.Long">
+        select count(distinct `device`) from series
+    </select>
+
+    <select id="selectDatabasesCount" resultType="java.lang.Long">
+        select count(distinct `database`) from series
+    </select>
+
     <select id="selectSeriesStat" resultType="IoTDBSeriesStat">
-        select
-        <if test="path == null || path.isEmpty()">
-            `path`,
-        </if>
+        select `path`,
         <include refid="statColumns"/>
         from series natural join file_series_stats
-        <if test="path != null">
-            <include refid="equalPathWhereClause">
-                <property name="path" value="#{path}"/>
-            </include>
-        </if>
-        <if test="path == null || path.isEmpty()">
-            group by `path`
-        </if>
+        group by `path`
+        limit #{limit}
+        offset #{offset}
     </select>
 
     <select id="selectDeviceStat" resultType="IoTDBSeriesStat">
-        select
-        <if test="path == null || path.isEmpty()">
-            `device` `path`,
-        </if>
+        select `device` as `path`,
         <include refid="statColumns"/>
         from series natural join file_series_stats
-        <if test="path != null">
-            <include refid="likePathWhereClause">
-                <property name="path" value="#{path}"/>
-            </include>
-        </if>
-        <if test="path == null || path.isEmpty()">
-            group by `device`
-        </if>
+        group by `device`
+        limit #{limit}
+        offset #{offset}
     </select>
 
     <select id="selectDatabaseStat" resultType="IoTDBSeriesStat">
-        select
-        <if test="path == null || path.isEmpty()">
-            `database` `path`,
-        </if>
+        select `database` as `path`,
         <include refid="statColumns"/>
         from series natural join file_series_stats
-        <if test="path != null">
-            <include refid="likePathWhereClause">
-                <property name="path" value="#{path}"/>
-            </include>
-        </if>
-        <if test="path == null || path.isEmpty()">
-            group by `database`
-        </if>
+        group by `database`
+        limit #{limit}
+        offset #{offset}
     </select>
 
     <select id="selectAllStat" resultType="IoTDBSeriesStat">

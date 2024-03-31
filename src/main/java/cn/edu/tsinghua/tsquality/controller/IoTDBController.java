@@ -46,8 +46,11 @@ public class IoTDBController {
   }
 
   @GetMapping("/time-series/overview")
-  public List<IoTDBSeriesOverview> getTimeSeriesOverview() {
-    return dataProfileService.getTimeSeriesOverview();
+  public OverviewResponseDto getTimeSeriesOverview(
+      @RequestParam("pageIndex") int pageIndex,
+      @RequestParam("pageSize") int pageSize
+  ) {
+    return dataProfileService.getTimeSeriesOverview(pageIndex, pageSize);
   }
 
   @PostMapping("/time-series/anomaly-detection")
@@ -57,15 +60,19 @@ public class IoTDBController {
   }
 
   @GetMapping("/devices/overview")
-  public List<IoTDBSeriesOverview> getDeviceOverview(
-      @RequestParam(value = "path", required = false) String path) {
-    return dataProfileService.getDeviceOverview(path);
+  public OverviewResponseDto getDeviceOverview(
+      @RequestParam("pageIndex") int pageIndex,
+      @RequestParam("pageSize") int pageSize
+  ) {
+    return dataProfileService.getDeviceOverview(pageIndex, pageSize);
   }
 
   @GetMapping("/databases/overview")
-  public List<IoTDBSeriesOverview> getDatabaseOverview(
-      @RequestParam(value = "path", required = false) String path) {
-    return dataProfileService.getDatabaseOverview(path);
+  public OverviewResponseDto getDatabaseOverview(
+      @RequestParam("pageIndex") int pageIndex,
+      @RequestParam("pageSize") int pageSize
+  ) {
+    return dataProfileService.getDatabaseOverview(pageIndex, pageSize);
   }
 
   @GetMapping("/time-series/data")

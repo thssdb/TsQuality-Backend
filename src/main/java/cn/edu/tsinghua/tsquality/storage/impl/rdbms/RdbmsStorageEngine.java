@@ -156,18 +156,33 @@ public class RdbmsStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectSeriesStats(String path) {
-    return dataQualityMapper.selectSeriesStat(path);
+  public long selectSeriesCount() {
+    return dataQualityMapper.selectSeriesCount();
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectDeviceStats(String path) {
-    return dataQualityMapper.selectDeviceStat(path);
+  public long selectDevicesCount() {
+    return dataQualityMapper.selectDevicesCount();
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectDatabaseStats(String path) {
-    return dataQualityMapper.selectDatabaseStat(path);
+  public long selectDatabasesCount() {
+    return dataQualityMapper.selectDatabasesCount();
+  }
+
+  @Override
+  public List<IoTDBSeriesStat> selectSeriesStats(int pageIndex, int pageSize) {
+    return dataQualityMapper.selectSeriesStat(pageSize, (pageIndex - 1) * pageSize);
+  }
+
+  @Override
+  public List<IoTDBSeriesStat> selectDeviceStats(int pageIndex, int pageSize) {
+    return dataQualityMapper.selectDeviceStat(pageSize, (pageIndex - 1) * pageSize);
+  }
+
+  @Override
+  public List<IoTDBSeriesStat> selectDatabaseStats(int pageIndex, int pageSize) {
+    return dataQualityMapper.selectDatabaseStat(pageSize, (pageIndex - 1) * pageSize);
   }
 
   @Override

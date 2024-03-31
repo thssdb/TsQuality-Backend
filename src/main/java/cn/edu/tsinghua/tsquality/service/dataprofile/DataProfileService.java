@@ -1,8 +1,7 @@
 package cn.edu.tsinghua.tsquality.service.dataprofile;
 
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBDataProfile;
-import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesOverview;
-import java.util.List;
+import cn.edu.tsinghua.tsquality.model.dto.OverviewResponseDto;
 
 public interface DataProfileService {
   Long getNumTimeSeries();
@@ -13,9 +12,9 @@ public interface DataProfileService {
 
   IoTDBDataProfile getOverallDataProfile();
 
-  List<IoTDBSeriesOverview> getTimeSeriesOverview();
+  OverviewResponseDto getTimeSeriesOverview(int pageIndex, int pageSize);
 
-  List<IoTDBSeriesOverview> getDeviceOverview(String path);
+  OverviewResponseDto getDeviceOverview(int pageIndex, int pageSize);
 
-  List<IoTDBSeriesOverview> getDatabaseOverview(String path);
+  OverviewResponseDto getDatabaseOverview(int pageIndex, int pageSize);
 }

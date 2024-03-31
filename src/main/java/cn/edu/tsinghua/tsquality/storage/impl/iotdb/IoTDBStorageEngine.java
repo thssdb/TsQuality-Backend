@@ -75,6 +75,21 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
     }
   }
 
+  @Override
+  public long selectSeriesCount() {
+    return 0;
+  }
+
+  @Override
+  public long selectDevicesCount() {
+    return 0;
+  }
+
+  @Override
+  public long selectDatabasesCount() {
+    return 0;
+  }
+
   private void saveTsFileInfo(TsFileInfo tsFileInfo)
       throws IoTDBConnectionException, StatementExecutionException {
     AlignedRepository repository =
@@ -158,17 +173,17 @@ public class IoTDBStorageEngine implements MetadataStorageEngine {
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectSeriesStats(String path) {
+  public List<IoTDBSeriesStat> selectSeriesStats(int pageIndex, int pageSize) {
     return null;
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectDeviceStats(String path) {
+  public List<IoTDBSeriesStat> selectDeviceStats(int pageIndex, int pageSize) {
     return null;
   }
 
   @Override
-  public List<IoTDBSeriesStat> selectDatabaseStats(String path) {
+  public List<IoTDBSeriesStat> selectDatabaseStats(int pageIndex, int pageSize) {
     return null;
   }
 
