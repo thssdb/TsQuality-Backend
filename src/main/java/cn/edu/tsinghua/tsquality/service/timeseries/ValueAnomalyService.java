@@ -1,13 +1,13 @@
 package cn.edu.tsinghua.tsquality.service.timeseries;
 
-import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.ValueAnomalyResultDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.request.ValueAnomalyRequestDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response.ValueAnomalyResponseDto;
+
+import java.util.Map;
 
 public interface ValueAnomalyService {
-  ValueAnomalyResultDto anomalyDetectionAndRepair(String path, String timeFilter);
+  ValueAnomalyResponseDto anomalyDetectionAndRepair(ValueAnomalyRequestDto dto);
 
-  ValueAnomalyResultDto anomalyDetectionAndRepairWithScreen(
-      String path, Double minSpeed, Double maxSpeed, String timeFilter);
+  ValueAnomalyResponseDto anomalyDetectionAndRepair(Map<String, Object> params, String path, String timeFilter);
 
-  ValueAnomalyResultDto anomalyDetectionAndRepairWithLsGreedy(
-      String path, Double center, Double sigma, String timeFilter);
 }

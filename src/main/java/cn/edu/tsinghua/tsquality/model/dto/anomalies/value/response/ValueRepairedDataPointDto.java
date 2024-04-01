@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.model.dto.anomalies.value;
+package cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPair;
 import lombok.AllArgsConstructor;

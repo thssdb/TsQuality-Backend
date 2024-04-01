@@ -1,15 +1,16 @@
-package cn.edu.tsinghua.tsquality.model.dto.anomalies.value;
+package cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
-public class ValueAnomalyResultDto {
+public class ValueAnomalyResponseDto {
   private List<ValueRepairedDataPointDto> data;
 
-  public ValueAnomalyResultDto(TVList original, TVList repaired) throws RuntimeException {
+  public ValueAnomalyResponseDto(TVList original, TVList repaired) throws RuntimeException {
     int size = original.size();
     if (size != repaired.size()) {
       throw new RuntimeException(

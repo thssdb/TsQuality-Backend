@@ -1,17 +1,17 @@
 package cn.edu.tsinghua.tsquality.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import cn.edu.tsinghua.tsquality.generators.IoTDBDataGenerator;
-import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.ValueAnomalyResultDto;
-import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.ValueRepairedDataPointDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response.ValueAnomalyResponseDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response.ValueRepairedDataPointDto;
 import cn.edu.tsinghua.tsquality.service.timeseries.impl.ValueAnomalyServiceImpl;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class ValueAnomalyServiceImplTest {
@@ -57,11 +57,11 @@ public class ValueAnomalyServiceImplTest {
 
   @Test
   void testValueAnomalyDetectionAndRepairWithNoArgs() {
-    ValueAnomalyResultDto result = underTests.anomalyDetectionAndRepair(path, null);
+    ValueAnomalyResponseDto result = underTests.anomalyDetectionAndRepair(null, path, null);
     thenResultShouldBeRepairedCorrectly(result);
   }
 
-  private void thenResultShouldBeRepairedCorrectly(ValueAnomalyResultDto result) {
+  private void thenResultShouldBeRepairedCorrectly(ValueAnomalyResponseDto result) {
     List<ValueRepairedDataPointDto> data = result.getData();
     assertThat(data.size()).isEqualTo(anomalyData.length);
 

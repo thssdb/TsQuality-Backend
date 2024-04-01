@@ -6,12 +6,12 @@ import java.util.Map;
 // UDF link: https://iotdb.apache.org/zh/UserGuide/latest/Reference/UDF-Libraries.html#valuerepair
 public class ValueRepairUDF extends AbstractUDF {
   public static final String NAME = UDF.VALUE_REPAIR.getName();
-  private static final String METHOD = "method";
-  private static final List<String> ALLOWED_METHOD = List.of("Screen", "LsGreedy");
-  private static final String MIN_SPEED = "minSpeed";
-  private static final String MAX_SPEED = "maxSpeed";
-  private static final String CENTER = "center";
-  private static final String SIGMA = "sigma";
+  public static final String METHOD = "method";
+  public static final List<String> ALLOWED_METHOD = List.of("Screen", "LsGreedy");
+  public static final String MIN_SPEED = "minSpeed";
+  public static final String MAX_SPEED = "maxSpeed";
+  public static final String CENTER = "center";
+  public static final String SIGMA = "sigma";
 
   public ValueRepairUDF() {
     super(NAME, null);
