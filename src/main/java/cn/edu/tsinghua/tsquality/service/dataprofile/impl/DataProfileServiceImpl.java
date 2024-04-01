@@ -8,10 +8,9 @@ import cn.edu.tsinghua.tsquality.model.dto.OverviewResponseDto;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Log4j2
 @Service
@@ -61,31 +60,30 @@ public class DataProfileServiceImpl implements DataProfileService {
   @Override
   public OverviewResponseDto getTimeSeriesOverview(int pageIndex, int pageSize) {
     long totalCount = storageEngine.selectSeriesCount();
-    List<IoTDBSeriesOverview> stats = storageEngine
-        .selectSeriesStats(pageIndex, pageSize)
-        .stream()
-        .map(IoTDBSeriesOverview::new)
-        .toList();
+    List<IoTDBSeriesOverview> stats =
+        storageEngine.selectSeriesStats(pageIndex, pageSize).stream()
+            .map(IoTDBSeriesOverview::new)
+            .toList();
     return new OverviewResponseDto(totalCount, stats);
   }
 
   @Override
   public OverviewResponseDto getDeviceOverview(int pageIndex, int pageSize) {
     long totalCount = storageEngine.selectDevicesCount();
-    List<IoTDBSeriesOverview> stats = storageEngine.selectDeviceStats(pageIndex, pageSize)
-        .stream()
-        .map(IoTDBSeriesOverview::new)
-        .toList();
+    List<IoTDBSeriesOverview> stats =
+        storageEngine.selectDeviceStats(pageIndex, pageSize).stream()
+            .map(IoTDBSeriesOverview::new)
+            .toList();
     return new OverviewResponseDto(totalCount, stats);
   }
 
   @Override
   public OverviewResponseDto getDatabaseOverview(int pageIndex, int pageSize) {
     long totalCount = storageEngine.selectDatabasesCount();
-    List<IoTDBSeriesOverview> stats = storageEngine.selectDatabaseStats(pageIndex, pageSize)
-        .stream()
-        .map(IoTDBSeriesOverview::new)
-        .toList();
+    List<IoTDBSeriesOverview> stats =
+        storageEngine.selectDatabaseStats(pageIndex, pageSize).stream()
+            .map(IoTDBSeriesOverview::new)
+            .toList();
     return new OverviewResponseDto(totalCount, stats);
   }
 }

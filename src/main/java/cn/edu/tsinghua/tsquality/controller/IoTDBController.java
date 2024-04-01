@@ -3,9 +3,8 @@ package cn.edu.tsinghua.tsquality.controller;
 import cn.edu.tsinghua.tsquality.model.dto.*;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/iotdb")
@@ -47,9 +46,7 @@ public class IoTDBController {
 
   @GetMapping("/time-series/overview")
   public OverviewResponseDto getTimeSeriesOverview(
-      @RequestParam("pageIndex") int pageIndex,
-      @RequestParam("pageSize") int pageSize
-  ) {
+      @RequestParam("pageIndex") int pageIndex, @RequestParam("pageSize") int pageSize) {
     return dataProfileService.getTimeSeriesOverview(pageIndex, pageSize);
   }
 
@@ -61,17 +58,13 @@ public class IoTDBController {
 
   @GetMapping("/devices/overview")
   public OverviewResponseDto getDeviceOverview(
-      @RequestParam("pageIndex") int pageIndex,
-      @RequestParam("pageSize") int pageSize
-  ) {
+      @RequestParam("pageIndex") int pageIndex, @RequestParam("pageSize") int pageSize) {
     return dataProfileService.getDeviceOverview(pageIndex, pageSize);
   }
 
   @GetMapping("/databases/overview")
   public OverviewResponseDto getDatabaseOverview(
-      @RequestParam("pageIndex") int pageIndex,
-      @RequestParam("pageSize") int pageSize
-  ) {
+      @RequestParam("pageIndex") int pageIndex, @RequestParam("pageSize") int pageSize) {
     return dataProfileService.getDatabaseOverview(pageIndex, pageSize);
   }
 

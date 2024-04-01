@@ -8,12 +8,11 @@ import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
-import org.apache.iotdb.session.pool.SessionPool;
-import org.apache.iotdb.tsfile.read.common.Path;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.iotdb.session.pool.SessionPool;
+import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface MetadataStorageEngine {
   List<TsFileInfo> selectAllFiles();

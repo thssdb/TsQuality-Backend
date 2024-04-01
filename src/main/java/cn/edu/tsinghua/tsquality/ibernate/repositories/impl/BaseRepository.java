@@ -1,8 +1,7 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
-import org.apache.logging.log4j.util.Strings;
-
 import java.util.List;
+import org.apache.logging.log4j.util.Strings;
 
 public class BaseRepository {
   protected String countSql(String device) {

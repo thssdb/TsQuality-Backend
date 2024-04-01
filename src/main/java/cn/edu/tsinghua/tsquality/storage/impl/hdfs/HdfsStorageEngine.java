@@ -1,5 +1,8 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs;
 
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.lit;
+
 import cn.edu.tsinghua.tsquality.common.TimeRange;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
@@ -10,23 +13,20 @@ import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.ChunkLevelStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.FileLevelStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.MetadataStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.PageLevelStat;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.lit;
 import org.apache.spark.sql.types.StructType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Component("hdfsStorageEngine")
 @ConditionalOnProperty(name = "pre-aggregation.storage.type", havingValue = "hdfs")
@@ -232,8 +232,9 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
       originalDataStat = getStatFromOriginalData(sessionPool, path, timeRanges);
     }
 
-    List<Double> result = mergeStatsAsDQMetrics(
-        dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
+    List<Double> result =
+        mergeStatsAsDQMetrics(
+            dqTypes, fileLevelStat, chunkLevelStat, pageLevelStat, originalDataStat);
 
     System.out.println("HDFS get data quality time: " + (System.currentTimeMillis() - start));
     return result;

@@ -1,7 +1,7 @@
 package cn.edu.tsinghua.tsquality.controller;
 
-import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.response.TimestampAnomalyResponseDto;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.request.TimestampAnomalyRequestDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.response.TimestampAnomalyResponseDto;
 import cn.edu.tsinghua.tsquality.service.timeseries.TimestampAnomalyService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +15,7 @@ public class TimestampAnomalyController {
   }
 
   @PostMapping
-  public TimestampAnomalyResponseDto anomalyDetectionAndRepair(
-      TimestampAnomalyRequestDto dto) {
+  public TimestampAnomalyResponseDto anomalyDetectionAndRepair(TimestampAnomalyRequestDto dto) {
     return service.anomalyDetectionAndRepair(dto);
   }
 }

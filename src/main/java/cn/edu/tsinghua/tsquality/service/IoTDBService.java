@@ -9,6 +9,8 @@ import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
 import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
@@ -16,9 +18,6 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Log4j2
 @Service
