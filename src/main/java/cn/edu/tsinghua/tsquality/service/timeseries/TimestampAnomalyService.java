@@ -1,9 +1,12 @@
 package cn.edu.tsinghua.tsquality.service.timeseries;
 
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.request.TimestampAnomalyRequestDto;
 import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface TimestampAnomalyService {
+  TimestampAnomalyResultDto anomalyDetectionAndRepair(TimestampAnomalyRequestDto dto);
+
   TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, String timeFilter);
 
   TimestampAnomalyResultDto anomalyDetectionAndRepair(

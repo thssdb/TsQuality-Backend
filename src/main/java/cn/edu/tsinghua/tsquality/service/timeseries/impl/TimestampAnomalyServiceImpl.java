@@ -5,11 +5,13 @@ import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.TimestampRepairUDF;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.request.TimestampAnomalyRequestDto;
 import cn.edu.tsinghua.tsquality.service.timeseries.TimestampAnomalyService;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Log4j2
 @Service
@@ -18,6 +20,18 @@ public class TimestampAnomalyServiceImpl implements TimestampAnomalyService {
 
   public TimestampAnomalyServiceImpl(SessionPool sessionPool) {
     this.sessionPool = sessionPool;
+  }
+
+  @Override
+  public TimestampAnomalyResultDto anomalyDetectionAndRepair(
+      TimestampAnomalyRequestDto request) {
+    if (request.getInterval() != null) {
+      return anomalyDetectionAndRepair(request.getPath(), request.getInterval(), request.getTimeFilter());
+    }
+    if (request.getMethod() != null) {
+      return anomalyDetectionAndRepair(request.getPath(), request.getMethod(), request.getTimeFilter());
+    }
+    return anomalyDetectionAndRepair(request.getPath(), request.getTimeFilter());
   }
 
   @Override

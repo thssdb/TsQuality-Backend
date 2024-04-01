@@ -6,9 +6,9 @@ import java.util.Map;
 public class TimestampRepairUDF extends AbstractUDF {
   public static final String NAME = UDF.TIMESTAMP_REPAIR.getName();
 
-  private static final String INTERVAL = "interval";
-  private static final String METHOD = "method";
-  private static final List<String> ALLOWED_METHOD = List.of("median", "mode", "cluster");
+  public static final String INTERVAL = "interval";
+  public static final String METHOD = "method";
+  public static final List<String> ALLOWED_METHOD = List.of("Median", "Mode", "Cluster");
 
   public TimestampRepairUDF() {
     super(NAME, null);
