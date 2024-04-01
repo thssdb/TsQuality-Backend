@@ -73,7 +73,7 @@
     <select id="selectTimeRanges" resultType="TimeRange">
         select min_time as min, max_time as max
         from series natural join chunks natural join chunk_series_stats
-        where path = #{path} and
+        where path = #{path}
         <foreach item="item" collection="timeRanges" open=" and ((" separator=") or (" close="))" >
             min_time >= #{item.min} and max_time &lt;= #{item.max}
         </foreach>

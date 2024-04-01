@@ -1,36 +1,36 @@
 package cn.edu.tsinghua.tsquality.storage.impl.hdfs;
 
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.lit;
-
-import cn.edu.tsinghua.tsquality.common.TimeRange;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
-import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
+import cn.edu.tsinghua.tsquality.storage.impl.AbstractMetadataStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.ChunkLevelStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.FileLevelStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.MetadataStat;
 import cn.edu.tsinghua.tsquality.storage.impl.hdfs.entities.PageLevelStat;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.lit;
 import org.apache.spark.sql.types.StructType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Component("hdfsStorageEngine")
 @ConditionalOnProperty(name = "pre-aggregation.storage.type", havingValue = "hdfs")
-public class HdfsStorageEngine implements MetadataStorageEngine {
+public class HdfsStorageEngine extends AbstractMetadataStorageEngine {
   @Value("${hdfs.partition:1}")
   int partition;
 
@@ -41,7 +41,6 @@ public class HdfsStorageEngine implements MetadataStorageEngine {
 
   private final Configuration conf;
   private final SparkSession spark;
-  private final SessionPool sessionPool;
 
   public HdfsStorageEngine(Configuration config, SparkSession spark, SessionPool sessionPool)
       throws IOException {

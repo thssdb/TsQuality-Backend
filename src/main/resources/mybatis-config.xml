@@ -8,6 +8,6 @@
         <typeAlias alias="IoTDBFile" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBFile" />
         <typeAlias alias="IoTDBChunk" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBChunk" />
         <typeAlias alias="IoTDBSeriesStat" type="cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat" />
-        <typeAlias alias="TimeRange" type="cn.edu.tsinghua.tsquality.common.TimeRange" />
+        <typeAlias alias="TimeRange" type="cn.edu.tsinghua.tsquality.common.datastructures.TimeRange" />
     </typeAliases>
 </configuration>

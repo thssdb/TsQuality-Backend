@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.common;
+package cn.edu.tsinghua.tsquality.common.datastructures;
 
 import java.util.*;
 import lombok.Getter;

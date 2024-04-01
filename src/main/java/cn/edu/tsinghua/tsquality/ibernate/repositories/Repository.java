@@ -11,6 +11,12 @@ public interface Repository {
 
   void deleteTimeSeries();
 
+  long count(String timeFilter);
+
+  long selectMinTimestamp();
+
+  long selectMaxTimestamp();
+
   TVList select(AbstractUDF udf, String timeFilter, String valueFilter);
 
   TVList select(long limit);

@@ -1,16 +1,15 @@
 package cn.edu.tsinghua.tsquality.controller;
 
-import cn.edu.tsinghua.tsquality.common.TimeRange;
-import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
-import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.service.timeseries.impl.TimeSeriesDataQualityServiceImpl;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/time-series/data-quality")
@@ -22,11 +21,21 @@ public class TimeSeriesDataQualityController {
   }
 
   @GetMapping("/aggregation")
-  public TimeSeriesDQAggregationDetailDto getTimeSeriesDQAggregationDetail(
-      @RequestParam(value = "path", required = false) String path,
-      @RequestParam("type") String type) {
-    DQAggregationType aggregationType = DQAggregationType.valueOf(type);
-    return service.getTimeSeriesDQAggregationDetail(path, aggregationType, Collections.emptyList());
+  public LinkedHashMap<String, List<Double>> getTimeSeriesDQAggregationDetail(
+      @RequestParam("path") String path,
+      @RequestParam("type") String type,
+      @RequestParam(value = "startTime", required = false) Long startTime,
+      @RequestParam(value = "endTime", required = false) Long endTime) {
+    return service.getAggregateDQMetrics(type, path, startTime, endTime);
+  }
+
+  @GetMapping("/data-size")
+  public LinkedHashMap<String, Long> getDataSizeDistribution(
+      @RequestParam("path") String path,
+      @RequestParam("type") String type,
+      @RequestParam(value = "startTime", required = false) Long startTime,
+      @RequestParam(value = "endTime", required = false) Long endTime) {
+    return service.getDataSizeDistribution(type, path, startTime, endTime);
   }
 
   @GetMapping("/dq")

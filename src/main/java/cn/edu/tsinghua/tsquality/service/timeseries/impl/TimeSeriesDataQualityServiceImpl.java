@@ -1,62 +1,61 @@
 package cn.edu.tsinghua.tsquality.service.timeseries.impl;
 
-import cn.edu.tsinghua.tsquality.common.TimeRange;
-import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDQAggregationDetailDto;
-import cn.edu.tsinghua.tsquality.model.enums.DQAggregationType;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
+import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.service.timeseries.TimeSeriesDataQualityService;
 import cn.edu.tsinghua.tsquality.storage.DQType;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.List;
-import java.util.Random;
+import org.apache.iotdb.session.pool.SessionPool;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualityService {
   private final MetadataStorageEngine storageEngine;
+  private final SessionPool sessionPool;
 
-  public TimeSeriesDataQualityServiceImpl(MetadataStorageEngine storageEngine) {
+  public TimeSeriesDataQualityServiceImpl(MetadataStorageEngine storageEngine, SessionPool sessionPool) {
     this.storageEngine = storageEngine;
+    this.sessionPool = sessionPool;
   }
 
   @Override
-  public TimeSeriesDQAggregationDetailDto getTimeSeriesDQAggregationDetail(
-      String path, DQAggregationType aggregationType, List<TimeRange> timeRanges) {
-    return randomDQAggregationDetail();
+  public LinkedHashMap<String, Long> getDataSizeDistribution(String timePeriodType, String path, Long startTimestamp, Long endTimestamp) {
+    TimeRange timeRange = getTimeRange(path, startTimestamp, endTimestamp);
+    return storageEngine.getDataSizeDistribution(timePeriodType, path, timeRange);
   }
 
-  private TimeSeriesDQAggregationDetailDto mergeDQAggregationDetailResults(
-      TimeSeriesDQAggregationDetailDto rdbmsResult, TimeSeriesDQAggregationDetailDto iotdbResult) {
-    rdbmsResult.merge(iotdbResult);
-    return rdbmsResult;
+  private TimeRange getTimeRange(String path, Long startTimestamp, Long endTimestamp) {
+    long minTimestamp = getMinTimestamp(startTimestamp, path);
+    long maxTimestamp = getMaxTimestamp(endTimestamp, path);
+    return new TimeRange(minTimestamp, maxTimestamp);
   }
 
-  private TimeSeriesDQAggregationDetailDto randomDQAggregationDetail() {
-    TimeSeriesDQAggregationDetailDto result = new TimeSeriesDQAggregationDetailDto();
-    Random random = new Random();
-    for (int i = 0; i < 7; i++) {
-      result
-          .getItems()
-          .add(
-              TimeSeriesDQAggregationDetailDto.Item.builder()
-                  .time("2023-12-0" + (i + 1))
-                  .dataSize(randomDataSize(random))
-                  .completeness(randomDouble(random))
-                  .consistency(randomDouble(random))
-                  .timeliness(randomDouble(random))
-                  .validity(randomDouble(random))
-                  .build());
+  private long getMinTimestamp(Long startTimestamp, String path) {
+    if (startTimestamp != null && startTimestamp > 0) {
+      return startTimestamp;
     }
-    return result;
+    Repository repository = new RepositoryImpl(sessionPool, path);
+    return repository.selectMinTimestamp();
   }
 
-  private double randomDouble(Random random) {
-    return 0.5 + (1 - 0.5) * random.nextDouble();
+  private long getMaxTimestamp(Long endTimestamp, String path) {
+    if (endTimestamp != null && endTimestamp > 0) {
+      return endTimestamp;
+    }
+    Repository repository = new RepositoryImpl(sessionPool, path);
+    return repository.selectMaxTimestamp();
   }
 
-  private long randomDataSize(Random random) {
-    long min = 1000L, max = 100_000L;
-    return min + (long) (Math.abs(random.nextDouble() * (max - min)));
+  @Override
+  public LinkedHashMap<String, List<Double>> getAggregateDQMetrics(String timePeriodType, String path, Long startTimestamp, Long endTimestamp) {
+    TimeRange timeRange = getTimeRange(path, startTimestamp, endTimestamp);
+    return storageEngine.getAggregateDataQuality(timePeriodType, path, timeRange);
   }
+
 
   @Override
   public List<Double> getTimeSeriesDQMetrics(

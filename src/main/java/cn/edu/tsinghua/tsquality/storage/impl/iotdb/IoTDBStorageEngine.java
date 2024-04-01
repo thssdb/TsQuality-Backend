@@ -1,6 +1,6 @@
 package cn.edu.tsinghua.tsquality.storage.impl.iotdb;
 
-import cn.edu.tsinghua.tsquality.common.TimeRange;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.StatsAlignedRepository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.AlignedRepositoryImpl;
@@ -9,10 +9,7 @@ import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.DQType;
-import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import cn.edu.tsinghua.tsquality.storage.impl.AbstractMetadataStorageEngine;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -21,12 +18,15 @@ import org.apache.iotdb.tsfile.read.common.Path;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Log4j2
 @Component("IoTDBStorageEngine")
 @ConditionalOnProperty(name = "pre-aggregation.storage.type", havingValue = "iotdb")
-public class IoTDBStorageEngine implements MetadataStorageEngine {
+public class IoTDBStorageEngine extends AbstractMetadataStorageEngine {
   private long storeTime = 0;
-  private final SessionPool sessionPool;
 
   public IoTDBStorageEngine(SessionPool sessionPool) {
     this.sessionPool = sessionPool;

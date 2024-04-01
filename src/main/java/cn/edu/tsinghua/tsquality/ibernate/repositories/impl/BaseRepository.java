@@ -1,15 +1,28 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
-import java.util.List;
 import org.apache.logging.log4j.util.Strings;
+
+import java.util.List;
 
 public class BaseRepository {
   protected String countSql(String device) {
     return String.format("select count(*) from %s", device);
   }
 
+  protected String countSql(String device, String measurement, String timeFilter) {
+    return String.format("select count(%s) from %s where %s", measurement, device, timeFilter);
+  }
+
   protected String countTimeSeriesLikeSql(String prefix) {
     return String.format("count timeseries %s.**", prefix);
+  }
+
+  protected String selectMinTimestampSql(String device, String measurement) {
+    return String.format("select min_time(%s) from %s", measurement, device);
+  }
+
+  protected String selectMaxTimestampSql(String device, String measurement) {
+    return String.format("select max_time(%s) from %s", measurement, device);
   }
 
   protected String prepareSelectSql(

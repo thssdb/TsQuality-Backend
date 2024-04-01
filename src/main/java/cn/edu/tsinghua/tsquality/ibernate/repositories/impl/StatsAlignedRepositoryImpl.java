@@ -1,6 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
-import cn.edu.tsinghua.tsquality.common.TimeRange;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.StatsAlignedRepository;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;

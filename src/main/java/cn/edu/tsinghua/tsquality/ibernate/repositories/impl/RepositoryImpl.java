@@ -5,8 +5,6 @@ import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVListFactory;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.udfs.AbstractUDF;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.SessionDataSetWrapper;
 import org.apache.iotdb.rpc.IoTDBConnectionException;
@@ -18,6 +16,9 @@ import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.iotdb.tsfile.write.record.Tablet;
 import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RepositoryImpl extends BaseRepository implements Repository {
   private final Path path;
@@ -55,6 +56,53 @@ public class RepositoryImpl extends BaseRepository implements Repository {
       }
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public long count(String timeFilter) {
+    String sql = countSql(path.getDevice(), path.getMeasurement(), timeFilter);
+    try {
+      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      return wrapperToLong(wrapper);
+    } catch (Exception ignored) {
+      return 0;
+    }
+  }
+
+  @Override
+  public long selectMinTimestamp() {
+    SessionDataSetWrapper wrapper = null;
+    String sql = selectMinTimestampSql(path.getDevice(), path.getMeasurement());
+    try {
+      wrapper = executeSelectSql(sql);
+      return wrapperToLong(wrapper);
+    } catch (Exception ignored) {
+      return 0;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
+    }
+  }
+
+  private long wrapperToLong(SessionDataSetWrapper wrapper) throws IoTDBConnectionException, StatementExecutionException {
+    SessionDataSet.DataIterator iterator = wrapper.iterator();
+    if (iterator.next()) {
+      return iterator.getLong(1);
+    }
+    return 0L;
+  }
+
+  @Override
+  public long selectMaxTimestamp() {
+    SessionDataSetWrapper wrapper = null;
+    String sql = selectMaxTimestampSql(path.getDevice(), path.getMeasurement());
+    try {
+      wrapper = executeSelectSql(sql);
+      return wrapperToLong(wrapper);
+    } catch (Exception ignored) {
+      return 0;
+    } finally {
+      sessionPool.closeResultSet(wrapper);
     }
   }
 

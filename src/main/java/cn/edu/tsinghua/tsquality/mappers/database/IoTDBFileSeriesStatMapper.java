@@ -1,6 +1,6 @@
 package cn.edu.tsinghua.tsquality.mappers.database;
 
-import cn.edu.tsinghua.tsquality.common.TimeRange;
+import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
