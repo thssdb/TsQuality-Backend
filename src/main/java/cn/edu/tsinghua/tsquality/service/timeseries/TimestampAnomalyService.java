@@ -1,30 +1,30 @@
 package cn.edu.tsinghua.tsquality.service.timeseries;
 
-import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.TimestampAnomalyResultDto;
+import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.response.TimestampAnomalyResponseDto;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.request.TimestampAnomalyRequestDto;
 import org.apache.iotdb.tsfile.read.common.Path;
 
 public interface TimestampAnomalyService {
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(TimestampAnomalyRequestDto dto);
+  TimestampAnomalyResponseDto anomalyDetectionAndRepair(TimestampAnomalyRequestDto dto);
 
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(String path, String timeFilter);
+  TimestampAnomalyResponseDto anomalyDetectionAndRepair(String path, String timeFilter);
 
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(
+  TimestampAnomalyResponseDto anomalyDetectionAndRepair(
       String path, Long standardInterval, String timeFilter);
 
-  TimestampAnomalyResultDto anomalyDetectionAndRepair(
+  TimestampAnomalyResponseDto anomalyDetectionAndRepair(
       String path, String detectionMethod, String timeFilter);
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(Path path, String timeFilter) {
+  default TimestampAnomalyResponseDto anomalyDetectionAndRepair(Path path, String timeFilter) {
     return anomalyDetectionAndRepair(path.getFullPath(), timeFilter);
   }
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(
+  default TimestampAnomalyResponseDto anomalyDetectionAndRepair(
       Path path, Long standardInterval, String timeFilter) {
     return anomalyDetectionAndRepair(path.getFullPath(), standardInterval, timeFilter);
   }
 
-  default TimestampAnomalyResultDto anomalyDetectionAndRepair(
+  default TimestampAnomalyResponseDto anomalyDetectionAndRepair(
       Path path, String detectionMethod, String timeFilter) {
     return anomalyDetectionAndRepair(path.getFullPath(), detectionMethod, timeFilter);
   }
