@@ -1,16 +1,12 @@
 package cn.edu.tsinghua.tsquality.service.preaggregation.impl;
 
+import cn.edu.tsinghua.tsquality.model.dto.preaggregation.PreAggregationProgressDto;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBSeriesStat;
 import cn.edu.tsinghua.tsquality.service.preaggregation.PreAggregationService;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileInfo;
 import cn.edu.tsinghua.tsquality.service.preaggregation.datastructures.TsFileStat;
 import cn.edu.tsinghua.tsquality.storage.MetadataStorageEngine;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.iotdb.db.storageengine.dataregion.modification.Modification;
@@ -28,6 +24,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Log4j2
 @Service
 public class PreAggregationServiceImpl implements PreAggregationService {
@@ -44,7 +47,7 @@ public class PreAggregationServiceImpl implements PreAggregationService {
 
   @Override
   @Scheduled(cron = "${pre-aggregation.scan-cron:0 */10 * * * ?}")
-  public void preAggregate() {
+  public void preAggregate() throws InterruptedException {
     List<TsFileInfo> allTsFiles = getAllTsFiles();
     if (allTsFiles.isEmpty()) {
       return;
@@ -64,6 +67,7 @@ public class PreAggregationServiceImpl implements PreAggregationService {
 
     //    long start = System.currentTimeMillis();
     for (TsFileInfo tsfile : targetTsFiles) {
+      TimeUnit.SECONDS.sleep(2);
       preAggregateTsFile(tsfile);
     }
     //    System.out.println("Pre-aggregation time: " + (System.currentTimeMillis() - start) +
@@ -254,5 +258,12 @@ public class PreAggregationServiceImpl implements PreAggregationService {
     }
     IoTDBSeriesStat stat = new IoTDBSeriesStat(batchData);
     tsFileStat.addPageSeriesStat(entry.getKey(), stat);
+  }
+
+  @Override
+  public PreAggregationProgressDto getProgress() {
+    long totalFileCount = getAllTsFiles().size();
+    long processedFileCount = storageEngine.selectAllFiles().size();
+    return new PreAggregationProgressDto(totalFileCount, processedFileCount);
   }
 }

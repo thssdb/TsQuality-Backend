@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.controller;
+package cn.edu.tsinghua.tsquality.controller.anomalies;
 
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.request.ValueAnomalyRequestDto;
 import cn.edu.tsinghua.tsquality.model.dto.anomalies.value.response.ValueAnomalyResponseDto;

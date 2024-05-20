@@ -16,8 +16,7 @@ import org.apache.iotdb.session.pool.SessionPool;
 import org.apache.iotdb.tsfile.read.common.Path;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.lit;
+import static org.apache.spark.sql.functions.*;
 import org.apache.spark.sql.types.StructType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -242,6 +241,7 @@ public class HdfsStorageEngine extends AbstractMetadataStorageEngine {
   private Dataset<Row> readDatasetFromCsv(
       String filePath, String seriesPath, List<TimeRange> timeRanges) {
     Dataset<Row> dataset = spark.read().option("header", true).csv(filePath);
+    dataset.withColumn("minYear", year(col("minTime")));
     return dataset.filter(col("path").equalTo(seriesPath)).filter(getTimeFilter(timeRanges));
   }
 
