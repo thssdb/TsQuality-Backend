@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +66,6 @@ public class PreAggregationServiceImpl implements PreAggregationService {
 
     //    long start = System.currentTimeMillis();
     for (TsFileInfo tsfile : targetTsFiles) {
-      TimeUnit.SECONDS.sleep(2);
       preAggregateTsFile(tsfile);
     }
     //    System.out.println("Pre-aggregation time: " + (System.currentTimeMillis() - start) +

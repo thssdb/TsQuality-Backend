@@ -1,6 +1,7 @@
 package cn.edu.tsinghua.tsquality.controller;
 
 import cn.edu.tsinghua.tsquality.model.dto.*;
+import cn.edu.tsinghua.tsquality.model.dto.timeseries.TimeSeriesRecentDataDto;
 import cn.edu.tsinghua.tsquality.service.IoTDBService;
 import cn.edu.tsinghua.tsquality.service.dataprofile.DataProfileService;
 import java.util.List;

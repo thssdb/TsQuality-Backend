@@ -10,7 +10,8 @@ public class BaseRepository {
   }
 
   protected String countSql(String device, String measurement, String timeFilter) {
-    return String.format("select count(%s) from %s where %s", measurement, device, timeFilter);
+    String whereClause = timeFilter == null ? "" : String.format("where %s", timeFilter);
+    return String.format("select count(%s) from %s %s", measurement, device, whereClause);
   }
 
   protected String countTimeSeriesLikeSql(String prefix) {

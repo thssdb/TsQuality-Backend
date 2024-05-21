@@ -3,7 +3,7 @@ package cn.edu.tsinghua.tsquality.model.dto.anomalies.timestamp.response;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.mappers.objects.Mapper;
 import cn.edu.tsinghua.tsquality.mappers.objects.impl.TVListDataPointDtoListMapperImpl;
-import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDataPointDto;
+import cn.edu.tsinghua.tsquality.model.dto.timeseries.TimeSeriesDataPointDto;
 import lombok.Data;
 
 import java.util.List;

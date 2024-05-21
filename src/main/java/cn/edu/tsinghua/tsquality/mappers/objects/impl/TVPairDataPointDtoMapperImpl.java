@@ -2,7 +2,7 @@ package cn.edu.tsinghua.tsquality.mappers.objects.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvpair.TVPair;
 import cn.edu.tsinghua.tsquality.mappers.objects.Mapper;
-import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesDataPointDto;
+import cn.edu.tsinghua.tsquality.model.dto.timeseries.TimeSeriesDataPointDto;
 import org.springframework.stereotype.Component;
 
 @Component

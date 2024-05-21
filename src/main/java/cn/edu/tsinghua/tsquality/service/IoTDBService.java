@@ -7,7 +7,7 @@ import cn.edu.tsinghua.tsquality.ibernate.repositories.Repository;
 import cn.edu.tsinghua.tsquality.ibernate.repositories.impl.RepositoryImpl;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionRequest;
 import cn.edu.tsinghua.tsquality.model.dto.IoTDBSeriesAnomalyDetectionResult;
-import cn.edu.tsinghua.tsquality.model.dto.TimeSeriesRecentDataDto;
+import cn.edu.tsinghua.tsquality.model.dto.timeseries.TimeSeriesRecentDataDto;
 import cn.edu.tsinghua.tsquality.model.entity.IoTDBTimeValuePair;
 import java.util.ArrayList;
 import java.util.List;

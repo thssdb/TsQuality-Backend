@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.model.dto;
+package cn.edu.tsinghua.tsquality.model.dto.timeseries;
 
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import java.util.List;

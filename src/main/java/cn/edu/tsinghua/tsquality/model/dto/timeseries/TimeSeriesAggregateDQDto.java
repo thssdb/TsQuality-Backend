@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.model.dto;
+package cn.edu.tsinghua.tsquality.model.dto.timeseries;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
