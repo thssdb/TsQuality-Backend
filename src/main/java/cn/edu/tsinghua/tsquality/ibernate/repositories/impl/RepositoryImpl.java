@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositoryImpl extends BaseRepository implements Repository {
+  // IMPORTANT!
+  // make sure to close the SessionDatasetWrapper after query
+  // or the occupied connection size of sessionPool will get bigger and bigger
+  // until it reaches the max size (defaults to 100) and jams the whole system!
   private final Path path;
   private final SessionPool sessionPool;
   private TSDataType dataType;
@@ -61,12 +65,15 @@ public class RepositoryImpl extends BaseRepository implements Repository {
 
   @Override
   public long count(String timeFilter) {
+    SessionDataSetWrapper wrapper = null;
     String sql = countSql(path.getDevice(), path.getMeasurement(), timeFilter);
     try {
-      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      wrapper = executeSelectSql(sql);
       return wrapperToLong(wrapper);
     } catch (Exception ignored) {
       return 0;
+    } finally {
+      closeResultSetIfNotNull(wrapper);
     }
   }
 
@@ -80,6 +87,12 @@ public class RepositoryImpl extends BaseRepository implements Repository {
     } catch (Exception ignored) {
       return 0;
     } finally {
+      closeResultSetIfNotNull(wrapper);
+    }
+  }
+
+  private void closeResultSetIfNotNull(SessionDataSetWrapper wrapper) {
+    if (wrapper != null) {
       sessionPool.closeResultSet(wrapper);
     }
   }
@@ -102,19 +115,22 @@ public class RepositoryImpl extends BaseRepository implements Repository {
     } catch (Exception ignored) {
       return 0;
     } finally {
-      sessionPool.closeResultSet(wrapper);
+      closeResultSetIfNotNull(wrapper);
     }
   }
 
   @Override
   public TVList select(AbstractUDF udf, String timeFilter, String valueFilter) {
+    SessionDataSetWrapper wrapper = null;
     setDataTypeIfNeeded();
     String sql = prepareUdfSelectSql(udf, timeFilter, valueFilter, 0);
     try {
-      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      wrapper = executeSelectSql(sql);
       return datasetToTVList(wrapper);
     } catch (Exception ignored) {
       return new EmptyTVList();
+    } finally {
+      closeResultSetIfNotNull(wrapper);
     }
   }
 
@@ -128,13 +144,16 @@ public class RepositoryImpl extends BaseRepository implements Repository {
 
   @Override
   public TVList select(long limit) {
+    SessionDataSetWrapper wrapper = null;
     setDataTypeIfNeeded();
     String sql = prepareSelectSqlWithLimit(path.getMeasurement(), path.getDevice(), limit);
     try {
-      SessionDataSetWrapper wrapper = executeSelectSql(sql);
+      wrapper = executeSelectSql(sql);
       return datasetToTVList(wrapper);
     } catch (Exception ignored) {
       return new EmptyTVList();
+    } finally {
+      closeResultSetIfNotNull(wrapper);
     }
   }
 
@@ -156,14 +175,16 @@ public class RepositoryImpl extends BaseRepository implements Repository {
     } catch (Exception ignored) {
       return new EmptyTVList();
     } finally {
-      sessionPool.closeResultSet(wrapper);
+      closeResultSetIfNotNull(wrapper);
     }
   }
 
   private TSDataType getDataType() {
+    SessionDataSetWrapper wrapper = null;
     try {
       String sql = String.format("show timeseries %s", path.getFullPath());
-      SessionDataSet.DataIterator iterator = sessionPool.executeQueryStatement(sql).iterator();
+      wrapper = sessionPool.executeQueryStatement(sql);
+      SessionDataSet.DataIterator iterator = wrapper.iterator();
       if (!iterator.next()) {
         throw new RuntimeException("No such timeseries");
       }
@@ -171,6 +192,8 @@ public class RepositoryImpl extends BaseRepository implements Repository {
       return TSDataType.valueOf(dataType);
     } catch (IoTDBConnectionException | StatementExecutionException e) {
       throw new RuntimeException(e);
+    } finally {
+      closeResultSetIfNotNull(wrapper);
     }
   }
 

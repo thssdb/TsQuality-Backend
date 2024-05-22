@@ -1,11 +1,9 @@
 package cn.edu.tsinghua.tsquality.model.entity;
 
 import cn.edu.tsinghua.tsquality.common.Util;
+import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.EmptyTVList;
 import cn.edu.tsinghua.tsquality.ibernate.datastructures.tvlist.TVList;
 import cn.edu.tsinghua.tsquality.storage.impl.iotdb.StatsTimeSeriesUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import lombok.Data;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -14,6 +12,10 @@ import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
 import org.apache.iotdb.tsfile.read.common.BatchData;
 import org.apache.spark.sql.Row;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 public class IoTDBSeriesStat {
@@ -74,6 +76,9 @@ public class IoTDBSeriesStat {
   }
 
   public IoTDBSeriesStat(TVList tvList) {
+    if (tvList instanceof EmptyTVList) {
+      return;
+    }
     int size = tvList.size();
     if (size == 0) {
       return;

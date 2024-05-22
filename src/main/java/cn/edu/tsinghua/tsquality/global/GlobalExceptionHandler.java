@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseDto<String> handleException(Exception e) {
+    e.printStackTrace();
     log.error(e);
     return ResponseDto.fail(ResultCode.FAIL, e.getMessage());
   }

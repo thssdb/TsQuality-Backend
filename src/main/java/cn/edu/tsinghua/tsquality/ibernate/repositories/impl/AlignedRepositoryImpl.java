@@ -1,10 +1,6 @@
 package cn.edu.tsinghua.tsquality.ibernate.repositories.impl;
 
 import cn.edu.tsinghua.tsquality.ibernate.repositories.AlignedRepository;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.annotation.Nonnull;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.iotdb.isession.SessionDataSet;
@@ -16,6 +12,11 @@ import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.apache.iotdb.tsfile.read.common.Path;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Log4j2
 public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepository {
@@ -131,6 +132,12 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
       log.error(e);
       return 0;
     } finally {
+      closeResultSetIfNotNull(wrapper);
+    }
+  }
+
+  protected void closeResultSetIfNotNull(SessionDataSetWrapper wrapper) {
+    if (wrapper != null) {
       sessionPool.closeResultSet(wrapper);
     }
   }
@@ -167,8 +174,8 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
 
   @Override
   public List<List<Object>> select(String timeFilter, String valueFilter) {
-    String sql = prepareSelectSql(measurements, device, timeFilter, valueFilter);
     SessionDataSetWrapper wrapper = null;
+    String sql = prepareSelectSql(measurements, device, timeFilter, valueFilter);
     try {
       wrapper = sessionPool.executeQueryStatement(sql);
       return wrapperToSelectResult(wrapper);
@@ -176,7 +183,7 @@ public class AlignedRepositoryImpl extends BaseRepository implements AlignedRepo
       log.error(e);
       return new ArrayList<>();
     } finally {
-      sessionPool.closeResultSet(wrapper);
+      closeResultSetIfNotNull(wrapper);
     }
   }
 

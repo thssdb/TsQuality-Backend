@@ -35,19 +35,21 @@ public class TimeSeriesDataQualityServiceImpl implements TimeSeriesDataQualitySe
   }
 
   private long getMinTimestamp(Long startTimestamp, String path) {
-    if (startTimestamp != null && startTimestamp > 0) {
-      return startTimestamp;
-    }
     Repository repository = new RepositoryImpl(sessionPool, path);
-    return repository.selectMinTimestamp();
+    long minTimestamp =  repository.selectMinTimestamp();
+    if  (startTimestamp == null || startTimestamp == 0) {
+      return minTimestamp;
+    }
+    return Math.max(minTimestamp, startTimestamp);
   }
 
   private long getMaxTimestamp(Long endTimestamp, String path) {
-    if (endTimestamp != null && endTimestamp > 0) {
-      return endTimestamp;
-    }
     Repository repository = new RepositoryImpl(sessionPool, path);
-    return repository.selectMaxTimestamp();
+    long maxTimestamp = repository.selectMaxTimestamp();
+    if (endTimestamp == null || endTimestamp == 0) {
+      return maxTimestamp;
+    }
+    return Math.min(maxTimestamp, endTimestamp);
   }
 
   @Override

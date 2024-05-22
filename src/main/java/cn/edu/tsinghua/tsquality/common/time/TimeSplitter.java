@@ -12,8 +12,8 @@ public class TimeSplitter {
     List<TimeRange> result = new ArrayList<>();
 
     long currentTimestamp = timeRange.getMin();
-    LocalDateTime currentDateTime = LocalDateTime.ofEpochSecond(currentTimestamp / 1000, 0, ZoneOffset.UTC);
-    LocalDateTime endDateTime = LocalDateTime.ofEpochSecond(timeRange.getMax() / 1000, 0, ZoneOffset.UTC);
+    LocalDateTime currentDateTime = LocalDateTime.ofEpochSecond(currentTimestamp / 1000, 0, ZoneOffset.ofHours(8));
+    LocalDateTime endDateTime = LocalDateTime.ofEpochSecond(timeRange.getMax() / 1000, 0, ZoneOffset.ofHours(8));
 
     while (currentDateTime.isBefore(endDateTime)) {
       LocalDateTime nextDateTime = switch (splitType) {
@@ -26,7 +26,7 @@ public class TimeSplitter {
       if (nextDateTime.isAfter(endDateTime)) {
         nextDateTime = endDateTime;
       }
-      long next = nextDateTime.toEpochSecond(ZoneOffset.UTC) * 1000;
+      long next = nextDateTime.toEpochSecond(ZoneOffset.ofHours(8)) * 1000;
       result.add(new TimeRange(currentTimestamp, next == timeRange.getMax() ? next : next - 1000));
       currentTimestamp = next;
       currentDateTime = nextDateTime;

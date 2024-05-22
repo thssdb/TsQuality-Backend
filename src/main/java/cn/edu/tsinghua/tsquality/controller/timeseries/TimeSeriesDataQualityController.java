@@ -1,4 +1,4 @@
-package cn.edu.tsinghua.tsquality.controller.dq;
+package cn.edu.tsinghua.tsquality.controller.timeseries;
 
 import cn.edu.tsinghua.tsquality.common.datastructures.TimeRange;
 import cn.edu.tsinghua.tsquality.service.timeseries.impl.TimeSeriesDataQualityServiceImpl;

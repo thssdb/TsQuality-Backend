@@ -1,9 +1,10 @@
 package cn.edu.tsinghua.tsquality.common.datastructures;
 
-import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 @Getter
 public class TimeRange implements Comparable<TimeRange> {
@@ -13,7 +14,7 @@ public class TimeRange implements Comparable<TimeRange> {
   @Setter private boolean rightClose = true;
 
   public static String getTimeFilter(List<TimeRange> ranges) {
-    return String.join(" and ", ranges.stream().map(TimeRange::getTimeFilter).toList());
+    return String.join(" or ", ranges.stream().map(TimeRange::getTimeFilter).toList());
   }
 
   public static String getStatsTimeFilter(
